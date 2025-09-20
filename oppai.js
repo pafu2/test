@@ -1115,7 +1115,7 @@
       const link = document.createElement('a');
       link.style.color = '#666';
       link.style.textDecoration = 'underline';
-      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.2';
+      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.2改';
       link.href = 'https://donguri-k.github.io/tools/arena-assist-tool';
       link.target = '_blank';
       const author = document.createElement('input');
@@ -3047,3 +3047,4 @@ nextProgress = Math.floor(Math.random() * 2 ) + 15;
     });
   })();
 })();
+
