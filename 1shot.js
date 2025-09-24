@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d.パクリ9.2改 1撃仕様
+// @version      1.2.2d.パクリ9.4改 1撃仕様
 // @description fixes and additions
 // @author       勝手にまほろば
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -1122,7 +1122,7 @@
       const link = document.createElement('a');
       link.style.color = '#666';
       link.style.textDecoration = 'underline';
-      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.2改 1撃仕様';
+      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改 1撃仕様';
       link.href = 'https://donguri-k.github.io/tools/arena-assist-tool';
       link.target = '_blank';
       const author = document.createElement('input');
@@ -3046,4 +3046,5 @@
     });
   })();
 })();
+
 
