@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d.パクリ9.2改 2撃仕様(後撃ち)
+// @version      1.2.2d.パクリ9.4改 2撃仕様(後撃ち)
 // @description fixes and additions
 // @author       勝手にまほろば
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -37,6 +37,13 @@
      MODENAME = '[ﾗﾀﾞｰ]';
  } else {
      MODENAME = '[ﾊｰﾄﾞｺｱ]';
+ }
+
+ let MODEM;
+ if (MODEQ === 'm=l') {
+     MODEM = 'l';
+ } else {
+     MODEM = 'hc';
  }
 
   const vw = Math.min(document.documentElement.clientWidth, window.innerWidth || 0);
@@ -624,7 +631,7 @@
         const table = arenaField.querySelector('table');
         const { row, col } = table.dataset;
         const action = arenaModDialog.dataset.action;
-        arenaMod(row, col, action, amt);
+        arenaMod(row, col, action, amt, MODEM);
         arenaModDialog.close();
       })
 
@@ -635,7 +642,7 @@
           const table = arenaField.querySelector('table');
           const { row, col } = table.dataset;
           const action = arenaModDialog.dataset.action;
-          arenaMod(row, col, action, amt);
+          arenaMod(row, col, action, amt, MODEM);
           arenaModDialog.close();
         }
       })
@@ -644,13 +651,13 @@
       arenaModDialog.append(div, p);
     })();
 
-    async function arenaMod(row, col, action, amt){
+    async function arenaMod(row, col, action, amt, MODEM){
       const options = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: `row=${row}&col=${col}&m=hc&action=${action}&amt=${amt}`
+        body: `row=${row}&col=${col}&action=${action}&amt=${amt}&m=${MODEM}`
       };
       try{
         const res = await fetch('/teamvol/', options);
@@ -1115,7 +1122,7 @@
       const link = document.createElement('a');
       link.style.color = '#666';
       link.style.textDecoration = 'underline';
-      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.2改 2撃仕様(後撃ち)';
+      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改 2撃仕様(後撃ち)';
       link.href = 'https://donguri-k.github.io/tools/arena-assist-tool';
       link.target = '_blank';
       const author = document.createElement('input');
@@ -3047,3 +3054,4 @@ nextProgress = Math.floor(Math.random() * 2 ) + 15;
     });
   })();
 })();
+
