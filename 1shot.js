@@ -39,6 +39,13 @@
      MODENAME = '[ﾊｰﾄﾞｺｱ]';
  }
 
+ let MODEM;
+ if (MODEQ === 'm=l') {
+     MODEM = 'l';
+ } else {
+     MODEM = 'hc';
+ }
+
   const vw = Math.min(document.documentElement.clientWidth, window.innerWidth || 0);
   const vh = Math.min(document.documentElement.clientHeight, window.innerHeight || 0);
 
@@ -624,7 +631,7 @@
         const table = arenaField.querySelector('table');
         const { row, col } = table.dataset;
         const action = arenaModDialog.dataset.action;
-        arenaMod(row, col, action, amt);
+        arenaMod(row, col, action, amt, MODEM);
         arenaModDialog.close();
       })
 
@@ -635,7 +642,7 @@
           const table = arenaField.querySelector('table');
           const { row, col } = table.dataset;
           const action = arenaModDialog.dataset.action;
-          arenaMod(row, col, action, amt);
+          arenaMod(row, col, action, amt, MODEM);
           arenaModDialog.close();
         }
       })
@@ -644,13 +651,13 @@
       arenaModDialog.append(div, p);
     })();
 
-    async function arenaMod(row, col, action, amt){
+    async function arenaMod(row, col, action, amt, MODEM){
       const options = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: `row=${row}&col=${col}&m=hc&action=${action}&amt=${amt}`
+        body: `row=${row}&col=${col}&action=${action}&amt=${amt}&m=${MODEM}`
       };
       try{
         const res = await fetch('/teamvol/', options);
@@ -3039,3 +3046,4 @@
     });
   })();
 })();
+
