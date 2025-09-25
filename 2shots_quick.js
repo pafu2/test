@@ -1221,7 +1221,6 @@
     resetCurrentEquip.style.borderTop = 'solid 1px #000';
     resetCurrentEquip.style.cursor = 'pointer';
     resetCurrentEquip.style.color = '#a62';
-    resetCurrentEquip.style.height = '80px';
     resetCurrentEquip.style.whiteSpace = 'nowrap';
     resetCurrentEquip.style.overflow = 'hidden';
     resetCurrentEquip.addEventListener('click', ()=>{
@@ -3055,5 +3054,6 @@ nextProgress = Math.floor(Math.random() * 4 ) + 7;
     });
   })();
 })();
+
 
 
