@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d.パクリ9.2改 3撃仕様
+// @version      1.2.2d.パクリ9.4改 3撃仕様
 // @description fixes and additions
 // @author       勝手にまほろば
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -1115,7 +1115,7 @@
       const link = document.createElement('a');
       link.style.color = '#666';
       link.style.textDecoration = 'underline';
-      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.2改 3撃仕様';
+      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改 3撃仕様';
       link.href = 'https://donguri-k.github.io/tools/arena-assist-tool';
       link.target = '_blank';
       const author = document.createElement('input');
@@ -2575,7 +2575,7 @@
 
     const messageTypes = {
       afterRetry: [
-        '再建が必要です。',
+        '再建が必要です。'
       ],
       retry: [
         'あなたのチームは動きを使い果たしました。しばらくお待ちください。',
@@ -2668,16 +2668,14 @@
             let processType;
             let sleepTime = 1.5;
 
-            if (text.endsWith('新しいアリーナリーダーです。')
-              || text.endsWith('アリーナチャレンジは失敗しました。')
-              || text.endsWith('防御設備を破壊しました。')
+            if (messageType === 'afterRetry') {
+              processType = 'continue';
+            } else if (text.startsWith('アリーナチャレンジ開始')
               || text.startsWith('リーダーになった')
             ) {
               success = true;
               message = '[成功] ' + lastLine;
               processType = 'return';
-            } else if (messageType === 'afterRetry') {
-              processType = 'continue';
             } else if (messageType === 'retry') {
               sleepTime = 10.1;
               processType = 'continue';
