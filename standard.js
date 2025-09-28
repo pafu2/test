@@ -1212,9 +1212,9 @@
     const resetCurrentEquip = document.createElement('div');
     resetCurrentEquip.textContent = '装備情報をリセット';
     resetCurrentEquip.style.borderTop = 'solid 1px #000';
-    resetCurrentEquip.style.height = '78px';
     resetCurrentEquip.style.cursor = 'pointer';
     resetCurrentEquip.style.color = '#a62';
+    resetCurrentEquip.style.height = '78px';
     resetCurrentEquip.style.whiteSpace = 'nowrap';
     resetCurrentEquip.style.overflow = 'hidden';
     resetCurrentEquip.addEventListener('click', ()=>{
@@ -3040,4 +3040,5 @@
     });
   })();
 })();
+
 
