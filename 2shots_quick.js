@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d.パクリ9.4改 2撃仕様(早撃ち)
+// @version      1.2.2d.パクリ9.4改β 2撃仕様(早撃ち)
 // @description fixes and additions
 // @author       勝手にまほろば
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -1122,7 +1122,7 @@
       const link = document.createElement('a');
       link.style.color = '#666';
       link.style.textDecoration = 'underline';
-      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改 2撃仕様(早撃ち)';
+      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改β 2撃仕様(早撃ち)';
       link.href = 'https://donguri-k.github.io/tools/arena-assist-tool';
       link.target = '_blank';
       const author = document.createElement('input');
@@ -2602,7 +2602,8 @@
         '武器と防具を装備しなければなりません。',
         '装備している防具と武器が力不足です。',
         '装備している防具と武器が強すぎます',
-        '装備しているものは改造が多すぎます。改造の少ない他のものをお試しください'
+        '装備しているものは改造が多すぎます。改造の少ない他のものをお試しください',
+        '参加するには、装備中の武器と防具のアイテムIDが134734584以上である必要があります。'
       ],
       nonAdjacent: [
         'このタイルは攻撃できません。あなたのチームが首都を持つまで、どの首都にも隣接するタイルを主張することはできません。',
@@ -2674,16 +2675,18 @@
             const messageType = getMessageType(lastLine);
             let message = lastLine;
             let processType;
-            let sleepTime = 1.5;
+            let sleepTime = 2.5;
 
-            if (text.startsWith('アリーナチャレンジ開始')
-              || text.startsWith('リーダーになった')
-            ) {
+            if (messageType === 'afterRetry') {
+              message = '[もう1発!!] ' + lastLine;
+              processType = 'continue';
+            } else if (text.startsWith('リーダーになった')) {
+              message = '[もう1発!!] ' + lastLine;
+              processType = 'continue';
+            } else if (text.startsWith('アリーナチャレンジ開始')) {
               success = true;
               message = '[成功] ' + lastLine;
               processType = 'return';
-            } else if (messageType === 'afterRetry') {
-              processType = 'continue';
             } else if (messageType === 'retry') {
               sleepTime = 10.1;
               processType = 'continue';
@@ -3054,6 +3057,7 @@ nextProgress = Math.floor(Math.random() * 4 ) + 7;
     });
   })();
 })();
+
 
 
 
