@@ -2757,7 +2757,7 @@
                } else {
                 nextProgress = Math.floor(Math.random() * 10) + 20; // 20 ~ 30 +- 5
                }
-          const next = `→ ${nextProgress}±5%`;
+              next = `→ ${nextProgress}±5%`;
               isAutoJoinRunning = false;
             } else if (processType === 'return') {
               next = '';
@@ -3080,3 +3080,4 @@
     });
   })();
 })();
+
