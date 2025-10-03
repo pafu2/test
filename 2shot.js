@@ -2761,7 +2761,7 @@
                } else {
                 nextProgress = Math.floor(Math.random() * 2 ) + 15;
                }
-          const next = `→ ${nextProgress}±5%`;
+              next = `→ ${nextProgress}±5%`;
               isAutoJoinRunning = false;
             } else if (processType === 'return') {
               next = '';
@@ -3088,3 +3088,4 @@
     });
   })();
 })();
+
