@@ -1,8 +1,8 @@
-// ==UserScript==
+﻿// ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d.パクリ9.4改β 1撃仕様
+// @version      1.2.2d.パクリ9.4改 連射版 - 1発撃ち
 // @description fixes and additions
-// @author       勝手にまほろば
+// @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
 // @match        https://donguri.5ch.net/teambattle?m=l
 // @match        https://donguri.5ch.net/bag
@@ -1122,11 +1122,11 @@
       const link = document.createElement('a');
       link.style.color = '#666';
       link.style.textDecoration = 'underline';
-      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改β 1撃仕様';
+      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改 連射版 - 1発撃ち';
       link.href = 'https://donguri-k.github.io/tools/arena-assist-tool';
       link.target = '_blank';
       const author = document.createElement('input');
-      author.value = '作者 [ 勝手にまほろば ]';
+      author.value = '作者 [ ぱふぱふ ]';
       author.style.color = '#666';
       author.style.background = 'none';
       author.style.margin = '2px';
@@ -2544,7 +2544,6 @@
     const teamColor = settings.teamColor;
     const teamName = settings.teamName;
 
-
     function logMessage(region, message, next) {
       const date = new Date();
       const ymd = date.toLocaleDateString('sv-SE').slice(2);
@@ -2642,6 +2641,7 @@
       }
       let regions = await getRegions();
       const excludeSet = new Set();
+      let loop = 0;
 
       let cellType;
       if (regions.nonAdjacent.length > 0) {
@@ -2675,24 +2675,45 @@
             const messageType = getMessageType(lastLine);
             let message = lastLine;
             let processType;
-            let sleepTime = 2.5;
+            let sleepTime = 3.0;
 
             if (messageType === 'afterRetry') {
-              message = '[もう1発!!] ' + lastLine;
+              loop += 1;
+              message = '(' + loop + '発目) '+ lastLine;
               processType = 'continue';
             } else if (text.startsWith('リーダーになった')) {
-              message = '[もう1発!!] ' + lastLine;
-              processType = 'continue';
+                if (loop < 9){
+                  loop += 1;
+                  message = '(' + loop + '発目) '+ lastLine;
+                  processType = 'continue';
+                } else {
+                  success = true;
+                  loop += 1;
+                  message = '(' + loop + '発目)【打止】'+ lastLine;
+                  processType = 'return';
+                }
             } else if (text.startsWith('アリーナチャレンジ開始')) {
               success = true;
-              message = '[成功] ' + lastLine;
+              loop += 1;
+              message = '(' + loop + '発目)【成功】'+ lastLine;
               processType = 'return';
             } else if (messageType === 'retry') {
               sleepTime = 10.1;
+              loop += 1;
+              message = '(' + loop + '発目) '+ lastLine;
               processType = 'continue';
             } else if (messageType === 'equipError'){
-              processType = 'continue';
-              message += ` (${cellRank}, ${currentEquipName})`;
+                if (loop < 9){
+                  loop += 1;
+                  sleepTime = 10.1;
+                  message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
+                  processType = 'continue';
+                } else {
+                  success = true;
+                  loop += 1;
+                  message = '(' + loop + '発目) 【打止】'+ lastLine;
+                  processType = 'return';
+                }
             } else if (lastLine.length > 100) {
               message = 'どんぐりシステム';
               processType = 'continue';
@@ -2705,18 +2726,28 @@
             } else if (messageType in regions) {
               excludeSet.add(region.join(','));
               if (messageType === cellType) {
+                loop += 1;
+                message = '(' + loop + '発目) '+ lastLine;
                 processType = 'continue';
               } else if (messageType === 'nonAdjacent') {
                 cellType = 'nonAdjacent';
+                loop += 1;
+                message = '(' + loop + '発目) '+ lastLine;
                 processType = 'break';
               } else if (messageType === 'teamAdjacent') {
                 cellType = 'teamAdjacent';
+                loop += 1;
+                message = '(' + loop + '発目) '+ lastLine;
                 processType = 'break';
               } else if (messageType === 'capitalAdjacent') {
                 cellType = 'capitalAdjacent';
+                loop += 1;
+                message = '(' + loop + '発目) '+ lastLine;
                 processType = 'break';
               } else if (messageType === 'mapEdge') {
                 cellType = 'mapEdge';
+                loop += 1;
+                message = '(' + loop + '発目) '+ lastLine;
                 processType = 'break';
               }
             }
@@ -2726,7 +2757,7 @@
                } else {
                 nextProgress = Math.floor(Math.random() * 10) + 20; // 20 ~ 30 +- 5
                }
-              next = `→ ${nextProgress}±5%`;
+          const next = `→ ${nextProgress}±5%`;
               isAutoJoinRunning = false;
             } else if (processType === 'return') {
               next = '';
@@ -2792,7 +2823,7 @@
                } else {
                 nextProgress = Math.floor(Math.random() * 10) + 20; // 20 ~ 30 +- 5
                }
-          const next = `→ ${nextProgress}±5%`;
+              next = `→ ${nextProgress}±5%`;
           isAutoJoinRunning = false;
           logMessage(null, '攻撃可能なタイルが見つかりませんでした。', next);
           return;
@@ -3049,8 +3080,3 @@
     });
   })();
 })();
-
-
-
-
-
