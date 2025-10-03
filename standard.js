@@ -1,4 +1,4 @@
-﻿// ==UserScript==
+﻿﻿// ==UserScript==
 // @name         donguri arena assist tool
 // @version      1.2.2d.パクリ9.4改 標準仕様
 // @description fixes and additions
@@ -2544,7 +2544,6 @@
     const teamColor = settings.teamColor;
     const teamName = settings.teamName;
 
-
     function logMessage(region, message, next) {
       const date = new Date();
       const ymd = date.toLocaleDateString('sv-SE').slice(2);
@@ -3047,8 +3046,3 @@
     });
   })();
 })();
-
-
-
-
-
