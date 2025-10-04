@@ -2699,8 +2699,7 @@
               processType = 'return';
             } else if (messageType === 'retry') {
               sleepTime = 10.1;
-              loop += 1;
-              message = '(' + loop + '発目) '+ lastLine;
+              message = lastLine;
               processType = 'continue';
             } else if (messageType === 'equipError'){
                 if (loop < 9){
@@ -3080,4 +3079,5 @@
     });
   })();
 })();
+
 
