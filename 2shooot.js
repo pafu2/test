@@ -2822,13 +2822,13 @@
         }
         if (!success && regions[cellType].length === 0) {
               if (currentProgress < 25) {
-                nextProgress = Math.floor(Math.random() * 2 ) + 38;
+                nextProgress = 35;
                } else if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 2 ) + 65;
+                nextProgress = 65;
                } else if (currentProgress < 75) {
-                nextProgress = Math.floor(Math.random() * 2 ) + 88;
+                nextProgress = 85;
                } else {
-                nextProgress = Math.floor(Math.random() * 2 ) + 15;
+                nextProgress = 15;
                }
           const next = `→ ${nextProgress}±5%`;
           isAutoJoinRunning = false;
@@ -3087,3 +3087,4 @@
     });
   })();
 })();
+
