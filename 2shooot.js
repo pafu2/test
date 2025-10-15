@@ -1,4 +1,4 @@
-﻿// ==UserScript==
+// ==UserScript==
 // @name         donguri arena assist tool
 // @version      1.2.2d.パクリ9.4改 連射版 - 2発撃ち
 // @description fixes and additions
@@ -2636,7 +2636,7 @@
     let nextProgress;
     async function attackRegion () {
       await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 5) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
         return;
       }
       let regions = await getRegions();
@@ -3087,4 +3087,3 @@
     });
   })();
 })();
-
