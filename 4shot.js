@@ -2751,22 +2751,22 @@
               }
             }
             if (success) {
-              if (currentProgress < 13) {
-                nextProgress = 19;
-               } else if (currentProgress < 26) {
-                nextProgress = 32;
-               } else if (currentProgress < 39) {
-                nextProgress = 45;
+              if (currentProgress < 15) {
+                nextProgress = 20;
+               } else if (currentProgress < 25) {
+                nextProgress = 30;
+               } else if (currentProgress < 35) {
+                nextProgress = 40;
                } else if (currentProgress < 50) {
-                nextProgress = 56;
-               } else if (currentProgress < 63) {
-                nextProgress = 69;
-               } else if (currentProgress < 76) {
-                nextProgress = 82;
-               } else if (currentProgress < 89) {
-                nextProgress = 95;
+                nextProgress = 60;
+               } else if (currentProgress < 65) {
+                nextProgress = 70;
+               } else if (currentProgress < 75) {
+                nextProgress = 80;
+               } else if (currentProgress < 85) {
+                nextProgress = 90;
                } else {
-                nextProgress = 6;
+                nextProgress = 10;
                }
               next = `→ ${nextProgress}±2%`;
               isAutoJoinRunning = false;
@@ -2829,22 +2829,22 @@
           }
         }
         if (!success && regions[cellType].length === 0) {
-              if (currentProgress < 13) {
-                nextProgress = 19;
-               } else if (currentProgress < 26) {
-                nextProgress = 32;
-               } else if (currentProgress < 39) {
-                nextProgress = 45;
+              if (currentProgress < 15) {
+                nextProgress = 20;
+               } else if (currentProgress < 25) {
+                nextProgress = 30;
+               } else if (currentProgress < 35) {
+                nextProgress = 40;
                } else if (currentProgress < 50) {
-                nextProgress = 56;
-               } else if (currentProgress < 63) {
-                nextProgress = 69;
-               } else if (currentProgress < 76) {
-                nextProgress = 82;
-               } else if (currentProgress < 89) {
-                nextProgress = 95;
+                nextProgress = 60;
+               } else if (currentProgress < 65) {
+                nextProgress = 70;
+               } else if (currentProgress < 75) {
+                nextProgress = 80;
+               } else if (currentProgress < 85) {
+                nextProgress = 90;
                } else {
-                nextProgress = 6;
+                nextProgress = 10;
                }
           const next = `→ ${nextProgress}±2%`;
           isAutoJoinRunning = false;
@@ -3103,4 +3103,5 @@
     });
   })();
 })();
+
 
