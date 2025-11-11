@@ -1212,6 +1212,7 @@
     presetList.style.margin = '0';
     presetList.style.padding = '0';
     presetList.style.borderTop = 'solid 1px #000';
+    presetList.style.height = '100%';
     presetList.style.overflowY = 'auto';
     presetList.style.flexGrow = '1';
     showEquipPreset();
@@ -3103,6 +3104,7 @@
     });
   })();
 })();
+
 
 
 
