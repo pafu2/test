@@ -2679,8 +2679,8 @@
             let sleepTime = 3.0;
 
             if (messageType === 'afterRetry') {
-              loop += 1;
-              message = '(' + loop + '発目) '+ lastLine;
+              sleepTime = 2.1;
+              message = '(撃破) '+ lastLine;
               processType = 'continue';
             } else if (text.startsWith('リーダーになった')) {
                 if (loop < 9){
@@ -3104,6 +3104,7 @@
     });
   })();
 })();
+
 
 
 
