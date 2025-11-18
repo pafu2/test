@@ -2694,7 +2694,7 @@
                   processType = 'return';
                 }
             } else if (text.startsWith('アリーナチャレンジ開始')) {
-                if (text.endsWith('失敗しました')) {
+                if (text.endsWith('失敗しました。')) {
                    lose += 1;
                      if (lose < 2){
                         loop += 1;
@@ -3126,3 +3126,4 @@
     });
   })();
 })();
+
