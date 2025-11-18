@@ -2708,7 +2708,7 @@
                      } else {
                         success = true;
                         loop += 1;
-                        message = '(' + loop + '発目)【止】'+ lastLine;
+                        message = '(' + lose + '敗目)【打止】'+ lastLine;
                         processType = 'return';
                      }
                 } else {
@@ -3131,6 +3131,7 @@
     });
   })();
 })();
+
 
 
 
