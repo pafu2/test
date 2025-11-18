@@ -2581,9 +2581,11 @@
     }
 
     const messageTypes = {
-      afterRetry: [
-        '再建が必要です。',
+      reinforceRetry: [
         '防御設備を破壊しました。'
+      ],
+      capitalRetry: [
+        '再建が必要です。'
       ],
       retry: [
         'あなたのチームは動きを使い果たしました。しばらくお待ちください。',
@@ -2679,9 +2681,11 @@
             let processType;
             let sleepTime = 3.0;
 
-            if (messageType === 'afterRetry') {
-              loop += 1;
-              message = '(' + loop + '発目) '+ lastLine;
+            if (messageType === 'reinforceRetry') {
+              message = '【強化撃破】 '+ lastLine;
+              processType = 'continue';
+            } else if (messageType === 'capitalRetry') {
+              message = '【首都撃破】 '+ lastLine;
               processType = 'continue';
             } else if (text.startsWith('リーダーになった')) {
                 if (loop < 9){
@@ -3127,6 +3131,7 @@
     });
   })();
 })();
+
 
 
 
