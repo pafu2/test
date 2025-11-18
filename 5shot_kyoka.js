@@ -2709,6 +2709,7 @@
                         loop += 1;
                         message = '(' + loop + '発目)【打止】'+ lastLine;
                         processType = 'return';
+                     }
                 } else {
                   success = true;
                   loop += 1;
@@ -3129,3 +3130,4 @@
     });
   })();
 })();
+
