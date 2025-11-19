@@ -1,4 +1,4 @@
-﻿// ==UserScript==
+﻿﻿// ==UserScript==
 // @name         donguri arena assist tool
 // @version      1.2.2d.パクリ9.4改 連射版 - 4発撃ち
 // @description fixes and additions
@@ -2679,8 +2679,8 @@
             let sleepTime = 3.0;
 
             if (messageType === 'afterRetry') {
-              sleepTime = 2.1;
-              message = '(撃破) '+ lastLine;
+              loop += 1;
+              message = '(' + loop + '発目) '+ lastLine;
               processType = 'continue';
             } else if (text.startsWith('リーダーになった')) {
                 if (loop < 9){
@@ -3104,9 +3104,3 @@
     });
   })();
 })();
-
-
-
-
-
-
