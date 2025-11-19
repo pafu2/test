@@ -2833,7 +2833,6 @@ async function autoJoin() {
       }
     }
   }
-}
 
     async function getRegions () {
       try {
@@ -3084,3 +3083,4 @@ async function autoJoin() {
     });
   })();
 })();
+
