@@ -2694,6 +2694,7 @@
 if (messageType === 'afterRetry') {
     retryRegion = region;   // ★ 次のループで最優先攻撃
     loop += 1;
+    sleepTime = 2.1;
     message = '(' + loop + '発目) '+ lastLine;
     processType = 'continue';
 }
