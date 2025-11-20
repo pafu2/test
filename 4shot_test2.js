@@ -2700,12 +2700,12 @@
                 if (loop < 9){
                   loop += 1;
                   sleepTime = 1.5;
-                  message = '(' + loop + '発目)［撃破］'+ lastLine;
+                  message = '(' + loop + '発目)［破壊］'+ lastLine;
                   processType = 'continue';
                 } else {
                   success = true;
                   loop += 1;
-                  message = '(' + loop + '発目)［撃破］【打止】'+ lastLine;
+                  message = '(' + loop + '発目)［破壊］【打止】'+ lastLine;
                   processType = 'return';
                   i++;
                 }
