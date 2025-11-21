@@ -2581,10 +2581,10 @@
     }
 
     const messageTypes = {
-      capitalRetry: [
+      capitalAttack: [
         '再建が必要です。'
       ],
-      reinforceRetry: [
+      reinforceAttack: [
         '防御設備を破壊しました。'
       ],
       retry: [
@@ -3152,5 +3152,6 @@
     });
   })();
 })();
+
 
 
