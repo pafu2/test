@@ -2004,11 +2004,7 @@
 
     const cells = grid.querySelectorAll('.cell');
     cells.forEach(async(elm) => {
-      const hasInfo = elm.dataset.rank !== undefined;
-      const isRefreshed = refreshedCells.includes(elm);
-      if(refreshAll || !hasInfo || isRefreshed) {
-        fetchSingleArenaInfo(elm)
-      }
+      fetchSingleArenaInfo(elm);
     })
   }
   async function fetchSingleArenaInfo(elm) {
@@ -3063,6 +3059,7 @@
     });
   })();
 })();
+
 
 
 
