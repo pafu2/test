@@ -1957,12 +1957,13 @@ async function refreshArenaInfo() {
           if (cellColors[cellKey]) {
             cell.style.backgroundColor = cellColors[cellKey];
           } else {
+            cell.style.backgroundColor = '#F0F0F0';
             // 武器・防具グレード別初期色を設定可能
             // ここでは例として grade 1-4 に色を割り当て
-            const gradeColorMap = ['#ffffff00', '#ffeeaa', '#aaffaa', '#aaddff', '#ffaaaa'];
+            // const gradeColorMap = ['#ffffff00', '#ffeeaa', '#aaffaa', '#aaddff', '#ffaaaa'];
             // row と col で簡易グレードを決める（適宜ゲームロジックに合わせて修正）
-            const grade = ((i + j) % gradeColorMap.length);
-            cell.style.backgroundColor = gradeColorMap[grade];
+            // const grade = ((i + j) % gradeColorMap.length);
+            // cell.style.backgroundColor = gradeColorMap[grade];
           }
 
           grid.appendChild(cell);
@@ -3154,3 +3155,4 @@ if (cellColors[cellKey]) {
     });
   })();
 })();
+
