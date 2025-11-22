@@ -1,8 +1,8 @@
-??// ==UserScript==
+// ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d.�p�N��9.4�� �A�˔� - 4������
+// @version      1.2.2d.パクリ9.4改 連射版 - 4発撃ち
 // @description fixes and additions
-// @author       �ςӂς�
+// @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
 // @match        https://donguri.5ch.net/teambattle?m=l
 // @match        https://donguri.5ch.net/bag
@@ -34,9 +34,9 @@
 
  let MODENAME;
  if (MODEQ === 'm=l') {
-     MODENAME = '[��ް]';
+     MODENAME = '[ﾗﾀﾞｰ]';
  } else {
-     MODENAME = '[ʰ�޺�]';
+     MODENAME = '[ﾊｰﾄﾞｺｱ]';
  }
 
  let MODEM;
@@ -139,33 +139,33 @@
     }
 
     const menuButton = button.cloneNode();
-    menuButton.textContent = '�����j���[';
+    menuButton.textContent = '▼メニュー';
     menuButton.addEventListener('click', ()=>{
       const isSubMenuOpen = subMenu.style.display === 'flex';
       subMenu.style.display = isSubMenuOpen ? 'none' : 'flex';
     })
 
     const equipButton = button.cloneNode();
-    equipButton.textContent = '������';
+    equipButton.textContent = '■装備';
     equipButton.addEventListener('click', ()=>{
       panel.style.display = 'flex';
     });
 
     const toggleViewButton = button.cloneNode();
-    toggleViewButton.innerText = '�\��\n�؂�ւ�';
+    toggleViewButton.innerText = '表示\n切り替え';
     toggleViewButton.addEventListener('click', ()=>{
       toggleCellViewMode();
     })
 
 
     const refreshButton = button.cloneNode();
-    refreshButton.innerText = '�G���A���\n�X�V';
+    refreshButton.innerText = 'エリア情報\n更新';
     refreshButton.addEventListener('click',()=>{
       fetchAreaInfo(false);
     });
 
     const skipAreaInfoButton = button.cloneNode();
-    skipAreaInfoButton.innerText = '�Z�����\n�X�L�b�v';
+    skipAreaInfoButton.innerText = 'セル情報\nスキップ';
     skipAreaInfoButton.style.color = '#fff';
     if (settings.skipArenaInfo) {
       skipAreaInfoButton.style.background = '#46f';
@@ -209,13 +209,13 @@
       div.style.height = '100%';
 
       const cellButton = subButton.cloneNode();
-      cellButton.innerText = '�G���A���\n�Ď擾';
+      cellButton.innerText = 'エリア情報\n再取得';
       cellButton.addEventListener('click',()=>{
         fetchAreaInfo(true);
       });
 
       const skipAutoEquipButton = subButton.cloneNode();
-      skipAutoEquipButton.textContent = '��������';
+      skipAutoEquipButton.textContent = '自動装備';
       skipAutoEquipButton.style.color = '#fff';
       skipAutoEquipButton.classList.add('skip-auto-equip');
       if (settings.skipAutoEquip) {
@@ -251,7 +251,7 @@
 
 
       const autoJoinButton = subButton.cloneNode();
-      autoJoinButton.innerText = '�����Q��\n���[�h';
+      autoJoinButton.innerText = '自動参加\nモード';
       autoJoinButton.style.background = '#ffb300';
       autoJoinButton.style.color = '#000';
       autoJoinButton.addEventListener('click',()=>{
@@ -300,8 +300,8 @@
         })
 
         const inputs = {
-          teamName: [input.cloneNode(),'�`�[����'],
-          teamColor: [input.cloneNode(),'�`�[���J���[']
+          teamName: [input.cloneNode(),'チーム名'],
+          teamColor: [input.cloneNode(),'チームカラー']
         }
         for (const key of Object.keys(inputs)) {
           const label_ = label.cloneNode();
@@ -322,7 +322,7 @@
 
         const description = document.createElement('p');
         description.style.fontSize = '90%';
-        description.innerText = '�`�[���J���[�͏�����/�啶�������m�ɓ��͂��Ă��������B�i���w�̗אڃ^�C���擾�ɕK�v�j\n���炩���ߑ����p�l������G���[�g���܂ߊe�����N�̑�����o�^���Ă��������B�i�������Ă��Ȃ��ꍇ�͏����j\n��������o�^���Ă��Ȃ��Ɛ��������ቺ���܂��B'
+        description.innerText = 'チームカラーは小文字/大文字も正確に入力してください。（自陣の隣接タイル取得に必要）\nあらかじめ装備パネルからエリートも含め各ランクの装備を登録してください。（所持していない場合は除く）\n※装備を登録していないと成功率が低下します。'
         div.append(description,closeButton);
         autoJoinSettingsDialog.append(div);
       })();
@@ -344,21 +344,21 @@
         log.classList.add('auto-join-log');
 
         const settingsButton = document.createElement('button');
-        settingsButton.textContent = '�ݒ�';
+        settingsButton.textContent = '設定';
         settingsButton.addEventListener('click', ()=>{
           autoJoinSettingsDialog.showModal();
           clearInterval(autoJoinIntervalId);
         })
         const closeButton = document.createElement('button');
         closeButton.style.fontSize = '100%';
-        closeButton.textContent = '�����Q�����[�h���I��';
+        closeButton.textContent = '自動参加モードを終了';
         closeButton.addEventListener('click', ()=>{
           autoJoinDialog.close();
         })
-        //closeButton.autofocus = true; // input�ւ̃I�[�g�t�H�[�J�X�j�~
+        //closeButton.autofocus = true; // inputへのオートフォーカス阻止
         const p = document.createElement('p');
-        //p.textContent = '���̉�ʂ��J�����܂܂ɂ��Ă������ƁB�ŒZ600�b';
-        p.textContent = '���̉�ʂ��J�����܂܂ɂ��Ă�������';
+        //p.textContent = 'この画面を開いたままにしておくこと。最短600秒';
+        p.textContent = 'この画面を開いたままにしておくこと';
         p.style.margin = '0';
 
         container.append(log, p, settingsButton, closeButton);
@@ -367,7 +367,7 @@
 
 
       const settingsButton = subButton.cloneNode();
-      settingsButton.textContent = '�ݒ�';
+      settingsButton.textContent = '設定';
       settingsButton.style.background = '#ffb300';
       settingsButton.style.color = '#000';
       settingsButton.addEventListener('click', ()=>{
@@ -375,7 +375,7 @@
       })
 
       const rangeAttackButton = subButton.cloneNode();
-      rangeAttackButton.textContent = '�͈͍U��';
+      rangeAttackButton.textContent = '範囲攻撃';
       rangeAttackButton.style.background = '#f64';
       rangeAttackButton.style.color = '#fff';
       rangeAttackButton.addEventListener('click', ()=>{
@@ -384,7 +384,7 @@
       })
 
       const closeSlideMenuButton = subButton.cloneNode();
-      closeSlideMenuButton.textContent = '��߂�';
+      closeSlideMenuButton.textContent = 'やめる';
       closeSlideMenuButton.style.background = '#888';
       closeSlideMenuButton.style.color = '#fff';
       closeSlideMenuButton.addEventListener('click', ()=>{
@@ -393,7 +393,7 @@
       })
 
       const startRangeAttackButton = subButton.cloneNode();
-      startRangeAttackButton.textContent = '�U���J�n';
+      startRangeAttackButton.textContent = '攻撃開始';
       startRangeAttackButton.style.background = '#f64';
       startRangeAttackButton.style.color = '#fff';
       startRangeAttackButton.addEventListener('click', async()=>{
@@ -406,7 +406,7 @@
       })
 
       const pauseRangeAttackButton = subButton.cloneNode();
-      pauseRangeAttackButton.textContent = '���f';
+      pauseRangeAttackButton.textContent = '中断';
       pauseRangeAttackButton.style.background = '#888';
       pauseRangeAttackButton.style.color = '#fff';
       pauseRangeAttackButton.addEventListener('click', ()=>{
@@ -416,7 +416,7 @@
       })
 
       const resumeRangeAttackButton = subButton.cloneNode();
-      resumeRangeAttackButton.textContent = '�ĊJ';
+      resumeRangeAttackButton.textContent = '再開';
       resumeRangeAttackButton.style.background = '#f64';
       resumeRangeAttackButton.style.color = '#fff';
       resumeRangeAttackButton.style.display = 'none';
@@ -443,7 +443,7 @@
       }
 
       const deselectButton = subButton.cloneNode();
-      deselectButton.textContent = '�I������';
+      deselectButton.textContent = '選択解除';
       deselectButton.style.background = '#888';
       deselectButton.style.color = '#fff';
       deselectButton.addEventListener('click', ()=>{
@@ -455,7 +455,7 @@
       })
 
       const batchSelectButton = subButton.cloneNode();
-      batchSelectButton.textContent = '�ꊇ�I��';
+      batchSelectButton.textContent = '一括選択';
       batchSelectButton.style.background = '#ffb300';
       batchSelectButton.style.color = '#000';
       batchSelectButton.addEventListener('click', ()=>{
@@ -483,7 +483,7 @@
             const cells = document.querySelectorAll('.cell');
             cells.forEach(cell => {
               const cellRank = cell.querySelector('p').textContent;
-              const regex = new RegExp(`\\b${rank}(����)?e?$`);
+              const regex = new RegExp(`\\b${rank}(だけ)?e?$`);
               const match = cellRank.match(regex);
               if(match) {
                 cell.classList.add('selected');
@@ -501,7 +501,7 @@
         closeButton.style.width = '4.5em';
         closeButton.style.background = '#888';
         closeButton.style.color = '#fff';
-        closeButton.textContent = '��߂�';
+        closeButton.textContent = 'やめる';
         closeButton.addEventListener('click', ()=>{
           batchSelectMenu.style.display = 'none';
         })
@@ -566,7 +566,7 @@
     }
 
     const challengeButton = button.cloneNode();
-    challengeButton.textContent = '�G���A�ɒ���';
+    challengeButton.textContent = 'エリアに挑む';
     challengeButton.style.flexGrow = '2';
     challengeButton.addEventListener('click', async(e)=>{
       const table = arenaField.querySelector('table');
@@ -577,27 +577,27 @@
     })
 
     const reinforceButton = button.cloneNode();
-    reinforceButton.textContent = '��������';
+    reinforceButton.textContent = '強化する';
     reinforceButton.style.flexGrow = '1';
     reinforceButton.addEventListener('click', ()=>{
       arenaModDialog.dataset.action = 'ReinforceArena';
-      modButton.textContent = '��������';
-      p.textContent = `�؍�: ${wood}, �S: ${steel} (1pt�ɂ��e25��)`;
+      modButton.textContent = '強化する';
+      p.textContent = `木材: ${wood}, 鉄: ${steel} (1ptにつき各25個)`;
       arenaModDialog.show();
     })
 
     const siegeButton = button.cloneNode();
-    siegeButton.textContent = '��̉�';
+    siegeButton.textContent = '弱体化';
     siegeButton.style.flexGrow = '1';
     siegeButton.addEventListener('click', ()=>{
       arenaModDialog.dataset.action = 'SiegeArena';
-      modButton.textContent = '��̉�';
-      p.textContent = `�؍�: ${wood}, �S: ${steel} (1pt�ɂ��e25��)`;
+      modButton.textContent = '弱体化';
+      p.textContent = `木材: ${wood}, 鉄: ${steel} (1ptにつき各25個)`;
       arenaModDialog.show();
     })
 
     const closeButton = button.cloneNode();
-    closeButton.textContent = '�~';
+    closeButton.textContent = '×';
     closeButton.marginLeft = 'auto';
     closeButton.style.fontSize = '24px';
     closeButton.style.width = '48px';
@@ -624,7 +624,7 @@
 
       const input = document.createElement('input');
       input.type = 'number';
-      input.placeholder = '�����̗�';
+      input.placeholder = '改造の量';
 
       modButton.addEventListener('click', ()=>{
         const amt = Number(input.value);
@@ -637,7 +637,7 @@
 
       input.addEventListener('keydown', (e)=>{
         if (e.key === "Enter") {
-          e.preventDefault(); // ���ꂪ������dialog�����Ȃ�
+          e.preventDefault(); // これが無いとdialogが閉じない
           const amt = Number(input.value);
           const table = arenaField.querySelector('table');
           const { row, col } = table.dataset;
@@ -663,11 +663,11 @@
         const res = await fetch('/teamvol/', options);
         if(!res.ok) throw new Error('/teamvol/ failed to load');
         const text = await res.text();
-        if(text.includes('�����p�b�N���J����')) {
+        if(text.includes('資源パックを開ける')) {
           open('/craft', '_blank');
           return;
         }
-        if(text !== '��������') throw new Error(text);
+        if(text !== '改造成功') throw new Error(text);
         wood = wood - 25 * Math.trunc(amt);
         steel = steel - 25 * Math.trunc(amt);
         arenaResult.textContent = text;
@@ -811,12 +811,12 @@
     header.style.display = 'flex';
 
     const h2 = document.createElement('h2');
-    h2.textContent = '�ݒ�'
+    h2.textContent = '設定'
     h2.style.fontSize = '1.2rem';
     h2.style.margin = '2px';
 
     const closeButton = button.cloneNode();
-    closeButton.textContent = '�~';
+    closeButton.textContent = '×';
     closeButton.style.marginLeft = 'auto';
     closeButton.style.background = 'none';
     closeButton.style.border = 'none';
@@ -838,7 +838,7 @@
 
     (()=>{
       const saveButton = button.cloneNode();
-      saveButton.textContent = '�ۑ�';
+      saveButton.textContent = '保存';
       saveButton.addEventListener('click', ()=>{
         const settingElements = settingsMenu.querySelectorAll('[data-setting]');
         settingElements.forEach(elm => {
@@ -864,7 +864,7 @@
       })
 
       const cancelButton = button.cloneNode();
-      cancelButton.textContent = '�L�����Z��';
+      cancelButton.textContent = 'キャンセル';
       cancelButton.addEventListener('click', ()=>{
         refreshSettings();
         settingsDialog.close();
@@ -954,130 +954,130 @@
       const toolbar = container.cloneNode();
       addHeader('toolbar', toolbar);
       const arenaResult = container.cloneNode();
-      addHeader('�A���[�i���O', arenaResult);
+      addHeader('アリーナログ', arenaResult);
       const arenaField = container.cloneNode();
-      addHeader('�A���[�i���', arenaField);
+      addHeader('アリーナ情報', arenaField);
       //const grid = container.cloneNode();
-      //addHeader('�O���b�h', grid);
+      //addHeader('グリッド', grid);
       const settingsPanel = container.cloneNode();
-      addHeader('�ݒ�p�l��', settingsPanel);
+      addHeader('設定パネル', settingsPanel);
       const equipPanel = container.cloneNode();
-      addHeader('�����p�l��', equipPanel);
+      addHeader('装備パネル', equipPanel);
 
       const settingItems = {
         toolbarPosition: {
-          text: '�ʒu:',
+          text: '位置:',
           type: 'select',
           options: {
-            left: '����',
-            right: '�E��',
-            center: '������'
+            left: '左寄せ',
+            right: '右寄せ',
+            center: '中央寄せ'
           },
           parent: toolbar
         },
         toolbarPositionLength: {
-          text: '�[�̋���:',
+          text: '端の距離:',
           type: 'width',
           parent: toolbar
         },
         arenaResultScrollPosition: {
-          text: '�X�N���[���ʒu:',
+          text: 'スクロール位置:',
           type: 'select',
           options: {
-            top: '��',
-            bottom: '��'
+            top: '上',
+            bottom: '下'
           },
           parent: arenaResult
         },
         arenaResultBottom: {
-          text: '�����̋���:',
+          text: '下部の距離:',
           type: 'height',
           parent: arenaResult
         },
         arenaResultPosition: {
-          text: '�ʒu:',
+          text: '位置:',
           type: 'select',
           options: {
-            right: '�E��',
-            left: '����'
+            right: '右寄せ',
+            left: '左寄せ'
           },
           parent: arenaResult
         },
         arenaResultPositionLength: {
-          text: '���[����̋���:',
+          text: '左端からの距離:',
           type: 'width',
           parent: arenaResult
         },
         arenaResultHeight: {
-          text: '���O�̍���:',
+          text: 'ログの高さ:',
           type: 'height',
           parent: arenaResult
         },
         arenaResultWidth: {
-          text: '���O�̉���:',
+          text: 'ログの横幅:',
           type: 'width',
           parent: arenaResult
         },
         arenaFieldBottom: {
-          text: '�����̋���:',
+          text: '下部の距離:',
           type: 'height',
           parent: arenaField
         },
         arenaFieldPosition: {
-          text: '�ʒu:',
+          text: '位置:',
           type: 'select',
           options: {
-            left: '����',
-            right: '�E��',
-            center: '������'
+            left: '左寄せ',
+            right: '右寄せ',
+            center: '中央寄せ'
           },
           parent: arenaField
         },
         arenaFieldPositionLength: {
-          text: '�[����̋���:',
+          text: '端からの距離:',
           type: 'width',
           parent: arenaField
         },
         arenaFieldWidth: {
-          text: '����:',
+          text: '横幅:',
           type: 'width',
           parent: arenaField
         },
         settingsPanelPosition: {
-          text: '�ʒu:',
+          text: '位置:',
           type: 'select',
           options: {
-            right: '�E��',
-            left: '����'
+            right: '右寄せ',
+            left: '左寄せ'
           },
           parent: settingsPanel
         },
         settingsPanelHeight: {
-          text: '����:',
+          text: '高さ:',
           type: 'height',
           parent: settingsPanel
         },
         settingsPanelWidth: {
-          text: '����:',
+          text: '横幅:',
           type: 'width',
           parent: settingsPanel
         },
         equipPanelPosition: {
-          text: '�ʒu:',
+          text: '位置:',
           type: 'select',
           options: {
-            right: '�E��',
-            left: '����'
+            right: '右寄せ',
+            left: '左寄せ'
           },
           parent: equipPanel
         },
         equipPanelHeight: {
-          text: '����:',
+          text: '高さ:',
           type: 'height',
           parent: equipPanel
         },
         equipPanelWidth: {
-          text: '����:',
+          text: '横幅:',
           type: 'width',
           parent: equipPanel
         }
@@ -1122,11 +1122,11 @@
       const link = document.createElement('a');
       link.style.color = '#666';
       link.style.textDecoration = 'underline';
-      link.textContent = 'arena assist tool - v1.2.2d.�p�N��9.4�� �A�˔� - 4������';
+      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改 連射版 - 4発撃ち';
       link.href = 'https://donguri-k.github.io/tools/arena-assist-tool';
       link.target = '_blank';
       const author = document.createElement('input');
-      author.value = '��� [ �ςӂς� ]';
+      author.value = '作者 [ ぱふぱふ ]';
       author.style.color = '#666';
       author.style.background = 'none';
       author.style.margin = '2px';
@@ -1135,7 +1135,7 @@
       author.readOnly = 'true';
       author.addEventListener('click',()=>{
         author.select();
-        navigator.clipboard.writeText('�� �� �� ��');
+        navigator.clipboard.writeText('ま ほ ろ ば');
       })
       footer.append(link, author);
     })();
@@ -1147,7 +1147,7 @@
 
   document.body.append(settingsDialog);
 
-  //-- ���� --//
+  //-- 装備 --//
   const panel = document.createElement('div');
   panel.style.position = 'fixed';
   panel.style.top = '0';
@@ -1191,7 +1191,7 @@
     // input.style.background = '#eee';
     // input.style.color = '#000';
     // input.style.borderRadius = 'unset';
-    // input.placeholder = '�t�B���^�c';
+    // input.placeholder = 'フィルタ…';
     button.type = 'button';
     button.style.borderRadius = 'unset';
     button.style.border = 'solid 1px #000';
@@ -1218,7 +1218,7 @@
     showEquipPreset();
 
     const resetCurrentEquip = document.createElement('div');
-    resetCurrentEquip.textContent = '�����������Z�b�g';
+    resetCurrentEquip.textContent = '装備情報をリセット';
     resetCurrentEquip.style.borderTop = 'solid 1px #000';
     resetCurrentEquip.style.cursor = 'pointer';
     resetCurrentEquip.style.color = '#a62';
@@ -1227,7 +1227,7 @@
     resetCurrentEquip.addEventListener('click', ()=>{
       localStorage.removeItem('current_equip');
       const stat = document.querySelector('.equip-preset-stat');
-      stat.textContent = '���݂̑�������������';
+      stat.textContent = '現在の装備情報を初期化';
       weaponTable = null;
       armorTable = null;
       necklaceTable = null;
@@ -1249,7 +1249,7 @@
       } else if (currentMode === 'auto') {
         selectAutoEquipItems(presetLi, presetName, currentRank);
       } else if (currentMode === 'edit') {
-        alert('������');
+        alert('未実装');
       }
     });
 
@@ -1264,7 +1264,7 @@
 
       /*
       const closeButton = button.cloneNode();
-      closeButton.textContent = '�~';
+      closeButton.textContent = '×';
       closeButton.style.marginLeft = 'auto';
       closeButton.style.background = 'none';
       closeButton.style.border = 'none';
@@ -1278,7 +1278,7 @@
       */
 
       const addButton = button.cloneNode();
-      addButton.textContent = '�ǉ�';
+      addButton.textContent = '追加';
       addButton.addEventListener('click', async()=>{
         selectedEquips = {id:[], rank:[]};
         addButton.disabled = true;
@@ -1287,19 +1287,19 @@
       })
 
       const removeButton = button.cloneNode();
-      removeButton.textContent = '�폜';
-      removeButton.dataset.text = '�폜';
+      removeButton.textContent = '削除';
+      removeButton.dataset.text = '削除';
       removeButton.dataset.mode = 'remove';
       /*
       const editButton = button.cloneNode();
-      editButton.textContent = '�ҏW';
-      editButton.dataset.text = '�ҏW';
+      editButton.textContent = '編集';
+      editButton.dataset.text = '編集';
       editButton.dataset.mode = 'edit';
       */
 
       const equipSettingsButton = button.cloneNode();
-      equipSettingsButton.textContent = '�����o�^';
-      equipSettingsButton.dataset.text = '�����o�^';
+      equipSettingsButton.textContent = '装備登録';
+      equipSettingsButton.dataset.text = '装備登録';
       equipSettingsButton.dataset.mode = 'auto';
 
       const equipSettingsDialog = document.createElement('dialog');
@@ -1344,7 +1344,7 @@
         const closeButton = button.cloneNode();
         closeButton.style.width = '100px';
         closeButton.style.background = '#caa';
-        closeButton.textContent = '�~';
+        closeButton.textContent = '×';
         closeButton.addEventListener('click',()=>{
           equipSettingsDialog.close();
         })
@@ -1352,16 +1352,16 @@
         const div2 = document.createElement('div');
         div2.style.textAlign = 'center';
         const toggleButton = button.cloneNode();
-        toggleButton.textContent = '�ΐ�p';
+        toggleButton.textContent = '対戦用';
         toggleButton.style.width = '7em';
         toggleButton.style.background = '#acc';
         toggleButton.addEventListener('click',()=>{
           if (autoEquipMode === 'normal') {
             autoEquipMode = 'autojoin';
-            toggleButton.textContent = '�����Q���p';
+            toggleButton.textContent = '自動参加用';
           } else {
             autoEquipMode = 'normal';
-            toggleButton.textContent = '�ΐ�p';
+            toggleButton.textContent = '対戦用';
           }
         })
 
@@ -1374,20 +1374,20 @@
           settings.autoEquipRandomly = checkRandom.checked;
           localStorage.setItem('aat_settings', JSON.stringify(settings));
         })
-        label.append(checkRandom, '�����_������');
+        label.append(checkRandom, 'ランダム装備');
 
         div.append(closeButton);
         div2.append(toggleButton,label);
 
         const description = document.createElement('div');
-        description.innerText = '�ΐ�Ɏg�p���鑕����I�����Ă��������B�o�g���J�n�O�Ɏ����I�ɑ�����ύX���܂��B�����o�^�����ꍇ�͊J�n���ɑ���������̂�I�����܂��B\n�q���g: ���C���ƂȂ�1�̃Z�b�g���g�����Ƃ��قƂ�ǂȂ�1�̂ݓo�^�^�����̑������g�������邱�Ƃ������Ȃ畡���o�^���Ă����Ɛ؂�ւ��̎�Ԃ����Ȃ��Ȃ�B\n�܂��́A�����_�������Ƀ`�F�b�N������ƁA�o�^���Ă��钆���玩���Ń����_���ɑI��\n\n�����Q���p��o�^���Ă����ƁA�ʏ�̑ΐ�p�Ƃ͕ʂ̑������g�p����B�o�^���Ă��Ȃ��ꍇ�͑ΐ�p�������g�p�B';
+        description.innerText = '対戦に使用する装備を選択してください。バトル開始前に自動的に装備を変更します。複数登録した場合は開始時に装備するものを選択します。\nヒント: メインとなる1つのセットを使うことがほとんどなら1つのみ登録／複数の装備を使い分けることが多いなら複数登録しておくと切り替えの手間が少なくなる。\nまたは、ランダム装備にチェックを入れると、登録してある中から自動でランダムに選択\n\n自動参加用を登録しておくと、通常の対戦用とは別の装備を使用する。登録していない場合は対戦用装備を使用。';
         description.style.fontSize = '70%';
 
         equipSettingsDialog.append(div, div2, description);
       })();
 
       const backupButton = button.cloneNode();
-      backupButton.innerText = '�o�b�N\n�A�b�v';
+      backupButton.innerText = 'バック\nアップ';
 
       const backupDialog = document.createElement('dialog');
       backupDialog.style.background = '#fff';
@@ -1404,7 +1404,7 @@
 
         const div = document.createElement('div');
         const saveButton = button.cloneNode();
-        saveButton.textContent = '�ۑ�';
+        saveButton.textContent = '保存';
         saveButton.addEventListener('click', ()=>{
           const isSuccess = importEquipPresets(textarea.value);
           if(isSuccess) {
@@ -1425,10 +1425,10 @@
           }
         });
         const copyButton = button.cloneNode();
-        copyButton.textContent = '�R�s�[';
+        copyButton.textContent = 'コピー';
         copyButton.addEventListener('click', ()=>{navigator.clipboard.writeText(textarea.value).then(alert('copy'));})
         const closeButton = button.cloneNode();
-        closeButton.textContent = '����';
+        closeButton.textContent = '閉じる';
         closeButton.addEventListener('click', ()=>{backupDialog.close()})
         div.append(saveButton, copyButton, closeButton);
         backupDialog.append(textarea, div);
@@ -1463,11 +1463,11 @@
       function setMode(mode, button) {
         resetMode();
         currentMode = mode;
-        button.textContent = '����';
+        button.textContent = '完了';
         button.classList.add('active');
-        if(mode === 'remove') stat.textContent = '�폜���������̂�I��';
-        else if (mode === 'edit') stat.textContent = '�N���b�N�ŕҏW';
-        else if (mode === 'auto') stat.textContent = '�N���b�N�őI��(�����I����)';
+        if(mode === 'remove') stat.textContent = '削除したいものを選択';
+        else if (mode === 'edit') stat.textContent = 'クリックで編集';
+        else if (mode === 'auto') stat.textContent = 'クリックで選択(複数選択可)';
       }
 
       function resetMode() {
@@ -1518,7 +1518,7 @@
     equipField.style.maxWidth = '90vw';
     equipField.style.height = '95vh';
     const closeButton = button.cloneNode();
-    closeButton.textContent = '�~';
+    closeButton.textContent = '×';
     closeButton.style.position = 'absolute';
     closeButton.style.background = 'none';
     closeButton.style.border = 'none';
@@ -1552,7 +1552,7 @@
     p.style.height = '28px';
 
     const equipSwitchButton = button.cloneNode();
-    equipSwitchButton.textContent = '?����';
+    equipSwitchButton.textContent = '▶武器';
     equipSwitchButton.style.width = '4em';
     equipSwitchButton.style.height = '42px';
     equipSwitchButton.style.fontSize = '';
@@ -1563,23 +1563,23 @@
         weaponTable.style.display = 'none';
         armorTable.style.display = '';
         necklaceTable.style.display = 'none';
-        event.target.textContent = '?�h��';
+        event.target.textContent = '▶防具';
       } else if (!armorTable.style.display) {
         weaponTable.style.display = 'none';
         armorTable.style.display = 'none';
         necklaceTable.style.display = '';
-        event.target.textContent = '?��';
+        event.target.textContent = '▶首';
       } else if (!necklaceTable.style.display) {
         weaponTable.style.display = '';
         armorTable.style.display = 'none';
         necklaceTable.style.display = 'none';
-        event.target.textContent = '?����';
+        event.target.textContent = '▶武器';
       }
     });
 
     // register
     const registerButton = button.cloneNode();
-    registerButton.textContent = '�o�^';
+    registerButton.textContent = '登録';
     registerButton.style.width = '4em';
     registerButton.style.height = '42px';
     registerButton.style.fontSize = '';
@@ -1591,14 +1591,14 @@
       dialog.style.color = '#000';
       dialog.style.textAlign = 'center';
       const presetNameInput = document.createElement('input');
-      presetNameInput.placeholder = '�v���Z�b�g��';
+      presetNameInput.placeholder = 'プリセット名';
       presetNameInput.style.background = '#fff';
       presetNameInput.style.color = '#000';
       const p = document.createElement('p');
-      p.textContent = '�����̃v���Z�b�g�����݂���ꍇ�͏㏑������܂��B';
+      p.textContent = '同名のプリセットが存在する場合は上書きされます。';
       p.style.margin = '0';
       const confirmButton = button.cloneNode();
-      confirmButton.textContent = '�ۑ�';
+      confirmButton.textContent = '保存';
       confirmButton.addEventListener('click', ()=>{
         if(presetNameInput.value.trim() === '') return;
         saveEquipPreset(presetNameInput.value.substring(0,32), selectedEquips);
@@ -1607,7 +1607,7 @@
       })
       presetNameInput.addEventListener('keydown', (e)=>{
         if (e.key === "Enter") {
-          e.preventDefault(); // ���ꂪ������dialog�����Ȃ�
+          e.preventDefault(); // これが無いとdialogが閉じない
           if(presetNameInput.value.trim() === '') return;
           saveEquipPreset(presetNameInput.value.substring(0,32), selectedEquips);
           dialog.close();
@@ -1615,13 +1615,13 @@
         }
       })
       const cancelButton = button.cloneNode();
-      cancelButton.textContent = '�L�����Z��';
+      cancelButton.textContent = 'キャンセル';
       cancelButton.addEventListener('click', ()=>{dialog.close()});
       dialog.append(presetNameInput, confirmButton, cancelButton, p);
       equipField.append(dialog);
       registerButton.addEventListener('click', ()=>{
         if(!selectedEquips.id[0] && !selectedEquips.id[1] && !selectedEquips.id[2]) {
-          alert('���������I���ł�');
+          alert('装備が未選択です');
           return;
         }
         dialog.showModal();
@@ -1654,7 +1654,7 @@
           const text = await res.text();
           const doc = new DOMParser().parseFromString(text, 'text/html');
           const h1 = doc.querySelector('h1');
-          if(h1?.textContent !== '�A�C�e���o�b�O') throw new Error(text);
+          if(h1?.textContent !== 'アイテムバッグ') throw new Error(text);
           weaponTable = doc.querySelector('#weaponTable');
           armorTable = doc.querySelector('#armorTable');
           necklaceTable = doc.querySelector('#necklaceTable');
@@ -1701,7 +1701,7 @@
         }
       }
 
-      equipSwitchButton.textContent = '?����';
+      equipSwitchButton.textContent = '▶武器';
       weaponTable.style.display = '';
       armorTable.style.display = 'none';
       necklaceTable.style.display = 'none';
@@ -1764,7 +1764,7 @@
         return true;
       } catch (e) {
         if (e instanceof SyntaxError) {
-          alert('�����G���[');
+          alert('書式エラー');
         }
         return false;
       }
@@ -1773,7 +1773,7 @@
 
 
     function removePresetItems(presetName) {
-      const userConfirmed = confirm(presetName + ' ���폜���܂����H');
+      const userConfirmed = confirm(presetName + ' を削除しますか？');
       if(!userConfirmed) return;
       const stat = document.querySelector('.equip-preset-stat');
       const equipPresets = JSON.parse(localStorage.getItem('equipPresets')) || {};
@@ -1820,17 +1820,17 @@
       console.log(items[rank]);
     }
   })();
-  //-- �����܂� --//
+  //-- ここまで --//
   async function setPresetItems (presetName) {
     let currentEquip = JSON.parse(localStorage.getItem('current_equip')) || [];
     const stat = document.querySelector('.equip-preset-stat');
-    if (stat.textContent === '������...') return;
+    if (stat.textContent === '装備中...') return;
     const equipPresets = JSON.parse(localStorage.getItem('equipPresets')) || {};
     const fetchPromises = equipPresets[presetName].id
-      .filter(id => id !== undefined && id !== null && !currentEquip.includes(id)) // ���o�^or���ɑ������̕��ʂ͏��O
+      .filter(id => id !== undefined && id !== null && !currentEquip.includes(id)) // 未登録or既に装備中の部位は除外
       .map(id => fetch('https://donguri.5ch.net/equip/' + id));
 
-    stat.textContent = '������...';
+    stat.textContent = '装備中...';
     try {
       const responses = await Promise.all(fetchPromises);
       const texts = await Promise.all(
@@ -1842,20 +1842,20 @@
         })
       );
 
-      if(texts.includes('�ǂ񂮂肪������܂���ł����B')) {
-        throw new Error('�ă��O�C�����Ă�������');
-      } else if(texts.includes('�A�C�e����������܂���ł����B')) {
-        throw new Error('�A�C�e����������܂���ł���');
+      if(texts.includes('どんぐりが見つかりませんでした。')) {
+        throw new Error('再ログインしてください');
+      } else if(texts.includes('アイテムが見つかりませんでした。')) {
+        throw new Error('アイテムが見つかりませんでした');
       }
 
       const docs = texts.map(text => new DOMParser().parseFromString(text,'text/html'));
       const titles = docs.map(doc => doc.querySelector('h1')?.textContent);
-      if(titles.includes('�ǂ񂮂��n')) {
-        throw new Error('�ă��O�C�����Ă�������');
-      } else if (!titles.every(title => title === '�A�C�e���o�b�O')) {
-        throw new Error('�����G���[');
+      if(titles.includes('どんぐり基地')) {
+        throw new Error('再ログインしてください');
+      } else if (!titles.every(title => title === 'アイテムバッグ')) {
+        throw new Error('装備エラー');
       }
-      stat.textContent = '����: ' + presetName;
+      stat.textContent = '完了: ' + presetName;
       localStorage.setItem('current_equip', JSON.stringify(equipPresets[presetName].id));
       currentEquipName = presetName;
     } catch (e) {
@@ -1893,12 +1893,12 @@ async function refreshArenaInfo() {
     const text = await res.text();
     const doc = new DOMParser().parseFromString(text, 'text/html');
     const h1 = doc?.querySelector('h1')?.textContent;
-    if (h1 !== '�ǂ񂮂�`�[���킢') throw new Error('title.ng info');
+    if (h1 !== 'どんぐりチーム戦い') throw new Error('title.ng info');
 
     const currentCells = grid.querySelectorAll('.cell');
     const scriptContent = doc.querySelector('.grid > script')?.textContent || '';
 
-    // --- cellColors �̈��S�擾 ---
+    // --- cellColors の安全取得 ---
     let cellColors = {};
     const cellColorsMatch = scriptContent.match(/const cellColors = ({[\s\S]+?});/);
     if (cellColorsMatch) {
@@ -1910,7 +1910,7 @@ async function refreshArenaInfo() {
       }
     }
 
-    // capitalMap �̎擾�i��̃}�X�̃A�E�g���C���p�j
+    // capitalMap の取得（占領マスのアウトライン用）
     let capitalMap = [];
     const capitalMapMatch = scriptContent.match(/const capitalMap = (\[\[.+?\]\])/s);
     if (capitalMapMatch) {
@@ -1922,13 +1922,13 @@ async function refreshArenaInfo() {
       }
     }
 
-    // �V�����O���b�h�̍s��
+    // 新しいグリッドの行列数
     const newGrid = doc.querySelector('.grid');
     const rows = Number(newGrid.style.gridTemplateRows.match(/repeat\((\d+), 35px\)/)[1]);
     const cols = Number(newGrid.style.gridTemplateColumns.match(/repeat\((\d+), 35px\)/)[1]);
 
     if (currentCells.length !== rows * cols) {
-      // --- �O���b�h�č\�z ---
+      // --- グリッド再構築 ---
       grid.style.gridTemplateRows = newGrid.style.gridTemplateRows;
       grid.style.gridTemplateColumns = newGrid.style.gridTemplateColumns;
       grid.innerHTML = '';
@@ -1945,7 +1945,7 @@ async function refreshArenaInfo() {
           cell.style.cursor = 'pointer';
           cell.style.transition = 'background-color 0.3s';
 
-          // ��̃}�X�̃A�E�g���C��
+          // 占領マスのアウトライン
           if (includesCoord(capitalMap, i, j)) {
             cell.style.outline = 'black solid 2px';
             cell.style.borderColor = 'gold';
@@ -1953,14 +1953,14 @@ async function refreshArenaInfo() {
 
           const cellKey = `${i}-${j}`;
 
-          // --- �N����̂��Ă��Ȃ��ꍇ�ł������F��ݒ� ---
+          // --- 誰も占領していない場合でも初期色を設定 ---
           if (cellColors[cellKey]) {
             cell.style.backgroundColor = cellColors[cellKey];
           } else {
-            // ����E�h��O���[�h�ʏ����F��ݒ�\
-            // �����ł͗�Ƃ��� grade 1-4 �ɐF�����蓖��
+            // 武器・防具グレード別初期色を設定可能
+            // ここでは例として grade 1-4 に色を割り当て
             const gradeColorMap = ['#ffffff00', '#ffeeaa', '#aaffaa', '#aaddff', '#ffaaaa'];
-            // row �� col �ŊȈՃO���[�h�����߂�i�K�X�Q�[�����W�b�N�ɍ��킹�ďC���j
+            // row と col で簡易グレードを決める（適宜ゲームロジックに合わせて修正）
             const grade = ((i + j) % gradeColorMap.length);
             cell.style.backgroundColor = gradeColorMap[grade];
           }
@@ -1970,7 +1970,7 @@ async function refreshArenaInfo() {
         }
       }
     } else {
-      // --- �����Z���X�V ---
+      // --- 既存セル更新 ---
       currentCells.forEach(cell => {
         const { row, col } = cell.dataset;
         const cellKey = `${row}-${col}`;
@@ -1978,7 +1978,7 @@ async function refreshArenaInfo() {
 if (cellColors[cellKey]) {
   cell.style.backgroundColor = cellColors[cellKey];
 } else {
-  cell.style.backgroundColor = '#f0f0f0'; // ��̂���Ă��Ȃ��ꍇ�͊D�F
+  cell.style.backgroundColor = '#f0f0f0'; // 占領されていない場合は灰色
 }
 
         if (includesCoord(capitalMap, row, col)) {
@@ -2022,11 +2022,11 @@ if (cellColors[cellKey]) {
       const text = await res.text();
       const doc = new DOMParser().parseFromString(text, 'text/html');
       const h1 = doc?.querySelector('h1')?.textContent;
-      if(h1 !== '�ǂ񂮂�`�[���킢') throw new Error(`title.ng [${row}][${col}][${h1}]`);
+      if(h1 !== 'どんぐりチーム戦い') throw new Error(`title.ng [${row}][${col}][${h1}]`);
       const rank = doc.querySelector('small')?.textContent || '';
       if(!rank) return Promise.reject(`rank.ng [${row}][${col}][${h1}]`);
       const leader = doc.querySelector('strong')?.textContent || '';
-      const shortenRank = rank.replace('[�G���[�g]','e').replace('����','-').replace(/(�܂�|\[|\]|\||\s)/g,'');
+      const shortenRank = rank.replace('[エリート]','e').replace('から','-').replace(/(まで|\[|\]|\||\s)/g,'');
       const teamname = doc.querySelector('table').rows[1]?.cells[2].textContent;
 
       const cell = elm.cloneNode();
@@ -2049,7 +2049,7 @@ if (cellColors[cellKey]) {
         p.style.alignItems = 'center';
         p.style.lineHeight = '1';
         p.style.justifyContent = 'center';
-        const str = shortenRank.replace(/\w+-|����/g,'');
+        const str = shortenRank.replace(/\w+-|だけ/g,'');
         p.textContent = str;
         if (str.length === 3) p.style.fontSize = '14px';
         if (str.length === 4) p.style.fontSize = '13px';
@@ -2086,7 +2086,7 @@ if (cellColors[cellKey]) {
     button.style.marginLeft = '2px';
 
     const editButton = button.cloneNode();
-    editButton.textContent = '��';
+    editButton.textContent = '▼';
     editButton.addEventListener('click', ()=>{
       editButton.style.display = 'none';
       editEndButton.style.display = '';
@@ -2126,7 +2126,7 @@ if (cellColors[cellKey]) {
       })
     })
     const editEndButton = button.cloneNode();
-    editEndButton.textContent = '?';
+    editEndButton.textContent = '✓';
     editEndButton.style.display = 'none';
     editEndButton.addEventListener('click', ()=>{
       editButton.style.display = '';
@@ -2141,30 +2141,30 @@ if (cellColors[cellKey]) {
     })
 
     const helpButton = button.cloneNode();
-    helpButton.textContent = '�H';
+    helpButton.textContent = '？';
     helpButton.addEventListener('click', ()=>{
       helpDialog.innerHTML = '';
       const div = document.createElement('div');
       div.style.lineHeight = '150%';
-      div.innerText = `�E[��]�������ƐF��ҏW�ł��܂��B�ҏW��͈�x[�G���A���Ď擾]�����s���Ă��������B
-      �E�ύX�����`�[���̃Z����[�G���A���X�V]���ɕK���擾�����悤�ɂȂ�܂��B
-      *�X�V���̓ǂݍ��݂𑝂₵�����Ȃ��ꍇ�́A���łɕύX���Ȃ����Ƃ𐄏����܂��B
-      �E���F�̃`�[�����������݂���ꍇ�A���ꂼ��̐F��ύX���邱�Ƃœ��F�̓h��ւ��ɑΉ��\�ł��B(�J�X�^���J���[�ŏ㏑�����ꂽ�Z���͏�ɓǂݍ��݂̑ΏۂɂȂ邽��)
-      �E�ҏW�����F��߂��ɂ͓��͗��̕�����S�ď�������Ԃŕۑ����Ă��������B
+      div.innerText = `・[▼]を押すと色を編集できます。編集後は一度[エリア情報再取得]を実行してください。
+      ・変更したチームのセルは[エリア情報更新]時に必ず取得されるようになります。
+      *更新時の読み込みを増やしたくない場合は、無闇に変更しないことを推奨します。
+      ・同色のチームが複数存在する場合、それぞれの色を変更することで同色の塗り替えに対応可能です。(カスタムカラーで上書きされたセルは常に読み込みの対象になるため)
+      ・編集した色を戻すには入力欄の文字を全て消した状態で保存してください。
 
-      �d�l (�ǂ܂Ȃ��Ă悢)�F
-      [�G���A���Ď擾]�͑S�G���A�ɃA�N�Z�X�������擾����̂ɑ΂��A[�G���A���X�V]�͐F���X�V���ꂽ�Z���݂̂��擾����悤�ɂ��Ă���B
-      �����ŁA���F��A��B�̃`�[�������݂���󋵂�z�肷��B
-      �EB�̐F�݂̂�ҏW�����ꍇ�AA���ێ�����Z����B���l�������ہA�ҏW�O�̐F��񂪓���̂��߃Z�����̎擾���s���Ȃ��B
-      �EA��B�̑o����ҏW���Ă����ƁAA���ێ�����Z���͏�ɐF��񂪍X�V���ꂽ�����ƂȂ�擾�ΏۂɂȂ�B
-      �v����ɁA���F�̏ꍇ�͑S�ĐF��ς��Ă����Ƃ悢�Ƃ������ƁB���F�����Ȃ��Ȃ�����߂���OK.
+      仕様 (読まなくてよい)：
+      [エリア情報再取得]は全エリアにアクセスし情報を取得するのに対し、[エリア情報更新]は色が更新されたセルのみを取得するようにしてある。
+      ここで、同色のAとBのチームが存在する状況を想定する。
+      ・Bの色のみを編集した場合、Aが保持するセルをBが獲得した際、編集前の色情報が同一のためセル情報の取得が行われない。
+      ・AとBの双方を編集しておくと、Aが保持するセルは常に色情報が更新された扱いとなり取得対象になる。
+      要するに、同色の場合は全て色を変えておくとよいということ。同色がいなくなったら戻せばOK.
       `;
       const resetButton = button.cloneNode();
-      resetButton.textContent = '�F�ݒ菉����';
+      resetButton.textContent = '色設定初期化';
       resetButton.addEventListener('click', ()=>{
         delete settings.customColors;
         localStorage.setItem('aat_settings', JSON.stringify(settings));
-        alert('�F�̐ݒ�����������܂����i�v�G���A�X�V�j');
+        alert('色の設定を初期化しました（要エリア更新）');
       })
       helpDialog.append(resetButton, div);
       helpDialog.show();
@@ -2215,7 +2215,7 @@ if (cellColors[cellKey]) {
       const text = await res.text();
       const doc = new DOMParser().parseFromString(text,'text/html');
       const h1 = doc?.querySelector('h1')?.textContent;
-      if(h1 !== '�ǂ񂮂�`�[���킢') return Promise.reject(`title.ng`);
+      if(h1 !== 'どんぐりチーム戦い') return Promise.reject(`title.ng`);
       const table = doc.querySelector('table');
       if(!table) throw new Error('table.ng');
       showArenaTable(table);
@@ -2226,7 +2226,7 @@ if (cellColors[cellKey]) {
     function showArenaTable (table){
       const tableRow = table.querySelector('tbody > tr');
       if(!tableRow) return;
-      const coordinate = tableRow.cells[0].textContent.replace('�A���[�i','').trim();
+      const coordinate = tableRow.cells[0].textContent.replace('アリーナ','').trim();
       const holderName = tableRow.cells[1].querySelector('strong');
       const equipCond = tableRow.cells[1].querySelector('small');
       const teamName = tableRow.cells[2].textContent;
@@ -2250,8 +2250,8 @@ if (cellColors[cellKey]) {
 
       cells[0].append(coordinate, hr, equipCond);
       cells[1].append(holderName, document.createElement('br'), `${teamName}`);
-      cells[2].innerText = `��:${statistics[0]}\n��:${statistics[1]}\n��:${statistics[2]}`;
-      cells[3].innerText = `����:${modCounts[0]}\n���:${modCounts[1]}\n${modders}�l`;
+      cells[2].innerText = `勝:${statistics[0]}\n負:${statistics[1]}\n引:${statistics[2]}`;
+      cells[3].innerText = `強化:${modCounts[0]}\n弱体:${modCounts[1]}\n${modders}人`;
       cells[3].style.whiteSpace = 'nowrap';
 
       const [dataRow, dataCol] = coordinate.match(/\d+/g);
@@ -2296,8 +2296,8 @@ if (cellColors[cellKey]) {
       return;
     }
     rank = rank
-      .replace('�G���[�g','e')
-      .replace(/.+����|\w+-|�܂�|����|\s|\[|\]|\|/g,'');
+      .replace('エリート','e')
+      .replace(/.+から|\w+-|まで|だけ|\s|\[|\]|\|/g,'');
     const autoEquipItems = JSON.parse(localStorage.getItem('autoEquipItems')) || {};
     if (autoEquipItems[rank] && !autoEquipItems[rank]?.includes(currentEquipName)) {
       if (autoEquipItems[rank].length === 0) {
@@ -2372,7 +2372,7 @@ if (cellColors[cellKey]) {
       }
 
       arenaResult.show();
-      // arenaResult.show();�̂��Ƃ�setTimeout���g�p���Ȃ��ƈʒu�������
+      // arenaResult.show();のあとでsetTimeoutを使用しないと位置がずれる
       setTimeout(() => {
         if (settings.arenaResultScrollPosition === 'bottom') {
           arenaResult.scrollTop = arenaResult.scrollHeight;
@@ -2382,7 +2382,7 @@ if (cellColors[cellKey]) {
       }, 0);
       arenaResult.style.display = '';
 
-      if (lastLine === '���[�_�[�ɂȂ���' || lastLine.includes('�͐V�����A���[�i���[�_�[�ł��B')) {
+      if (lastLine === 'リーダーになった' || lastLine.includes('は新しいアリーナリーダーです。')) {
         if (!settings.teamColor) return;
         const cell = document.querySelector(`div[data-row="${row}"][data-col="${col}"]`);
         cell.style.background = '#' + settings.teamColor;
@@ -2401,7 +2401,7 @@ if (cellColors[cellKey]) {
     }
 
     if(rangeAttackQueue.length === 0) {
-      alert('�Z����I�����Ă�������');
+      alert('セルを選択してください');
       return;
     }
 
@@ -2419,7 +2419,7 @@ if (cellColors[cellKey]) {
       if(!rangeAttackProcessing) return;
 
       const cell = rangeAttackQueue[0];
-      // �U���O�ɑI���������ꂽ�ꍇ
+      // 攻撃前に選択解除された場合
       if(!cell.classList.contains('selected')) {
         rangeAttackQueue.shift();
         continue;
@@ -2441,15 +2441,15 @@ if (cellColors[cellKey]) {
         let lastLine = text.trim().split('\n').pop();
         if(
           lastLine.length > 100 ||
-          lastLine === '�ǂ񂮂肪������܂���ł����B'
+          lastLine === 'どんぐりが見つかりませんでした。'
         ) {
-          throw new Error('�ǂ񂮂肪������܂���ł����B');
+          throw new Error('どんぐりが見つかりませんでした。');
         }
         if(
-          lastLine === '���Ȃ��̃`�[���͓������g���ʂ����܂����B���΂炭���҂����������B' ||
+          lastLine === 'あなたのチームは動きを使い果たしました。しばらくお待ちください。' ||
           lastLine === 'ng<>too fast' ||
-          lastLine === '����Ɩh��𑕔����Ȃ���΂Ȃ�܂���B' ||
-          lastLine === '�ŏ��Ƀ`�[���ɎQ������K�v������܂��B'
+          lastLine === '武器と防具を装備しなければなりません。' ||
+          lastLine === '最初にチームに参加する必要があります。'
         ) {
           throw new Error(lastLine);
         }
@@ -2460,7 +2460,7 @@ if (cellColors[cellKey]) {
         rangeAttackQueue.shift();
       } catch (e) {
         const p = pTemplate.cloneNode();
-        p.textContent = `(${row}, ${col}) [���f] ${e}`;
+        p.textContent = `(${row}, ${col}) [中断] ${e}`;
         arenaResult.prepend(p);
         errorOccurred = true;
         break;
@@ -2472,7 +2472,7 @@ if (cellColors[cellKey]) {
     }
     if(!errorOccurred) {
       const p = pTemplate.cloneNode();
-      p.textContent = `����`;
+      p.textContent = `完了`;
       arenaResult.prepend(p);
       return true;
     } else {
@@ -2506,7 +2506,7 @@ if (cellColors[cellKey]) {
         p.style.alignItems = 'center';
         p.style.lineHeight = '1';
         p.style.justifyContent = 'center';
-        const rank = cell.dataset.rank.replace(/\w+-|����/g,'');
+        const rank = cell.dataset.rank.replace(/\w+-|だけ/g,'');
         p.textContent = rank;
         if (rank.length === 3) p.style.fontSize = '14px';
         if (rank.length === 4) p.style.fontSize = '13px';
@@ -2559,7 +2559,7 @@ if (cellColors[cellKey]) {
       timestamp.style.whiteSpace = 'nowrap';
 
       const regionDiv = document.createElement('div');
-      const progress = `${currentPeriod}�� ${currentProgress}%`;
+      const progress = `${currentPeriod}期 ${currentProgress}%`;
       if (region) regionDiv.innerText = `${progress}\nchallenge: ${region}\n${next}`;
       else regionDiv.innerText = next;
       regionDiv.style.fontSize = '90%';
@@ -2584,48 +2584,48 @@ if (cellColors[cellKey]) {
 
     const messageTypes = {
       capitalAttack: [
-        '�Č����K�v�ł��B'
+        '再建が必要です。'
       ],
       reinforceAttack: [
-        '�h��ݔ���j�󂵂܂����B'
+        '防御設備を破壊しました。'
       ],
       retry: [
-        '���Ȃ��̃`�[���͓������g���ʂ����܂����B���΂炭���҂����������B',
+        'あなたのチームは動きを使い果たしました。しばらくお待ちください。',
         'ng<>too fast'
       ],
       reset: [
-        '���̃^�C���͍U���ł��܂���B�͈͊O�ł��B'
+        'このタイルは攻撃できません。範囲外です。'
       ],
       quit: [
-        '�ŏ��Ƀ`�[���ɎQ������K�v������܂��B',
-        '�ǂ񂮂肪������܂���ł����B',
-        '���Ȃ��̂ǂ񂮂肪�����ł��܂���ł����B',
-        '���x�����Ⴗ���܂��B'
+        '最初にチームに参加する必要があります。',
+        'どんぐりが見つかりませんでした。',
+        'あなたのどんぐりが理解できませんでした。',
+        'レベルが低すぎます。'
       ],
       equipError: [
-        '����Ɩh��𑕔����Ȃ���΂Ȃ�܂���B',
-        '�������Ă���h��ƕ��킪�͕s���ł��B',
-        '�������Ă���h��ƕ��킪�������܂�',
-        '�������Ă�����͉̂������������܂��B�����̏��Ȃ����̂��̂���������������',
-        '�Q������ɂ́A�������̕���Ɩh��̃A�C�e��ID'
+        '武器と防具を装備しなければなりません。',
+        '装備している防具と武器が力不足です。',
+        '装備している防具と武器が強すぎます',
+        '装備しているものは改造が多すぎます。改造の少ない他のものをお試しください',
+        '参加するには、装備中の武器と防具のアイテムID'
       ],
       nonAdjacent: [
-        '���̃^�C���͍U���ł��܂���B���Ȃ��̃`�[������s�����܂ŁA�ǂ̎�s�ɂ��אڂ���^�C�����咣���邱�Ƃ͂ł��܂���B',
-        '���Ȃ��̃`�[���͎�s�������Ă��Ȃ����߁A���̃`�[���̎�s�ɍU���ł��܂���B'
+        'このタイルは攻撃できません。あなたのチームが首都を持つまで、どの首都にも隣接するタイルを主張することはできません。',
+        'あなたのチームは首都を持っていないため、他のチームの首都に攻撃できません。'
       ],
       teamAdjacent: [
-        '���̃^�C���͍U���ł��܂���B���Ȃ��̃`�[���̐���̓y�ɗאڂ��Ă��Ȃ���΂Ȃ�܂���B',
-        '���̃^�C���͍U���ł��܂���B��s��D�悷��ɂ́A�אڃ^�C�������Ȃ��Ƃ�3�x�z���Ă���K�v������܂��B',
-        '���̃^�C���͍U���ł��܂���B��s��D�悷��ɂ́A�אڃ^�C�������Ȃ��Ƃ�2�x�z���Ă���K�v������܂��B',
-        '���̃^�C���͍U���ł��܂���B��s��D�悷��ɂ́A�אڃ^�C�������Ȃ��Ƃ�1�x�z���Ă���K�v������܂��B',
-        '���̃^�C���͍U���ł��܂���B�����̎�s�͍U���ł��܂���B',
-        '���̎�s�͍U���ł��܂���B����̑��^�C�����̏��Ȃ��Ƃ�'
+        'このタイルは攻撃できません。あなたのチームの制御領土に隣接していなければなりません。',
+        'このタイルは攻撃できません。首都を奪取するには、隣接タイルを少なくとも3つ支配している必要があります。',
+        'このタイルは攻撃できません。首都を奪取するには、隣接タイルを少なくとも2つ支配している必要があります。',
+        'このタイルは攻撃できません。首都を奪取するには、隣接タイルを少なくとも1つ支配している必要があります。',
+        'このタイルは攻撃できません。自分の首都は攻撃できません。',
+        'この首都は攻撃できません。相手の総タイル数の少なくとも'
       ],
       capitalAdjacent: [
-        '���̃^�C���͍U���ł��܂���B���G�����}�b�v�ł́A�����咣�͐��m��1�̎�s�ɗאڂ��Ă��Ȃ���΂Ȃ�܂���B'
+        'このタイルは攻撃できません。混雑したマップでは、初期主張は正確に1つの首都に隣接していなければなりません。'
       ],
       mapEdge: [
-        '���̃^�C���͍U���ł��܂���B���G�����}�b�v�ł́A�����咣�̓}�b�v�̒[�łȂ���΂Ȃ�܂���B'
+        'このタイルは攻撃できません。混雑したマップでは、初期主張はマップの端でなければなりません。'
       ]
     }
 
@@ -2689,55 +2689,55 @@ if (cellColors[cellKey]) {
                 if (loop < 9){
                   loop += 1;
                   sleepTime = 1.5;
-                  message = '(' + loop + '����)�m�ח��n'+ lastLine;
+                  message = '(' + loop + '発目)［陥落］'+ lastLine;
                   processType = 'continue';
                 } else {
                   success = true;
                   loop += 1;
-                  message = '(' + loop + '����)�m�ח��n�y�Ŏ~�z'+ lastLine;
+                  message = '(' + loop + '発目)［陥落］【打止】'+ lastLine;
                   processType = 'return';
                   i++;
                 }
             } else if (messageType === 'reinforceAttack') {
               success = true;
               loop += 1;
-              message = '(' + loop + '����)�m�j��n�y�����z'+ lastLine;
+              message = '(' + loop + '発目)［破壊］【成功】'+ lastLine;
               processType = 'return';
               i++;
 //              if (loop < 9){
 //                loop += 1;
 //                sleepTime = 1.5;
-//                message = '(' + loop + '����)�m�j��n'+ lastLine;
+//                message = '(' + loop + '発目)［破壊］'+ lastLine;
 //                processType = 'continue';
 //              } else {
 //                success = true;
 //                loop += 1;
-//                message = '(' + loop + '����)�m�j��n�y�Ŏ~�z'+ lastLine;
+//                message = '(' + loop + '発目)［破壊］【打止】'+ lastLine;
 //                processType = 'return';
 //                i++;
 //              }
-            } else if (text.startsWith('���[�_�[�ɂȂ���')) {
+            } else if (text.startsWith('リーダーになった')) {
                 if (loop < 9){
                   loop += 1;
-                  message = '(' + loop + '����) '+ lastLine;
+                  message = '(' + loop + '発目) '+ lastLine;
                   processType = 'continue';
                 } else {
                   success = true;
                   loop += 1;
-                  message = '(' + loop + '����)�y�Ŏ~�z'+ lastLine;
+                  message = '(' + loop + '発目)【打止】'+ lastLine;
                   processType = 'return';
                 }
                 i++;
-            } else if (text.startsWith('�A���[�i�`�������W�J�n')) {
-                if (text.endsWith('�A���[�i�`�������W�͎��s���܂����B')) {
+            } else if (text.startsWith('アリーナチャレンジ開始')) {
+                if (text.endsWith('アリーナチャレンジは失敗しました。')) {
                   success = true;
                   loop += 1;
-                  message = '(' + loop + '����)�y���s�z'+ lastLine;
+                  message = '(' + loop + '発目)【失敗】'+ lastLine;
                   processType = 'return';
                 } else {
                   success = true;
                   loop += 1;
-                  message = '(' + loop + '����)�y�����z'+ lastLine;
+                  message = '(' + loop + '発目)【成功】'+ lastLine;
                   processType = 'return';
                 }
                 i++;
@@ -2750,21 +2750,21 @@ if (cellColors[cellKey]) {
                 if (loop < 9){
                   loop += 1;
                   sleepTime = 10.1;
-                  message = '(' + loop + '����) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
+                  message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
                   processType = 'continue';
                 } else {
                   success = true;
                   loop += 1;
-                  message = '(' + loop + '����)�y�Ŏ~�z'+ lastLine;
+                  message = '(' + loop + '発目)【打止】'+ lastLine;
                   processType = 'return';
                 }
                 i++;
             } else if (lastLine.length > 100) {
-              message = '�ǂ񂮂�V�X�e��';
+              message = 'どんぐりシステム';
               processType = 'continue';
               i++;
             } else if (messageType === 'quit') {
-              message = '[��~] ' + lastLine;
+              message = '[停止] ' + lastLine;
               processType = 'return';
               clearInterval(autoJoinIntervalId);
               i++;
@@ -2775,27 +2775,27 @@ if (cellColors[cellKey]) {
               excludeSet.add(region.join(','));
               if (messageType === cellType) {
                 loop += 1;
-                message = '(' + loop + '����) '+ lastLine;
+                message = '(' + loop + '発目) '+ lastLine;
                 processType = 'continue';
               } else if (messageType === 'nonAdjacent') {
                 cellType = 'nonAdjacent';
                 loop += 1;
-                message = '(' + loop + '����) '+ lastLine;
+                message = '(' + loop + '発目) '+ lastLine;
                 processType = 'break';
               } else if (messageType === 'teamAdjacent') {
                 cellType = 'teamAdjacent';
                 loop += 1;
-                message = '(' + loop + '����) '+ lastLine;
+                message = '(' + loop + '発目) '+ lastLine;
                 processType = 'break';
               } else if (messageType === 'capitalAdjacent') {
                 cellType = 'capitalAdjacent';
                 loop += 1;
-                message = '(' + loop + '����) '+ lastLine;
+                message = '(' + loop + '発目) '+ lastLine;
                 processType = 'break';
               } else if (messageType === 'mapEdge') {
                 cellType = 'mapEdge';
                 loop += 1;
-                message = '(' + loop + '����) '+ lastLine;
+                message = '(' + loop + '発目) '+ lastLine;
                 processType = 'break';
               }
               i++;
@@ -2818,13 +2818,13 @@ if (cellColors[cellKey]) {
                } else {
                 nextProgress = 10;
                }
-              next = `�� ${nextProgress}�}2%`;
+              next = `→ ${nextProgress}±2%`;
               isAutoJoinRunning = false;
             } else if (processType === 'return') {
               next = '';
               isAutoJoinRunning = false;
             } else {
-              next = `�� ${sleepTime}s`;
+              next = `→ ${sleepTime}s`;
             }
 
             logMessage(region, message, next);
@@ -2855,8 +2855,8 @@ if (cellColors[cellKey]) {
                 message = e;
                 break;
             }
-            if (e.message === '�ă��O�C�����Ă�������') {
-              logMessage(region, '[��~] �ǂ񂮂肪������܂���ł���', '');
+            if (e.message === '再ログインしてください') {
+              logMessage(region, '[停止] どんぐりが見つかりませんでした', '');
               isAutoJoinRunning = false;
               clearInterval(autoJoinIntervalId);
               return;
@@ -2869,11 +2869,11 @@ if (cellColors[cellKey]) {
               errorCount++;
               let sleepTime = 20 * errorCount;
               if(sleepTime > 600) sleepTime = 600;
-              logMessage(region, message, `�� ${sleepTime}s`);
+              logMessage(region, message, `→ ${sleepTime}s`);
               await sleep(sleepTime * 1000);
             } else {
               let sleepTime = 20;
-              logMessage(region, e, `�� ${sleepTime}s`);
+              logMessage(region, e, `→ ${sleepTime}s`);
               await sleep(sleepTime * 1000);
             }
             i++;
@@ -2897,9 +2897,9 @@ if (cellColors[cellKey]) {
                } else {
                 nextProgress = 10;
                }
-          const next = `�� ${nextProgress}�}2%`;
+          const next = `→ ${nextProgress}±2%`;
           isAutoJoinRunning = false;
-          logMessage(null, '�U���\�ȃ^�C����������܂���ł����B', next);
+          logMessage(null, '攻撃可能なタイルが見つかりませんでした。', next);
           return;
         }
       }
@@ -2912,7 +2912,7 @@ if (cellColors[cellKey]) {
         const text = await res.text();
         const doc = new DOMParser().parseFromString(text, 'text/html');
         const h1 = doc?.querySelector('h1')?.textContent;
-        if (h1 !== '�ǂ񂮂�`�[���킢') throw new Error('title.ng info');
+        if (h1 !== 'どんぐりチーム戦い') throw new Error('title.ng info');
 
         const scriptContent = doc.querySelector('.grid > script').textContent;
         const cellColorsString = scriptContent.match(/const cellColors = ({.+?})/s)[1];
@@ -3051,13 +3051,13 @@ if (cellColors[cellKey]) {
         const text = await res.text();
         const doc = new DOMParser().parseFromString(text,'text/html');
         const h1 = doc?.querySelector('h1')?.textContent;
-        if(h1 !== '�ǂ񂮂�`�[���킢') return Promise.reject(`title.ng`);
+        if(h1 !== 'どんぐりチーム戦い') return Promise.reject(`title.ng`);
         const table = doc.querySelector('table');
         if(!table) throw new Error('table.ng');
         const equipCond = table.querySelector('td small').textContent;
         const rank = equipCond
-          .replace('�G���[�g','e')
-          .replace(/.+����|\w+-|�܂�|����|\s|\[|\]|\|/g,'');
+          .replace('エリート','e')
+          .replace(/.+から|\w+-|まで|だけ|\s|\[|\]|\|/g,'');
         const autoEquipItems = JSON.parse(localStorage.getItem('autoEquipItems')) || {};
         const autoEquipItemsAutojoin = JSON.parse(localStorage.getItem('autoEquipItemsAutojoin')) || {};
 
@@ -3096,7 +3096,7 @@ if (cellColors[cellKey]) {
       let str,min,totalSec,sec,margin;
 
       if (currentProgress === 0 || currentProgress === 50) {
-        str = '�i�}�b�v�X�V���j';
+        str = '（マップ更新時）';
       } else {
         if (currentProgress === 100) {
           min = 0;
@@ -3108,15 +3108,15 @@ if (cellColors[cellKey]) {
           sec = totalSec % 60;
           margin = 20;
         }
-        str = '�i�}�b�v�X�V�܂�' + min + '��' + sec + '�b \xb1' + margin + '�b�j';
+        str = '（マップ更新まで' + min + '分' + sec + '秒 \xb1' + margin + '秒）';
       }
       progressBarBody.textContent = currentProgress + '%';
       progressBarBody.style.width = currentProgress + '%';
-      progressBarInfo.textContent = `${MODENAME} �� ${currentPeriod} ��${str}`;
+      progressBarInfo.textContent = `${MODENAME} 第 ${currentPeriod} 期${str}`;
 
       const statBlock = doc.querySelector('.stat-block');
-      wood = statBlock.textContent.match(/�؍ނ̐�: (\d+)/)[1];
-      steel = statBlock.textContent.match(/�S�̐�: (\d+)/)[1];
+      wood = statBlock.textContent.match(/木材の数: (\d+)/)[1];
+      steel = statBlock.textContent.match(/鉄の数: (\d+)/)[1];
     } catch (e) {
       console.error(e+' drawProgressBar()')
     }
@@ -3129,7 +3129,7 @@ if (cellColors[cellKey]) {
     autoJoin();
   }
   let progressBarIntervalId = setInterval(drawProgressBar, 18000);
-  (()=>{ // autoJoin��progressBar��interval�Ǘ�
+  (()=>{ // autoJoinとprogressBarのinterval管理
     function stopAutoJoin() {
       if (autoJoinIntervalId) {
         clearInterval(autoJoinIntervalId);
