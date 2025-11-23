@@ -1990,82 +1990,194 @@ async function refreshArenaInfo() {
   }
 }
 
-  async function fetchAreaInfo(refreshAll){
-    const refreshedCells = await refreshArenaInfo();
-    if (currentViewMode === 'detail') {
-      grid.style.gridTemplateRows = grid.style.gridTemplateRows.replace('35px','65px');
-      grid.style.gridTemplateColumns = grid.style.gridTemplateColumns.replace('35px','105px');
-    }
-    grid.parentNode.style.height = null;
-    grid.parentNode.style.padding = '20px 0';
+async function refreshArenaInfo() {
+  const refreshedCells = [];
 
-    const cells = grid.querySelectorAll('.cell');
-    cells.forEach(async(elm) => {
-      fetchSingleArenaInfo(elm);
-    })
+  // includesCoord関数をSetで最適化
+  function includesCoord(arr, row, col) {
+    const coordSet = new Set(arr.map(([r, c]) => `${r}-${c}`));
+    return coordSet.has(`${row}-${col}`);
   }
-  async function fetchSingleArenaInfo(elm) {
-    try {
-      const { row, col } = elm.dataset;
-      const url = `https://donguri.5ch.net/teambattle?r=${row}&c=${col}&`+MODEQ;
-      const res = await fetch(url);
-      if(!res.ok) throw new Error(res.status + ' res.ng');
-      const text = await res.text();
-      const doc = new DOMParser().parseFromString(text, 'text/html');
-      const h1 = doc?.querySelector('h1')?.textContent;
-      if(h1 !== 'どんぐりチーム戦い') throw new Error(`title.ng [${row}][${col}][${h1}]`);
-      const rank = doc.querySelector('small')?.textContent || '';
-      if(!rank) return Promise.reject(`rank.ng [${row}][${col}][${h1}]`);
-      const leader = doc.querySelector('strong')?.textContent || '';
-      const shortenRank = rank.replace('[エリート]','e').replace('から','-').replace(/(まで|\[|\]|\||\s)/g,'');
-      const teamname = doc.querySelector('table').rows[1]?.cells[2].textContent;
 
-      const cell = elm.cloneNode();
-      if (currentViewMode === 'detail') {
-        const p = [document.createElement('p'), document.createElement('p')];
-        p[0].textContent = shortenRank;
-        p[1].textContent = leader;
-        p[0].style.margin = '0';
-        p[1].style.margin = '0';
-        cell.style.width = '100px';
-        cell.style.height = '60px';
-        cell.style.borderWidth = '3px';
-        cell.append(p[0],p[1]);
-      } else {
-        const p = document.createElement('p');
-        p.style.height = '28px';
-        p.style.width = '28px';
-        p.style.margin = '0';
-        p.style.display = 'flex';
-        p.style.alignItems = 'center';
-        p.style.lineHeight = '1';
-        p.style.justifyContent = 'center';
-        const str = shortenRank.replace(/\w+-|だけ/g,'');
-        p.textContent = str;
-        if (str.length === 3) p.style.fontSize = '14px';
-        if (str.length === 4) p.style.fontSize = '13px';
-        cell.append(p);
+  try {
+    const res = await fetch('');
+    if (!res.ok) throw new Error('res.ng');
+
+    const text = await res.text();
+    const doc = new DOMParser().parseFromString(text, 'text/html');
+    const h1 = doc?.querySelector('h1')?.textContent;
+    if (h1 !== 'どんぐりチーム戦い') throw new Error('title.ng info');
+
+    const currentCells = grid.querySelectorAll('.cell');
+    const scriptContent = doc.querySelector('.grid > script')?.textContent || '';
+
+    let cellColors = {};
+    const cellColorsMatch = scriptContent.match(/const cellColors = ({[\s\S]+?});/);
+    if (cellColorsMatch) {
+      try {
+        cellColors = Function('"use strict";return (' + cellColorsMatch[1] + ')')();
+      } catch(e) {
+        console.error('cellColors parse error', e);
+        cellColors = {};
       }
-      cell.style.overflow = 'hidden';
-      cell.dataset.rank = shortenRank;
-      cell.dataset.leader = leader;
-      cell.dataset.team = teamname;
+    }
 
-      if ('customColors' in settings && teamname in settings.customColors) {
-        cell.style.backgroundColor = '#' + settings.customColors[teamname];
+    let capitalMap = [];
+    const capitalMapMatch = scriptContent.match(/const capitalMap = (\[\[.+?\]\])/s);
+    if (capitalMapMatch) {
+      try {
+        capitalMap = JSON.parse(capitalMapMatch[1]);
+      } catch(e) {
+        console.error('capitalMap parse error', e);
+        capitalMap = [];
       }
-      const rgb = cell.style.backgroundColor.match(/\d+/g);
-      const brightness = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
-      cell.style.color = brightness > 128 ? '#000' : '#fff';
+    }
 
-      cell.addEventListener('click', ()=>{
-        handleCellClick (cell);
+    const newGrid = doc.querySelector('.grid');
+    const rows = Number(newGrid.style.gridTemplateRows.match(/repeat\((\d+), 35px\)/)[1]);
+    const cols = Number(newGrid.style.gridTemplateColumns.match(/repeat\((\d+), 35px\)/)[1]);
+
+    // グリッドサイズが変更された場合のみ再描画
+    if (currentCells.length !== rows * cols) {
+      grid.style.gridTemplateRows = newGrid.style.gridTemplateRows;
+      grid.style.gridTemplateColumns = newGrid.style.gridTemplateColumns;
+      grid.innerHTML = '';  // 内部のHTMLを一度削除してから新しいセルを追加
+
+      const fragment = document.createDocumentFragment(); // 一度にDOM操作をまとめる
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.dataset.row = i;
+          cell.dataset.col = j;
+          cell.style.width = '30px';
+          cell.style.height = '30px';
+          cell.style.border = '1px solid #ccc';
+          cell.style.cursor = 'pointer';
+          cell.style.transition = 'background-color 0.3s';
+
+          if (includesCoord(capitalMap, i, j)) {
+            cell.style.outline = 'black solid 2px';
+            cell.style.borderColor = 'gold';
+          }
+
+          const cellKey = `${i}-${j}`;
+          cell.style.backgroundColor = cellColors[cellKey] || '#f0f0f0';
+          fragment.appendChild(cell);
+          refreshedCells.push(cell);
+        }
+      }
+      grid.appendChild(fragment);
+    } else {
+      currentCells.forEach(cell => {
+        const { row, col } = cell.dataset;
+        const cellKey = `${row}-${col}`;
+        cell.style.backgroundColor = cellColors[cellKey] || '#f0f0f0';
+
+        if (includesCoord(capitalMap, row, col)) {
+          cell.style.outline = 'black solid 2px';
+          cell.style.borderColor = 'gold';
+        } else {
+          cell.style.outline = '';
+          cell.style.borderColor = '#ccc';
+        }
       });
-      elm.replaceWith(cell);
-    } catch(e) {
-      console.error(e)
     }
+
+    // マップ下部のテーブル更新
+    const tables = document.querySelectorAll('table');
+    const newTables = doc.querySelectorAll('table');
+    newTables.forEach((table, i) => {
+      tables[i].replaceWith(table);
+    });
+
+    // 色のカスタマイズ
+    addCustomColor();
+
+    return refreshedCells;
+  } catch (e) {
+    console.error(e);
+    return [];
   }
+}
+
+async function fetchAreaInfo(refreshAll){
+  const refreshedCells = await refreshArenaInfo();
+  if (currentViewMode === 'detail') {
+    grid.style.gridTemplateRows = grid.style.gridTemplateRows.replace('35px','65px');
+    grid.style.gridTemplateColumns = grid.style.gridTemplateColumns.replace('35px','105px');
+  }
+  grid.parentNode.style.height = null;
+  grid.parentNode.style.padding = '20px 0';
+
+  const cells = grid.querySelectorAll('.cell');
+  // fetchSingleArenaInfoの並列処理
+  const promises = Array.from(cells).map(elm => fetchSingleArenaInfo(elm));
+  await Promise.all(promises); // すべての非同期処理が完了するのを待つ
+}
+
+async function fetchSingleArenaInfo(elm) {
+  try {
+    const { row, col } = elm.dataset;
+    const url = `https://donguri.5ch.net/teambattle?r=${row}&c=${col}&`+MODEQ;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error(res.status + ' res.ng');
+    const text = await res.text();
+    const doc = new DOMParser().parseFromString(text, 'text/html');
+    const h1 = doc?.querySelector('h1')?.textContent;
+    if(h1 !== 'どんぐりチーム戦い') throw new Error(`title.ng [${row}][${col}][${h1}]`);
+    const rank = doc.querySelector('small')?.textContent || '';
+    if(!rank) return Promise.reject(`rank.ng [${row}][${col}][${h1}]`);
+    const leader = doc.querySelector('strong')?.textContent || '';
+    const shortenRank = rank.replace('[エリート]','e').replace('から','-').replace(/(まで|\[|\]|\||\s)/g,'');
+    const teamname = doc.querySelector('table').rows[1]?.cells[2].textContent;
+
+    const cell = elm.cloneNode();
+    if (currentViewMode === 'detail') {
+      const p = [document.createElement('p'), document.createElement('p')];
+      p[0].textContent = shortenRank;
+      p[1].textContent = leader;
+      p[0].style.margin = '0';
+      p[1].style.margin = '0';
+      cell.style.width = '100px';
+      cell.style.height = '60px';
+      cell.style.borderWidth = '3px';
+      cell.append(p[0],p[1]);
+    } else {
+      const p = document.createElement('p');
+      p.style.height = '28px';
+      p.style.width = '28px';
+      p.style.margin = '0';
+      p.style.display = 'flex';
+      p.style.alignItems = 'center';
+      p.style.lineHeight = '1';
+      p.style.justifyContent = 'center';
+      const str = shortenRank.replace(/\w+-|だけ/g,'');
+      p.textContent = str;
+      if (str.length === 3) p.style.fontSize = '14px';
+      if (str.length === 4) p.style.fontSize = '13px';
+      cell.append(p);
+    }
+    cell.style.overflow = 'hidden';
+    cell.dataset.rank = shortenRank;
+    cell.dataset.leader = leader;
+    cell.dataset.team = teamname;
+
+    if ('customColors' in settings && teamname in settings.customColors) {
+      cell.style.backgroundColor = '#' + settings.customColors[teamname];
+    }
+    const rgb = cell.style.backgroundColor.match(/\d+/g);
+    const brightness = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+    cell.style.color = brightness > 128 ? '#000' : '#fff';
+
+    cell.addEventListener('click', ()=>{
+      handleCellClick(cell);
+    });
+    elm.replaceWith(cell);
+  } catch(e) {
+    console.error(e);
+  }
+}
 
   function addCustomColor() {
     const teamTable = document.querySelector('table');
@@ -3048,3 +3160,4 @@ async function refreshArenaInfo() {
     });
   })();
 })();
+
