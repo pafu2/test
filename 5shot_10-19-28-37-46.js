@@ -1,4 +1,4 @@
-﻿// ==UserScript==
+// ==UserScript==
 // @name         donguri arena assist tool
 // @version      1.2.2d.パクリ9.4改 連射版 - 5発撃ち
 // @description fixes and additions
@@ -3147,4 +3147,5 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
+
 
