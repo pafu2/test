@@ -1,4 +1,4 @@
-﻿﻿// ==UserScript==
+// ==UserScript==
 // @name         donguri arena assist tool
 // @version      1.2.2d.パクリ9.4改 標準仕様
 // @description fixes and additions
