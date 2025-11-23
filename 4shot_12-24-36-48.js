@@ -8,7 +8,6 @@
 // @match        https://donguri.5ch.net/bag
 // ==/UserScript==
 
-
 (()=>{
   if(location.href === 'https://donguri.5ch.net/bag') {
     function saveCurrentEquip(url, index) {
@@ -157,7 +156,6 @@
       toggleCellViewMode();
     })
 
-
     const refreshButton = button.cloneNode();
     refreshButton.innerText = 'エリア情報\n更新';
     refreshButton.addEventListener('click',()=>{
@@ -185,7 +183,6 @@
       settings.skipArenaInfo = shouldSkipAreaInfo;
       localStorage.setItem('aat_settings', JSON.stringify(settings));
     });
-
 
     const subMenu = document.createElement('div');
     subMenu.style.display = 'none';
@@ -248,7 +245,6 @@
       slideMenu.style.right = '-100%';
       slideMenu.style.background = '#fff';
       slideMenu.style.transition = 'transform 0.1s ease';
-
 
       const autoJoinButton = subButton.cloneNode();
       autoJoinButton.innerText = '自動参加\nモード';
@@ -364,7 +360,6 @@
         container.append(log, p, settingsButton, closeButton);
         autoJoinDialog.append(container);
       })();
-
 
       const settingsButton = subButton.cloneNode();
       settingsButton.textContent = '設定';
@@ -1771,7 +1766,6 @@
 
     }
 
-
     function removePresetItems(presetName) {
       const userConfirmed = confirm(presetName + ' を削除しますか？');
       if(!userConfirmed) return;
@@ -1879,118 +1873,122 @@
 
   scaleContentsToFit(grid.parentNode, grid);
 
-  async function refreshArenaInfo() {
-    const refreshedCells = [];
-    function includesCoord(arr, row, col) {
-      return arr.some(([r, c]) => r === Number(row) && c === Number(col));
+async function refreshArenaInfo() {
+  const refreshedCells = [];
+
+  function includesCoord(arr, row, col) {
+    return arr.some(([r, c]) => r === Number(row) && c === Number(col));
+  }
+
+  try {
+    const res = await fetch('');
+    if (!res.ok) throw new Error('res.ng');
+
+    const text = await res.text();
+    const doc = new DOMParser().parseFromString(text, 'text/html');
+    const h1 = doc?.querySelector('h1')?.textContent;
+    if (h1 !== 'どんぐりチーム戦い') throw new Error('title.ng info');
+
+    const currentCells = grid.querySelectorAll('.cell');
+    const scriptContent = doc.querySelector('.grid > script')?.textContent || '';
+
+    let cellColors = {};
+    const cellColorsMatch = scriptContent.match(/const cellColors = ({[\s\S]+?});/);
+    if (cellColorsMatch) {
+      try {
+        cellColors = Function('"use strict";return (' + cellColorsMatch[1] + ')')();
+      } catch(e) {
+        console.error('cellColors parse error', e);
+        cellColors = {};
+      }
     }
 
-    try {
-      const res = await fetch('');
-      if (!res.ok) throw new Error('res.ng');
+    let capitalMap = [];
+    const capitalMapMatch = scriptContent.match(/const capitalMap = (\[\[.+?\]\])/s);
+    if (capitalMapMatch) {
+      try {
+        capitalMap = JSON.parse(capitalMapMatch[1]);
+      } catch(e) {
+        console.error('capitalMap parse error', e);
+        capitalMap = [];
+      }
+    }
 
-      const text = await res.text();
-      const doc = new DOMParser().parseFromString(text, 'text/html');
-      const h1 = doc?.querySelector('h1')?.textContent;
-      if (h1 !== 'どんぐりチーム戦い') throw new Error('title.ng info');
+    const newGrid = doc.querySelector('.grid');
+    const rows = Number(newGrid.style.gridTemplateRows.match(/repeat\((\d+), 35px\)/)[1]);
+    const cols = Number(newGrid.style.gridTemplateColumns.match(/repeat\((\d+), 35px\)/)[1]);
 
-      const currentCells = grid.querySelectorAll('.cell');
-      const scriptContent = doc.querySelector('.grid > script').textContent;
+    if (currentCells.length !== rows * cols) {
+      grid.style.gridTemplateRows = newGrid.style.gridTemplateRows;
+      grid.style.gridTemplateColumns = newGrid.style.gridTemplateColumns;
+      grid.innerHTML = '';
 
-      const cellColorsString = scriptContent.match(/const cellColors = ({.+?})/s)[1];
-      const validJsonStr = cellColorsString.replace(/'/g, '"').replace(/,\s*}/, '}');
-      const cellColors = JSON.parse(validJsonStr);
-      const capitalMapString = scriptContent.match(/const capitalMap = (\[\[.+?\]\])/s)[1];
-      const capitalMap = JSON.parse(capitalMapString);
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.dataset.row = i;
+          cell.dataset.col = j;
+          cell.style.width = '30px';
+          cell.style.height = '30px';
+          cell.style.border = '1px solid #ccc';
+          cell.style.cursor = 'pointer';
+          cell.style.transition = 'background-color 0.3s';
 
-      const newGrid = doc.querySelector('.grid');
-      const rows = Number(newGrid.style.gridTemplateRows.match(/repeat\((\d+), 35px\)/)[1]);
-      const cols = Number(newGrid.style.gridTemplateColumns.match(/repeat\((\d+), 35px\)/)[1]);
-
-      if (currentCells.length !== rows * cols) {
-        grid.style.gridTemplateRows = newGrid.style.gridTemplateRows;
-        grid.style.gridTemplateColumns = newGrid.style.gridTemplateColumns;
-        grid.innerHTML = '';
-
-        for (let i = 0; i < rows; i++) {
-          for (let j = 0; j < cols; j++) {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-            cell.dataset.row = i;
-            cell.dataset.col = j;
-            cell.style.width = '30px';
-            cell.style.height = '30px';
-            cell.style.border = '1px solid #ccc';
-            cell.style.cursor = 'pointer';
-            cell.style.transition = 'background-color 0.3s';
-
-            if (includesCoord(capitalMap, i, j)) {
-              cell.style.outline = 'black solid 2px';
-              cell.style.borderColor = 'gold';
-            } else {
-              cell.style.outline = '';
-            }
-            const cellKey = `${i}-${j}`;
-            /*
-            const rgb = cellColors[cellKey].match(/[0-9a-fA-F]{2}/g);
-            cell.style.outline = includesCoord(capitalMap, i, j) ? `${getOutlineColor(rgb)} solid 2px` : '';
-            */
-            if (cellColors[cellKey]) {
-              cell.style.backgroundColor = cellColors[cellKey];
-            } else {
-              cell.style.backgroundColor = '#ffffff00';
-            }
-
-            grid.appendChild(cell);
-            refreshedCells.push(cell);
-          }
-        }
-      } else {
-        currentCells.forEach(cell => {
-          const { row, col } = cell.dataset;
-          const cellKey = `${row}-${col}`;
-
-          const cellColorCode = '#' + cell.style.backgroundColor.match(/\d+/g)
-            .map(v => Number(v).toString(16).toLowerCase().padStart(2, '0'))
-            .join('');
-
-          if (cellColors[cellKey]) {
-            if (cellColorCode !== cellColors[cellKey].toLowerCase()) {
-              cell.style.backgroundColor = cellColors[cellKey];
-              refreshedCells.push(cell);
-            }
-          } else if (cellColorCode !== '#ffffff00') {
-            cell.style.backgroundColor = '#ffffff00';
-            refreshedCells.push(cell);
-          }
-
-          const rgb = cell.style.backgroundColor.match(/\d+/g).map(Number);
-          const brightness = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
-          cell.style.color = brightness > 128 ? '#000' : '#fff';
-
-          if (includesCoord(capitalMap, row, col)) {
+          if (includesCoord(capitalMap, i, j)) {
             cell.style.outline = 'black solid 2px';
             cell.style.borderColor = 'gold';
-          } else {
-            cell.style.outline = '';
-            cell.style.borderColor = '#ccc';
           }
 
-          // cell.style.outline = includesCoord(capitalMap, row, col) ? `${getOutlineColor(rgb)} solid 2px` : '';
-        });
-      }
+          const cellKey = `${i}-${j}`;
 
-      const tables = document.querySelectorAll('table');
-      const newTables = doc.querySelectorAll('table');
-      newTables.forEach((table, i) => {
-        tables[i].replaceWith(table);
+          if (cellColors[cellKey]) {
+            cell.style.backgroundColor = cellColors[cellKey];
+          } else {
+            cell.style.backgroundColor = '#f0f0f0';
+          }
+
+          grid.appendChild(cell);
+          refreshedCells.push(cell);
+        }
+      }
+    } else {
+      currentCells.forEach(cell => {
+        const { row, col } = cell.dataset;
+        const cellKey = `${row}-${col}`;
+
+        if (cellColors[cellKey]) {
+          cell.style.backgroundColor = cellColors[cellKey];
+        } else {
+          cell.style.backgroundColor = '#f0f0f0';
+        }
+
+        if (includesCoord(capitalMap, row, col)) {
+          cell.style.outline = 'black solid 2px';
+          cell.style.borderColor = 'gold';
+        } else {
+          cell.style.outline = '';
+          cell.style.borderColor = '#ccc';
+        }
       });
-      addCustomColor();
-      return refreshedCells;
-    } catch (e) {
-      console.error(e);
     }
+
+    // マップ下部のテーブル更新
+    const tables = document.querySelectorAll('table');
+    const newTables = doc.querySelectorAll('table');
+    newTables.forEach((table, i) => {
+      tables[i].replaceWith(table);
+    });
+
+    // 色のカスタマイズ
+    addCustomColor();
+
+    return refreshedCells;
+  } catch (e) {
+    console.error(e);
+    return [];
   }
+}
 
   async function fetchAreaInfo(refreshAll){
     const refreshedCells = await refreshArenaInfo();
@@ -2000,7 +1998,6 @@
     }
     grid.parentNode.style.height = null;
     grid.parentNode.style.padding = '20px 0';
-
 
     const cells = grid.querySelectorAll('.cell');
     cells.forEach(async(elm) => {
@@ -2183,7 +2180,6 @@
     setCustomColors(rows);
   }
   addCustomColor();
-
 
   const observer = new MutationObserver(() => {
     scaleContentsToFit(grid.parentNode, grid);
@@ -3148,6 +3144,3 @@
     });
   })();
 })();
-
-
-
