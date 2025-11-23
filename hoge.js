@@ -8,7 +8,6 @@
 // @match        https://donguri.5ch.net/bag
 // ==/UserScript==
 
-
 (()=>{
   if(location.href === 'https://donguri.5ch.net/bag') {
     function saveCurrentEquip(url, index) {
@@ -3138,3 +3137,4 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
+
