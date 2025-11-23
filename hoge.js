@@ -1,13 +1,12 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d.パクリ9.4改 連射版 - 4発撃ち
+// @version      1.2.2d.パクリ9.4改 連射版 - 4発撃ち(hoge)
 // @description fixes and additions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
 // @match        https://donguri.5ch.net/teambattle?m=l
 // @match        https://donguri.5ch.net/bag
 // ==/UserScript==
-
 
 (()=>{
   if(location.href === 'https://donguri.5ch.net/bag') {
@@ -157,7 +156,6 @@
       toggleCellViewMode();
     })
 
-
     const refreshButton = button.cloneNode();
     refreshButton.innerText = 'エリア情報\n更新';
     refreshButton.addEventListener('click',()=>{
@@ -185,7 +183,6 @@
       settings.skipArenaInfo = shouldSkipAreaInfo;
       localStorage.setItem('aat_settings', JSON.stringify(settings));
     });
-
 
     const subMenu = document.createElement('div');
     subMenu.style.display = 'none';
@@ -248,7 +245,6 @@
       slideMenu.style.right = '-100%';
       slideMenu.style.background = '#fff';
       slideMenu.style.transition = 'transform 0.1s ease';
-
 
       const autoJoinButton = subButton.cloneNode();
       autoJoinButton.innerText = '自動参加\nモード';
@@ -364,7 +360,6 @@
         container.append(log, p, settingsButton, closeButton);
         autoJoinDialog.append(container);
       })();
-
 
       const settingsButton = subButton.cloneNode();
       settingsButton.textContent = '設定';
@@ -1122,7 +1117,7 @@
       const link = document.createElement('a');
       link.style.color = '#666';
       link.style.textDecoration = 'underline';
-      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改 連射版 - 4発撃ち';
+      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改 連射版 - 4発撃ち(hoge)';
       link.href = 'https://donguri-k.github.io/tools/arena-assist-tool';
       link.target = '_blank';
       const author = document.createElement('input');
@@ -1771,7 +1766,6 @@
 
     }
 
-
     function removePresetItems(presetName) {
       const userConfirmed = confirm(presetName + ' を削除しますか？');
       if(!userConfirmed) return;
@@ -1898,7 +1892,6 @@ async function refreshArenaInfo() {
     const currentCells = grid.querySelectorAll('.cell');
     const scriptContent = doc.querySelector('.grid > script')?.textContent || '';
 
-    // --- cellColors の安全取得 ---
     let cellColors = {};
     const cellColorsMatch = scriptContent.match(/const cellColors = ({[\s\S]+?});/);
     if (cellColorsMatch) {
@@ -1910,7 +1903,6 @@ async function refreshArenaInfo() {
       }
     }
 
-    // capitalMap の取得（占領マスのアウトライン用）
     let capitalMap = [];
     const capitalMapMatch = scriptContent.match(/const capitalMap = (\[\[.+?\]\])/s);
     if (capitalMapMatch) {
@@ -1922,13 +1914,11 @@ async function refreshArenaInfo() {
       }
     }
 
-    // 新しいグリッドの行列数
     const newGrid = doc.querySelector('.grid');
     const rows = Number(newGrid.style.gridTemplateRows.match(/repeat\((\d+), 35px\)/)[1]);
     const cols = Number(newGrid.style.gridTemplateColumns.match(/repeat\((\d+), 35px\)/)[1]);
 
     if (currentCells.length !== rows * cols) {
-      // --- グリッド再構築 ---
       grid.style.gridTemplateRows = newGrid.style.gridTemplateRows;
       grid.style.gridTemplateColumns = newGrid.style.gridTemplateColumns;
       grid.innerHTML = '';
@@ -1945,7 +1935,6 @@ async function refreshArenaInfo() {
           cell.style.cursor = 'pointer';
           cell.style.transition = 'background-color 0.3s';
 
-          // 占領マスのアウトライン
           if (includesCoord(capitalMap, i, j)) {
             cell.style.outline = 'black solid 2px';
             cell.style.borderColor = 'gold';
@@ -1953,17 +1942,10 @@ async function refreshArenaInfo() {
 
           const cellKey = `${i}-${j}`;
 
-          // --- 誰も占領していない場合でも初期色を設定 ---
           if (cellColors[cellKey]) {
             cell.style.backgroundColor = cellColors[cellKey];
           } else {
-            cell.style.backgroundColor = '#F0F0F0';
-            // 武器・防具グレード別初期色を設定可能
-            // ここでは例として grade 1-4 に色を割り当て
-            // const gradeColorMap = ['#ffffff00', '#ffeeaa', '#aaffaa', '#aaddff', '#ffaaaa'];
-            // row と col で簡易グレードを決める（適宜ゲームロジックに合わせて修正）
-            // const grade = ((i + j) % gradeColorMap.length);
-            // cell.style.backgroundColor = gradeColorMap[grade];
+            cell.style.backgroundColor = '#f0f0f0';
           }
 
           grid.appendChild(cell);
@@ -1971,16 +1953,15 @@ async function refreshArenaInfo() {
         }
       }
     } else {
-      // --- 既存セル更新 ---
       currentCells.forEach(cell => {
         const { row, col } = cell.dataset;
         const cellKey = `${row}-${col}`;
 
-if (cellColors[cellKey]) {
-  cell.style.backgroundColor = cellColors[cellKey];
-} else {
-  cell.style.backgroundColor = '#f0f0f0'; // 占領されていない場合は灰色
-}
+        if (cellColors[cellKey]) {
+          cell.style.backgroundColor = cellColors[cellKey];
+        } else {
+          cell.style.backgroundColor = '#f0f0f0';
+        }
 
         if (includesCoord(capitalMap, row, col)) {
           cell.style.outline = 'black solid 2px';
@@ -1991,6 +1972,16 @@ if (cellColors[cellKey]) {
         }
       });
     }
+
+    // マップ下部のテーブル更新
+    const tables = document.querySelectorAll('table');
+    const newTables = doc.querySelectorAll('table');
+    newTables.forEach((table, i) => {
+      tables[i].replaceWith(table);
+    });
+
+    // 色のカスタマイズ
+    addCustomColor();
 
     return refreshedCells;
   } catch (e) {
@@ -2007,7 +1998,6 @@ if (cellColors[cellKey]) {
     }
     grid.parentNode.style.height = null;
     grid.parentNode.style.padding = '20px 0';
-
 
     const cells = grid.querySelectorAll('.cell');
     cells.forEach(async(elm) => {
@@ -2190,7 +2180,6 @@ if (cellColors[cellKey]) {
     setCustomColors(rows);
   }
   addCustomColor();
-
 
   const observer = new MutationObserver(() => {
     scaleContentsToFit(grid.parentNode, grid);
@@ -3155,4 +3144,3 @@ if (cellColors[cellKey]) {
     });
   })();
 })();
-
