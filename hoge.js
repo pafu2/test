@@ -2622,6 +2622,7 @@ async function fetchSingleArenaInfo(elm) {
       return result;
     }
 
+
     let nextProgress;
     async function attackRegion () {
       await drawProgressBar();
@@ -2642,6 +2643,7 @@ async function fetchSingleArenaInfo(elm) {
       } else {
         cellType = 'mapEdge';
       }
+
 
      while (dialog.open) {
        let success = false;
@@ -3137,5 +3139,3 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
-
-
