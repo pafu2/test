@@ -2784,20 +2784,20 @@ async function fetchSingleArenaInfo(elm) {
               i++;
             }
             if (success) {
-              if (currentProgress < 15) {
-                nextProgress = 20;
-               } else if (currentProgress < 25) {
-                nextProgress = 30;
-               } else if (currentProgress < 35) {
-                nextProgress = 40;
+              if (currentProgress < 20) {
+                nextProgress = 25;
+               } else if (currentProgress < 30) {
+                nextProgress = 35;
+               } else if (currentProgress < 40) {
+                nextProgress = 45;
                } else if (currentProgress < 50) {
                 nextProgress = 55;
-               } else if (currentProgress < 65) {
-                nextProgress = 70;
-               } else if (currentProgress < 75) {
-                nextProgress = 80;
-               } else if (currentProgress < 85) {
-                nextProgress = 90;
+               } else if (currentProgress < 70) {
+                nextProgress = 75;
+               } else if (currentProgress < 80) {
+                nextProgress = 85;
+               } else if (currentProgress < 90) {
+                nextProgress = 95;
                } else {
                 nextProgress = 5;
                }
@@ -2863,20 +2863,20 @@ async function fetchSingleArenaInfo(elm) {
           }
         }
         if (!success && regions[cellType].length === 0) {
-              if (currentProgress < 15) {
-                nextProgress = 20;
-               } else if (currentProgress < 25) {
-                nextProgress = 30;
-               } else if (currentProgress < 35) {
-                nextProgress = 40;
+              if (currentProgress < 20) {
+                nextProgress = 25;
+               } else if (currentProgress < 30) {
+                nextProgress = 35;
+               } else if (currentProgress < 40) {
+                nextProgress = 45;
                } else if (currentProgress < 50) {
                 nextProgress = 55;
-               } else if (currentProgress < 65) {
-                nextProgress = 70;
-               } else if (currentProgress < 75) {
-                nextProgress = 80;
-               } else if (currentProgress < 85) {
-                nextProgress = 90;
+               } else if (currentProgress < 70) {
+                nextProgress = 75;
+               } else if (currentProgress < 80) {
+                nextProgress = 85;
+               } else if (currentProgress < 90) {
+                nextProgress = 95;
                } else {
                 nextProgress = 5;
                }
@@ -3160,5 +3160,6 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
+
 
 
