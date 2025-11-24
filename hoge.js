@@ -2784,22 +2784,22 @@ async function fetchSingleArenaInfo(elm) {
               i++;
             }
             if (success) {
-              if (currentProgress < 20) {
-                nextProgress = 25;
-               } else if (currentProgress < 30) {
-                nextProgress = 35;
-               } else if (currentProgress < 40) {
-                nextProgress = 45;
+              if (currentProgress < 15) {
+                nextProgress = 20;
+               } else if (currentProgress < 25) {
+                nextProgress = 30;
+               } else if (currentProgress < 35) {
+                nextProgress = 40;
                } else if (currentProgress < 50) {
-                nextProgress = 55;
-               } else if (currentProgress < 70) {
-                nextProgress = 75;
-               } else if (currentProgress < 80) {
-                nextProgress = 85;
-               } else if (currentProgress < 90) {
-                nextProgress = 95;
+                nextProgress = 60;
+               } else if (currentProgress < 65) {
+                nextProgress = 70;
+               } else if (currentProgress < 75) {
+                nextProgress = 80;
+               } else if (currentProgress < 85) {
+                nextProgress = 90;
                } else {
-                nextProgress = 5;
+                nextProgress = 10;
                }
               next = `→ ${nextProgress}±2%`;
               isAutoJoinRunning = false;
@@ -2863,22 +2863,22 @@ async function fetchSingleArenaInfo(elm) {
           }
         }
         if (!success && regions[cellType].length === 0) {
-              if (currentProgress < 20) {
-                nextProgress = 25;
-               } else if (currentProgress < 30) {
-                nextProgress = 35;
-               } else if (currentProgress < 40) {
-                nextProgress = 45;
+              if (currentProgress < 15) {
+                nextProgress = 20;
+               } else if (currentProgress < 25) {
+                nextProgress = 30;
+               } else if (currentProgress < 35) {
+                nextProgress = 40;
                } else if (currentProgress < 50) {
-                nextProgress = 55;
-               } else if (currentProgress < 70) {
-                nextProgress = 75;
-               } else if (currentProgress < 80) {
-                nextProgress = 85;
-               } else if (currentProgress < 90) {
-                nextProgress = 95;
+                nextProgress = 60;
+               } else if (currentProgress < 65) {
+                nextProgress = 70;
+               } else if (currentProgress < 75) {
+                nextProgress = 80;
+               } else if (currentProgress < 85) {
+                nextProgress = 90;
                } else {
-                nextProgress = 5;
+                nextProgress = 10;
                }
           const next = `→ ${nextProgress}±2%`;
           isAutoJoinRunning = false;
@@ -2890,42 +2890,14 @@ async function fetchSingleArenaInfo(elm) {
 
     async function getRegions () {
       try {
-        const res = await fetch('https://donguri.5ch.net/teambattle');
+        const res = await fetch('');
         if (!res.ok) throw new Error(`[${res.status}] /teambattle`);
         const text = await res.text();
         const doc = new DOMParser().parseFromString(text, 'text/html');
         const h1 = doc?.querySelector('h1')?.textContent;
         if (h1 !== 'どんぐりチーム戦い') throw new Error('title.ng info');
 
-        // grid > script が存在するかチェック
-        const scriptEl = doc.querySelector('.grid > script');
-        if (!scriptEl) {
-          // 誰もマスを占領していない状態の対応
-          // 空のデータを返す
-          const grid = doc.querySelector('.grid');
-          const rows = Number(grid.style.gridTemplateRows.match(/repeat\((\d+), 35px\)/)[1]) - 1;
-          const cols = Number(grid.style.gridTemplateColumns.match(/repeat\((\d+), 35px\)/)[1]) - 1;
-
-          const cells = [];
-          for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
-              cells.push([r, c]);
-            }
-          }
-
-          const regions = {
-            nonAdjacent: shuffle(cells),
-            capitalAdjacent: [],
-            teamAdjacent: [],
-            mapEdge: []
-          };
-
-          console.log('regions (empty map):', regions);
-          return regions;
-        }
-
-        // 元の処理
-        const scriptContent = scriptEl.textContent;
+        const scriptContent = doc.querySelector('.grid > script').textContent;
         const cellColorsString = scriptContent.match(/const cellColors = ({.+?})/s)[1];
         const validJsonStr = cellColorsString.replace(/'/g, '"').replace(/,\s*}/, '}');
         const cellColors = JSON.parse(validJsonStr);
@@ -2933,8 +2905,8 @@ async function fetchSingleArenaInfo(elm) {
         const capitalMap = JSON.parse(capitalMapString);
 
         const grid = doc.querySelector('.grid');
-        const rows = Number(grid.style.gridTemplateRows.match(/repeat\((\d+), 35px\)/)[1]) - 1;
-        const cols = Number(grid.style.gridTemplateColumns.match(/repeat\((\d+), 35px\)/)[1]) - 1;
+        const rows = Number(grid.style.gridTemplateRows.match(/repeat\((\d+), 35px\)/)[1]) -1;
+        const cols = Number(grid.style.gridTemplateColumns.match(/repeat\((\d+), 35px\)/)[1]) -1;
 
         const cells = [];
         for (let r = 0; r < rows; r++) {
@@ -2971,11 +2943,11 @@ async function fetchSingleArenaInfo(elm) {
         const capitalAdjacentCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
           return adjacentSet.has(key);
-        });
+        })
 
         const teamColorSet = new Set();
-        for (const [key, value] of Object.entries(cellColors)) {
-          if (teamColor === value.replace('#', '')) {
+        for(const [key, value] of Object.entries(cellColors)) {
+          if (teamColor === value.replace('#','')) {
             teamColorSet.add(key);
           }
         }
@@ -2995,14 +2967,14 @@ async function fetchSingleArenaInfo(elm) {
         const teamAdjacentCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
           return teamColorSet.has(key) || teamAdjacentSet.has(key);
-        });
+        })
 
         const mapEdgeSet = new Set();
-        for (let i = 0; i < rows; i++) {
+        for (let i=0; i<rows; i++) {
           mapEdgeSet.add(`${i}-0`);
           mapEdgeSet.add(`${i}-${cols}`);
         }
-        for (let i = 0; i < cols; i++) {
+        for (let i=0; i<cols; i++) {
           mapEdgeSet.add(`0-${i}`);
           mapEdgeSet.add(`${rows}-${i}`);
         }
@@ -3010,21 +2982,26 @@ async function fetchSingleArenaInfo(elm) {
         const mapEdgeCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
           return mapEdgeSet.has(key) && !capitalSet.has(key);
-        });
+        })
+
+        function shuffle(arr) {
+          for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+          }
+          return arr;
+        }
 
         const regions = {
           nonAdjacent: shuffle(nonAdjacentCells),
           capitalAdjacent: shuffle(capitalAdjacentCells),
           teamAdjacent: shuffle(teamAdjacentCells),
           mapEdge: shuffle(mapEdgeCells)
-        };
-
-        // デバッグ用ログ
-        console.log('regions:', regions);
+        }
         return regions;
-
       } catch (e) {
-        console.error('Error in getRegions():', e);
+        console.error(e);
+        return;
       }
     }
 
@@ -3160,6 +3137,5 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
-
 
 
