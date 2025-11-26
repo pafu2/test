@@ -2858,7 +2858,7 @@ async function fetchSingleArenaInfo(elm) {
                } else {
                 nextProgress = Math.floor(Math.random() * 10) + 20; // 20 ~ 30 +- 5
                }
-              next = `→ ${nextProgress}±5%`;
+              const next = `→ ${nextProgress}±5%`;
           isAutoJoinRunning = false;
           logMessage(null, '攻撃可能なタイルが見つかりませんでした。', next);
           return;
@@ -3115,4 +3115,5 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
+
 
