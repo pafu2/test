@@ -2883,12 +2883,31 @@ async function fetchSingleArenaInfo(elm) {
         const h1 = doc?.querySelector('h1')?.textContent;
         if (h1 !== 'どんぐりチーム戦い') throw new Error('title.ng info');
 
-        const scriptContent = doc.querySelector('.grid > script').textContent;
-        const cellColorsString = scriptContent.match(/const cellColors = ({.+?})/s)[1];
-        const validJsonStr = cellColorsString.replace(/'/g, '"').replace(/,\s*}/, '}');
-        const cellColors = JSON.parse(validJsonStr);
-        const capitalMapString = scriptContent.match(/const capitalMap = (\[\[.+?\]\])/s)[1];
-        const capitalMap = JSON.parse(capitalMapString);
+        const scriptContent = doc.querySelector('.grid > script')?.textContent || '';
+        const cellColorsMatch = scriptContent.match(/const cellColors = ({.+?})/s);
+        let cellColors = {};
+        if (cellColorsMatch) {
+          const validJsonStr = cellColorsMatch[1]
+            .replace(/'/g, '"')
+            .replace(/,\s*}/, '}');
+          try {
+            cellColors = JSON.parse(validJsonStr);
+          } catch (e) {
+            console.error('cellColors JSON parse error:', e);
+            cellColors = {};
+          }
+        }
+
+        const capitalMapMatch = scriptContent.match(/const capitalMap = (\[\[.+?\]\])/s);
+        let capitalMap = [];
+        if (capitalMapMatch) {
+          try {
+            capitalMap = JSON.parse(capitalMapMatch[1]);
+          } catch (e) {
+            console.error('capitalMap JSON parse error:', e);
+            capitalMap = [];
+          }
+        }
 
         const grid = doc.querySelector('.grid');
         const rows = Number(grid.style.gridTemplateRows.match(/repeat\((\d+), 35px\)/)[1]) -1;
@@ -2929,11 +2948,11 @@ async function fetchSingleArenaInfo(elm) {
         const capitalAdjacentCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
           return adjacentSet.has(key);
-        })
+        });
 
         const teamColorSet = new Set();
-        for(const [key, value] of Object.entries(cellColors)) {
-          if (teamColor === value.replace('#','')) {
+        for (const [key, value] of Object.entries(cellColors)) {
+          if (teamColor === value.replace('#', '')) {
             teamColorSet.add(key);
           }
         }
@@ -2983,11 +3002,18 @@ async function fetchSingleArenaInfo(elm) {
           capitalAdjacent: shuffle(capitalAdjacentCells),
           teamAdjacent: shuffle(teamAdjacentCells),
           mapEdge: shuffle(mapEdgeCells)
-        }
+        };
+
         return regions;
+
       } catch (e) {
         console.error(e);
-        return;
+        return {
+          nonAdjacent: [],
+          capitalAdjacent: [],
+          teamAdjacent: [],
+          mapEdge: []
+        };
       }
     }
 
@@ -3123,6 +3149,7 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
+
 
 
 
