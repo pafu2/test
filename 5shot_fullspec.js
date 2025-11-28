@@ -2712,7 +2712,7 @@ async function fetchSingleArenaInfo(elm) {
                 if (text.endsWith('アリーナチャレンジは失敗しました。')) {
                   success = true;
                   loop += 1;
-                  message = '(' + loop + '発目)【失敗】'+ lastLine;
+                  message = '(' + loop + '発目)<div style="font-color:red">【失敗】</div>'+ lastLine;
                   processType = 'return';
                 } else {
                   success = true;
