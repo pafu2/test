@@ -2734,7 +2734,7 @@ async function fetchSingleArenaInfo(elm) {
             } else if (messageType === 'equipError'){
                 if (loop < 9){
                   loop += 1;
-                  sleepTime = 10.1;
+                  sleepTime = 5.1;
                   message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
                   processType = 'continue';
                 } else {
@@ -3173,5 +3173,6 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
+
 
 
