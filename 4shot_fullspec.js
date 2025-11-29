@@ -2731,7 +2731,6 @@ async function fetchSingleArenaInfo(elm) {
                   loop += 1;
                   sleepTime = 5.1;
                   message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
-                  excludeSet.add(region.join(','));
                   processType = 'continue';
                 } else {
                   success = true;
