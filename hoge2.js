@@ -2626,7 +2626,7 @@ async function fetchSingleArenaInfo(elm) {
     let nextProgress;
     async function attackRegion () {
       await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 1) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 2) {
         return;
       }
       let regions = await getRegions();
@@ -2797,9 +2797,9 @@ async function fetchSingleArenaInfo(elm) {
             }
             if (success) {
               if (currentProgress < 50) {
-                nextProgress = 51;
+                nextProgress = 52;
                } else {
-                nextProgress = 0;
+                nextProgress = 1;
                }
               next = `→ ${nextProgress}±1%`;
               isAutoJoinRunning = false;
@@ -2867,9 +2867,9 @@ async function fetchSingleArenaInfo(elm) {
         }
         if (!success && regions[cellType].length === 0) {
               if (currentProgress < 50) {
-                nextProgress = 51;
+                nextProgress = 52;
                } else {
-                nextProgress = 0;
+                nextProgress = 1;
                }
           const next = `→ ${nextProgress}±1%`;
           isAutoJoinRunning = false;
