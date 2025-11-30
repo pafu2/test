@@ -2671,7 +2671,7 @@ async function fetchSingleArenaInfo(elm) {
            let sleepTime = 3.0;
 
             if (messageType === 'capitalAttack') {
-                if (loop < 100){
+                if (loop < 99){
                   loop += 1;
                   sleepTime = 1.5;
                   message = '(' + loop + '発目)［陥落］'+ lastLine;
@@ -2684,7 +2684,7 @@ async function fetchSingleArenaInfo(elm) {
                   i++;
                 }
             } else if (messageType === 'reinforceAttack') {
-                if (loop < 100){
+                if (loop < 99){
                   loop += 1;
                   sleepTime = 1.5;
                   message = '(' + loop + '発目)［破壊］'+ lastLine;
@@ -2697,7 +2697,7 @@ async function fetchSingleArenaInfo(elm) {
                   i++;
                 }
             } else if (text.startsWith('リーダーになった')) {
-                if (loop < 100){
+                if (loop < 99){
                   loop += 1;
                   sleepTime = 1.5;
                   message = '(' + loop + '発目) '+ lastLine;
@@ -2710,7 +2710,7 @@ async function fetchSingleArenaInfo(elm) {
                 }
                 i++;
             } else if (text.startsWith('アリーナチャレンジ開始')) {
-                if (loop < 100) {
+                if (loop < 99) {
                      if (text.endsWith('アリーナチャレンジは失敗しました。')) {
                        success = true;
                        loop += 1;
@@ -2742,7 +2742,7 @@ async function fetchSingleArenaInfo(elm) {
               processType = 'continue';
               i++;
             } else if (messageType === 'equipError'){
-                if (loop < 100){
+                if (loop < 99){
                   loop += 1;
                   sleepTime = 5.1;
                   message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
