@@ -2797,9 +2797,9 @@ async function fetchSingleArenaInfo(elm) {
             }
             if (success) {
               if (currentProgress < 50) {
-                nextProgress = 52;
+                nextProgress = 51;
                } else {
-                nextProgress = 2;
+                nextProgress = 0;
                }
               next = `→ ${nextProgress}±1%`;
               isAutoJoinRunning = false;
@@ -2869,7 +2869,7 @@ async function fetchSingleArenaInfo(elm) {
               if (currentProgress < 50) {
                 nextProgress = 51;
                } else {
-                nextProgress = 1;
+                nextProgress = 0;
                }
           const next = `→ ${nextProgress}±1%`;
           isAutoJoinRunning = false;
