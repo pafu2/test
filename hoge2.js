@@ -2626,7 +2626,7 @@ async function fetchSingleArenaInfo(elm) {
     let nextProgress;
     async function attackRegion () {
       await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 2) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 1) {
         return;
       }
       let regions = await getRegions();
@@ -2671,11 +2671,11 @@ async function fetchSingleArenaInfo(elm) {
            let sleepTime = 3.0;
 
             if (messageType === 'capitalAttack') {
-                if (loop < 9){
+                if (loop < 100){
                   loop += 1;
                   sleepTime = 1.5;
                   message = '(' + loop + '発目)［陥落］'+ lastLine;
-                  processType = 'continue';
+                  processType = 'reload';
                 } else {
                   success = true;
                   loop += 1;
@@ -2684,28 +2684,24 @@ async function fetchSingleArenaInfo(elm) {
                   i++;
                 }
             } else if (messageType === 'reinforceAttack') {
-              success = true;
-              loop += 1;
-              message = '(' + loop + '発目)［破壊］【成功】'+ lastLine;
-              processType = 'return';
-              i++;
-//              if (loop < 9){
-//                loop += 1;
-//                sleepTime = 1.5;
-//                message = '(' + loop + '発目)［破壊］'+ lastLine;
-//                processType = 'continue';
-//              } else {
-//                success = true;
-//                loop += 1;
-//                message = '(' + loop + '発目)［破壊］【打止】'+ lastLine;
-//                processType = 'return';
-//                i++;
-//              }
-            } else if (text.startsWith('リーダーになった')) {
-                if (loop < 9){
+                if (loop < 100){
                   loop += 1;
+                  sleepTime = 1.5;
+                  message = '(' + loop + '発目)［破壊］'+ lastLine;
+                  processType = 'reload';
+                } else {
+                  success = true;
+                  loop += 1;
+                  message = '(' + loop + '発目)［破壊］【打止】'+ lastLine;
+                  processType = 'return';
+                  i++;
+                }
+            } else if (text.startsWith('リーダーになった')) {
+                if (loop < 100){
+                  loop += 1;
+                  sleepTime = 1.5;
                   message = '(' + loop + '発目) '+ lastLine;
-                  processType = 'continue';
+                  processType = 'reload';
                 } else {
                   success = true;
                   loop += 1;
@@ -2714,16 +2710,30 @@ async function fetchSingleArenaInfo(elm) {
                 }
                 i++;
             } else if (text.startsWith('アリーナチャレンジ開始')) {
-                if (text.endsWith('アリーナチャレンジは失敗しました。')) {
-                  success = true;
-                  loop += 1;
-                  message = '(' + loop + '発目)【失敗】'+ lastLine;
-                  processType = 'return';
+                if (loop < 100) {
+                     if (text.endsWith('アリーナチャレンジは失敗しました。')) {
+                       success = true;
+                       loop += 1;
+                       message = '(' + loop + '発目)【失敗】'+ lastLine;
+                       processType = 'reload';
+                     } else {
+                       success = true;
+                       loop += 1;
+                       message = '(' + loop + '発目)【成功】'+ lastLine;
+                       processType = 'reload';
+                     }
                 } else {
-                  success = true;
-                  loop += 1;
-                  message = '(' + loop + '発目)【成功】'+ lastLine;
-                  processType = 'return';
+                     if (text.endsWith('アリーナチャレンジは失敗しました。')) {
+                       success = true;
+                       loop += 1;
+                       message = '(' + loop + '発目)【失敗】'+ lastLine;
+                       processType = 'return';
+                     } else {
+                       success = true;
+                       loop += 1;
+                       message = '(' + loop + '発目)【成功】'+ lastLine;
+                       processType = 'return';
+                     }
                 }
                 i++;
             } else if (messageType === 'retry') {
@@ -2732,11 +2742,11 @@ async function fetchSingleArenaInfo(elm) {
               processType = 'continue';
               i++;
             } else if (messageType === 'equipError'){
-                if (loop < 9){
+                if (loop < 100){
                   loop += 1;
                   sleepTime = 5.1;
                   message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
-                  processType = 'continue';
+                  processType = 'reload';
                 } else {
                   success = true;
                   loop += 1;
@@ -2786,26 +2796,13 @@ async function fetchSingleArenaInfo(elm) {
               i++;
             }
             if (success) {
-              if (currentProgress < 15) {
-                nextProgress = 20;
-               } else if (currentProgress < 25) {
-                nextProgress = 30;
-               } else if (currentProgress < 35) {
-                nextProgress = 40;
-               } else if (currentProgress < 50) {
-                nextProgress = 60;
-               } else if (currentProgress < 65) {
-                nextProgress = 70;
-               } else if (currentProgress < 75) {
-                nextProgress = 80;
-               } else if (currentProgress < 85) {
-                nextProgress = 90;
+              if (currentProgress < 50) {
+                nextProgress = 52;
                } else {
-                nextProgress = 10;
+                nextProgress = 2;
                }
-              next = `→ ${nextProgress}±2%`;
+              next = `→ ${nextProgress}±1%`;
               isAutoJoinRunning = false;
-              processType = 'return';
             } else if (processType === 'return') {
               next = '';
               isAutoJoinRunning = false;
@@ -2869,24 +2866,12 @@ async function fetchSingleArenaInfo(elm) {
           }
         }
         if (!success && regions[cellType].length === 0) {
-              if (currentProgress < 15) {
-                nextProgress = 20;
-               } else if (currentProgress < 25) {
-                nextProgress = 30;
-               } else if (currentProgress < 35) {
-                nextProgress = 40;
-               } else if (currentProgress < 50) {
-                nextProgress = 60;
-               } else if (currentProgress < 65) {
-                nextProgress = 70;
-               } else if (currentProgress < 75) {
-                nextProgress = 80;
-               } else if (currentProgress < 85) {
-                nextProgress = 90;
+              if (currentProgress < 50) {
+                nextProgress = 51;
                } else {
-                nextProgress = 10;
+                nextProgress = 1;
                }
-          const next = `→ ${nextProgress}±2%`;
+          const next = `→ ${nextProgress}±1%`;
           isAutoJoinRunning = false;
           logMessage(null, '攻撃可能なタイルが見つかりませんでした。', next);
           return;
@@ -3096,7 +3081,7 @@ async function fetchSingleArenaInfo(elm) {
     if (!isAutoJoinRunning) {
       attackRegion();
     }
-    autoJoinIntervalId = setInterval(attackRegion,60000);
+    autoJoinIntervalId = setInterval(attackRegion,20000);
   };
 
   async function drawProgressBar(){
