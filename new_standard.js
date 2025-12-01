@@ -2675,6 +2675,7 @@ async function fetchSingleArenaInfo(elm) {
               message = '[成功] ' + lastLine;
               processType = 'return';
             } else if (messageType === 'breaktime') {
+              success = true;
               processType = 'return';
             } else if (messageType === 'afterRetry') {
               processType = 'continue';
