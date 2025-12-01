@@ -2572,6 +2572,10 @@ async function fetchSingleArenaInfo(elm) {
         '再建が必要です。',
         '防御設備を破壊しました。'
       ],
+      breaktime: [
+        'もう一度バトルに参加する前に、待たなければなりません。',
+        'ng: ちょっとゆっくり'
+      ],
       retry: [
         'あなたのチームは動きを使い果たしました。しばらくお待ちください。',
         'ng<>too fast'
@@ -2669,6 +2673,10 @@ async function fetchSingleArenaInfo(elm) {
             ) {
               success = true;
               message = '[成功] ' + lastLine;
+              processType = 'return';
+            } else if (messageType === 'breaktime') {
+              success = true;
+              message = lastLine;
               processType = 'return';
             } else if (messageType === 'afterRetry') {
               processType = 'continue';
