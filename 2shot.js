@@ -2574,6 +2574,10 @@ async function fetchSingleArenaInfo(elm) {
       reinforceAttack: [
         '防御設備を破壊しました。'
       ],
+      breaktime: [
+        'もう一度バトルに参加する前に、待たなければなりません。',
+        'ng: ちょっとゆっくり'
+      ],
       retry: [
         'あなたのチームは動きを使い果たしました。しばらくお待ちください。',
         'ng<>too fast'
@@ -2726,6 +2730,11 @@ async function fetchSingleArenaInfo(elm) {
                   processType = 'return';
                 }
                 i++;
+            } else if (messageType === 'breaktime') {
+              success = true;
+              message = lastLine;
+              processType = 'return';
+              i++;
             } else if (messageType === 'retry') {
               sleepTime = 10.1;
               message = lastLine;
@@ -3149,6 +3158,7 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
+
 
 
 
