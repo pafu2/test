@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      v1.2.2d.パクリ9.4改 連射版 - 1%・52%撃ち虎仕様
+// @version      1.2.2d.パクリ9.4改 連射版 - 1%撃ち
 // @description fixes and additions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -1117,7 +1117,7 @@
       const link = document.createElement('a');
       link.style.color = '#666';
       link.style.textDecoration = 'underline';
-      link.textContent = 'v1.2.2d.パクリ9.4改 連射版 - 1%・52%撃ち虎仕様';
+      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改 連射版 - 1発撃ち';
       link.href = 'https://donguri-k.github.io/tools/arena-assist-tool';
       link.target = '_blank';
       const author = document.createElement('input');
@@ -2710,7 +2710,7 @@ async function fetchSingleArenaInfo(elm) {
 //                i++;
 //              }
             } else if (text.startsWith('リーダーになった')) {
-                if (loop < 9){
+                if (loop < 14){
                   loop += 1;
                   sleepTime = 1.5;
                   message = '(' + loop + '発目) '+ lastLine;
@@ -2746,11 +2746,11 @@ async function fetchSingleArenaInfo(elm) {
               processType = 'continue';
               i++;
             } else if (messageType === 'equipError'){
-                if (loop < 9){
+                if (loop < 14){
                   loop += 1;
                   sleepTime = 5.1;
                   message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
-                  processType = 'continue';
+                  processType = 'reload';
                 } else {
                   success = true;
                   loop += 1;
