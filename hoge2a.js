@@ -2879,6 +2879,14 @@ async function fetchSingleArenaInfo(elm) {
       }
     }
 
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]]; // 配列の要素をランダムに入れ替える
+      }
+      return arr;
+    }
+
     async function getRegions () {
       try {
         // チーム情報を取得
