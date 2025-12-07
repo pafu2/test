@@ -2668,7 +2668,7 @@ async function fetchSingleArenaInfo(elm) {
            const messageType = getMessageType(lastLine);
            let message = lastLine;
            let processType;
-           let sleepTime = 3.0;
+           let sleepTime = 2.0;
 
             if (messageType === 'capitalAttack') {
                 if (loop < 100){
@@ -3167,4 +3167,5 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
+
 
