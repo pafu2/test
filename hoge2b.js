@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d.パクリ9.4改 連射版 - 4発撃ち
+// @version      1.2.2d.パクリ9.4改 連射版 - hoge2b
 // @description fixes and additions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -1117,7 +1117,7 @@
       const link = document.createElement('a');
       link.style.color = '#666';
       link.style.textDecoration = 'underline';
-      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改 連射版 - 4発撃ち';
+      link.textContent = '1.2.2d.パクリ9.4改 連射版 - hoge2b';
       link.href = 'https://donguri-k.github.io/tools/arena-assist-tool';
       link.target = '_blank';
       const author = document.createElement('input');
@@ -2879,6 +2879,14 @@ async function fetchSingleArenaInfo(elm) {
       }
     }
 
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]]; // 配列の要素をランダムに入れ替える
+      }
+      return arr;
+    }
+
     async function getRegions () {
       try {
         // チーム情報を取得
@@ -2919,8 +2927,8 @@ async function fetchSingleArenaInfo(elm) {
 
         // グリッドの行数、列数を取得
         const grid = doc.querySelector('.grid');
-        const rows = Number(grid.style.gridTemplateRows.match(/repeat\((\d+), 35px\)/)[1]) - 1;
-        const cols = Number(grid.style.gridTemplateColumns.match(/repeat\((\d+), 35px\)/)[1]) - 1;
+        const rows = Number(grid.style.gridTemplateRows.match(/repeat\((\d+), 35px\)/)[1]);
+        const cols = Number(grid.style.gridTemplateColumns.match(/repeat\((\d+), 35px\)/)[1]);
 
         const cells = [];
         for (let r = 0; r < rows; r++) {
@@ -2929,12 +2937,11 @@ async function fetchSingleArenaInfo(elm) {
           }
         }
 
-        // 隣接方向を指定（上下左右）
         const directions = [
-          [-1, 0], // 上
-          [1, 0],  // 下
-          [0, -1], // 左
-          [0, 1]   // 右
+          [-1, 0],
+          [1, 0],
+          [0, -1],
+          [0, 1]
         ];
 
         const adjacentSet = new Set();
@@ -2942,7 +2949,6 @@ async function fetchSingleArenaInfo(elm) {
           for (const [dr, dc] of directions) {
             const nr = cr + dr;
             const nc = cc + dc;
-            // 範囲内かつ隣接セルのみ
             if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
               adjacentSet.add(`${nr}-${nc}`);
             }
@@ -2950,6 +2956,17 @@ async function fetchSingleArenaInfo(elm) {
         }
 
         const capitalSet = new Set(capitalMap.map(([r, c]) => `${r}-${c}`));
+
+        // 非隣接セルを取得
+        const nonAdjacentCells = cells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return !capitalSet.has(key) && !adjacentSet.has(key);
+        });
+
+        const capitalAdjacentCells = cells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return adjacentSet.has(key);
+        });
 
         // 自分のチームメンバーを取得する
         const teamColorSet = new Set();
@@ -2959,14 +2976,13 @@ async function fetchSingleArenaInfo(elm) {
           }
         }
 
-        // 自分のチーム隣接セルの取得
+        // 自分のチームメンバーのセルを除外する
         const teamAdjacentSet = new Set();
         for (const key of [...teamColorSet]) {
           const [tr, tc] = key.split('-');
           for (const [dr, dc] of directions) {
             const nr = Number(tr) + dr;
             const nc = Number(tc) + dc;
-            // 範囲内かつ隣接セルのみ
             if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
               teamAdjacentSet.add(`${nr}-${nc}`);
             }
@@ -2978,14 +2994,32 @@ async function fetchSingleArenaInfo(elm) {
           return teamColorSet.has(key) || teamAdjacentSet.has(key);
         });
 
-        // 隣接セルのリストをシャッフル
+        // マップの端にあるセルを取得
+        const mapEdgeSet = new Set();
+        for (let i = 0; i < rows; i++) {
+          mapEdgeSet.add(`${i}-0`);
+          mapEdgeSet.add(`${i}-${cols}`);
+        }
+        for (let i = 0; i < cols; i++) {
+          mapEdgeSet.add(`0-${i}`);
+          mapEdgeSet.add(`${rows}-${i}`);
+        }
+
+        const mapEdgeCells = cells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return mapEdgeSet.has(key) && !capitalSet.has(key);
+        });
+
+        // 自分のチームメンバーを除外するフィルタリング関数
         const filteredCells = (cells) => {
           return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
         };
 
         const regions = {
-          capitalAdjacent: shuffle(filteredCells(Array.from(adjacentSet))),
-          teamAdjacent: shuffle(filteredCells(teamAdjacentCells))
+          nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
+          capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
+          teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
+          mapEdge: shuffle(filteredCells(mapEdgeCells))
         };
 
         return regions;
@@ -2993,8 +3027,10 @@ async function fetchSingleArenaInfo(elm) {
       } catch (e) {
         console.error(e);
         return {
+          nonAdjacent: [],
           capitalAdjacent: [],
-          teamAdjacent: []
+          teamAdjacent: [],
+          mapEdge: []
         };
       }
     }
