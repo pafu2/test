@@ -11,7 +11,7 @@
 (()=>{
   const container = document.createElement('div');
   const details = document.createElement('details');
-  //details.open = true; /* bookmarklet—p true */
+  //details.open = true; /* bookmarkletç”¨ true */
   details.classList.add('chest-opener');
   details.style.background = '#ddd';
   const summary = document.createElement('summary');
@@ -51,10 +51,10 @@
 
     const equipLabel = document.createElement('label');
     equipLabel.style.display = 'inline-flex';
-    equipLabel.append(equipChest, '•ó” ');
+    equipLabel.append(equipChest, 'å®ç®±');
     const battleLabel = document.createElement('label');
     battleLabel.style.display = 'inline-flex';
-    battleLabel.append(battleChest, 'ƒoƒgƒ‹•ó” ');
+    battleLabel.append(battleChest, 'ãƒãƒˆãƒ«å®ç®±');
     switchChestField.append(equipLabel, battleLabel);
     details.append(switchChestField);
   })();
@@ -66,7 +66,7 @@
     const label = document.createElement('label');
     label.style.fontSize = '16px';
   
-    label.append(shouldNotRecycle, 'ƒƒbƒNE•ª‰ğ‚µ‚È‚¢ƒ‚[ƒh');
+    label.append(shouldNotRecycle, 'ãƒ­ãƒƒã‚¯ãƒ»åˆ†è§£ã—ãªã„ãƒ¢ãƒ¼ãƒ‰');
     div.append(label);
     details.append(div);
   })();
@@ -88,7 +88,7 @@
   (()=>{
     const div = document.createElement('div');
     const p = document.createElement('p');
-    p.textContent = '== c‚·ƒAƒCƒeƒ€([ù]) ==';
+    p.textContent = '== æ®‹ã™ã‚¢ã‚¤ãƒ†ãƒ ([éŒ ]) ==';
     div.append(p);
   
     const ranks = ['[UR]','[SSR]','[SR]','[R]','[N]'];
@@ -131,7 +131,7 @@
     };
 
     const description = document.createElement('p');
-    description.innerHTML = 'c‚µ‚Ä‚¨‚«‚½‚¢ƒŒƒAƒŠƒeƒB‚Éƒ`ƒFƒbƒNB<br>&quot;,&quot;‹æØ‚è‚ÅƒAƒCƒeƒ€–¼‚Ìw’è‚ª‰Â”\BƒAƒCƒeƒ€–¼[‘®«]‚Å‘ÎÛ‚Ì‘®«‚àw’èB<br>—á: ‚Ç‚ñ‚®‚è‘å–C[‰Î•—], ‚Ç‚ñ‚®‚è‚©‚½‚Ñ‚ç<br>‘®«‚È‚µ‚Í[–³]‚©[‚È]BÚ×‚Í<a href="https://donguri-k.github.io/tools/chest-opener" target="_blank">‚±‚¿‚ç</a>‚ğQÆ';
+    description.innerHTML = 'æ®‹ã—ã¦ãŠããŸã„ãƒ¬ã‚¢ãƒªãƒ†ã‚£ã«ãƒã‚§ãƒƒã‚¯ã€‚<br>&quot;,&quot;åŒºåˆ‡ã‚Šã§ã‚¢ã‚¤ãƒ†ãƒ åã®æŒ‡å®šãŒå¯èƒ½ã€‚ã‚¢ã‚¤ãƒ†ãƒ å[å±æ€§]ã§å¯¾è±¡ã®å±æ€§ã‚‚æŒ‡å®šã€‚<br>ä¾‹: ã©ã‚“ãã‚Šå¤§ç ²[ç«é¢¨], ã©ã‚“ãã‚Šã‹ãŸã³ã‚‰<br>å±æ€§ãªã—ã¯[ç„¡]ã‹[ãª]ã€‚è©³ç´°ã¯<a href="https://donguri-k.github.io/tools/chest-opener" target="_blank">ã“ã¡ã‚‰</a>ã‚’å‚ç…§';
     description.style.fontSize = '14px';
     div.append(description);
     equipChestField.append(div);
@@ -144,13 +144,13 @@
   (()=>{
     const div = document.createElement('div');
     const p = document.createElement('p');
-    p.textContent = '== ” ‚ğŠJ‚¯‚é‰ñ” ==';
+    p.textContent = '== ç®±ã‚’é–‹ã‘ã‚‹å›æ•° ==';
     div.append(p);
     loopNum.type = 'number';
     loopNum.style.width = '5em';
   
     const loopConds = [
-      {value:'max',item:'–³§ŒÀ',checked:true},
+      {value:'max',item:'ç„¡åˆ¶é™',checked:true},
       {value:'num',item:loopNum,checked:false},
     ];
 
@@ -183,7 +183,7 @@
   (()=>{
     const div = document.createElement('div');
     const p = document.createElement('p');
-    p.textContent = '== c‚·ƒAƒCƒeƒ€ ==';
+    p.textContent = '== æ®‹ã™ã‚¢ã‚¤ãƒ†ãƒ  ==';
     div.append(p);
 
     const ranks = {
@@ -221,44 +221,44 @@
       for(let i=0; i<ranks[key]+1; i++){
         const buffs = document.createElement('option');
         buffs.value = i;
-        buffs.text = i + 'ˆÈã';
+        buffs.text = i + 'ä»¥ä¸Š';
         const debuffs = document.createElement('option');
         debuffs.value = i;
-        debuffs.text = i + 'ˆÈ‰º';
+        debuffs.text = i + 'ä»¥ä¸‹';
         buffSelect.add(buffs);
         debuffSelect.add(debuffs);
       }
       const option = document.createElement('option');
       option.value = 100;
-      option.text = '•ª‰ğ';
+      option.text = 'åˆ†è§£';
       buffSelect.add(option);
 
-      label.append(span_, 'ƒoƒt', buffSelect, 'ƒfƒoƒt', debuffSelect);
+      label.append(span_, 'ãƒãƒ•', buffSelect, 'ãƒ‡ãƒãƒ•', debuffSelect);
       div.append(label);
       battleChestField.append(div);
     };
 
     const description = document.createElement('p');
-    description.innerHTML = 'ƒŒƒAƒŠƒeƒB‚²‚Æ‚É‰ºŒÀƒoƒt”‚ÆãŒÀƒfƒoƒt”‚ğ‘I‘ğBi•s—v‚È‚à‚Ì‚Íu•ª‰ğv‚ğ‘I‘ğj<br>—á: uƒoƒt3ˆÈã ƒfƒoƒt0ˆÈ‰ºv‚Ìê‡Aƒoƒt‚ª2‚ÂˆÈ‰º‚Ì‚à‚Ì‚Æƒfƒoƒt‚ª1‚Â‚Å‚à‚ ‚é‚à‚Ì‚Í•ª‰ğ<br>•ŠíE–h‹ï‚ÆˆÙ‚È‚èƒƒbƒN‚Í‚µ‚È‚¢‚Ì‚Å’ˆÓ';
+    description.innerHTML = 'ãƒ¬ã‚¢ãƒªãƒ†ã‚£ã”ã¨ã«ä¸‹é™ãƒãƒ•æ•°ã¨ä¸Šé™ãƒ‡ãƒãƒ•æ•°ã‚’é¸æŠã€‚ï¼ˆä¸è¦ãªã‚‚ã®ã¯ã€Œåˆ†è§£ã€ã‚’é¸æŠï¼‰<br>ä¾‹: ã€Œãƒãƒ•3ä»¥ä¸Š ãƒ‡ãƒãƒ•0ä»¥ä¸‹ã€ã®å ´åˆã€ãƒãƒ•ãŒ2ã¤ä»¥ä¸‹ã®ã‚‚ã®ã¨ãƒ‡ãƒãƒ•ãŒ1ã¤ã§ã‚‚ã‚ã‚‹ã‚‚ã®ã¯åˆ†è§£<br>æ­¦å™¨ãƒ»é˜²å…·ã¨ç•°ãªã‚Šãƒ­ãƒƒã‚¯ã¯ã—ãªã„ã®ã§æ³¨æ„';
     description.style.fontSize = '14px';
     div.append(description);
   })();
 
   const equipChestButton = document.createElement('button');
   equipChestButton.type = 'button';
-  equipChestButton.textContent = 'ŠJn';
+  equipChestButton.textContent = 'é–‹å§‹';
   if(isBattleChestPage) equipChestButton.style.display = 'none';
   details.append(equipChestButton);
 
   const battleChestButton = document.createElement('button');
   battleChestButton.type = 'button';
-  battleChestButton.textContent = 'ŠJn';
+  battleChestButton.textContent = 'é–‹å§‹';
   if(!isBattleChestPage) battleChestButton.style.display = 'none';
   details.append(battleChestButton);
 
   const pauseButton = document.createElement('button');
   pauseButton.type = 'button';
-  pauseButton.textContent = '’†’f';
+  pauseButton.textContent = 'ä¸­æ–­';
   pauseButton.style.display = 'none';
   details.appendChild(pauseButton);
 
@@ -278,7 +278,7 @@
 
   const credit = document.createElement('div');
   const author = document.createElement('input');
-  author.value = 'ìÒ [ID: 7234e634]';
+  author.value = 'ä½œè€… [ID: 7234e634]';
   author.style.fontSize = '9px';
   author.style.border = 'none';
   author.readOnly = 'true';
@@ -287,7 +287,7 @@
     navigator.clipboard.writeText('7234e634');
   })
   const transfer = document.createElement('a');
-  transfer.textContent = '¨‚Ç‚ñ‚®‚è‚ğ‘—‚é';
+  transfer.textContent = 'â†’ã©ã‚“ãã‚Šã‚’é€ã‚‹';
   transfer.style.fontSize = '12px';
   transfer.style.background = '#212121';
   transfer.style.color = '#ffb300';
@@ -308,7 +308,7 @@
     equipChestButton.style.display = 'none';
     pauseButton.style.display = '';
 
-    // too fast‘Îô‚Ì‘Ò‹@
+    // too fastå¯¾ç­–ã®å¾…æ©Ÿ
     async function waitRemainingTime(startTime) {
       const elapsed = Date.now() - startTime;
       const remaining = 1200 - elapsed;
@@ -338,7 +338,7 @@
       try {
         const response = await fetch('https://donguri.5ch.net/open', {
           method: 'POST',
-          body: 'chestsize=B70', /* ¬: A65, ‘å: B70 */
+          body: 'chestsize=B70', /* å°: A65, å¤§: B70 */
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           }
@@ -353,14 +353,14 @@
           if (res.includes('Left No room in inventory')){
             throw new Error('Left No room in Inventory');
           }
-          if (res.includes('‚Ç‚ñ‚®‚è‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B')){
-            throw new Error('‚Ç‚ñ‚®‚è‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B');
+          if (res.includes('ã©ã‚“ãã‚ŠãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚')){
+            throw new Error('ã©ã‚“ãã‚ŠãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚');
           }
           if (res.includes('too fast')){
             throw new Error('too fast');
           }
           if (res.includes('Left Wrong chest')){
-            throw new Error('•ó” ‚ª‚ ‚è‚Ü‚¹‚ñB*—v•s‹ï‡•ñ');
+            throw new Error('å®ç®±ãŒã‚ã‚Šã¾ã›ã‚“ã€‚*è¦ä¸å…·åˆå ±å‘Š');
           }
           const parser = new DOMParser();
           const doc = parser.parseFromString(res, 'text/html');
@@ -368,19 +368,19 @@
           const title = doc.querySelector('title');
           const h1 = doc.querySelector('h1');
 
-          if (title.textContent.includes('“S‚ÌƒL[ƒoƒ“ƒhƒ‹') || h1.textContent.includes('“S‚ÌƒL[ƒoƒ“ƒhƒ‹')) {
+          if (title.textContent.includes('é‰„ã®ã‚­ãƒ¼ãƒãƒ³ãƒ‰ãƒ«') || h1.textContent.includes('é‰„ã®ã‚­ãƒ¼ãƒãƒ³ãƒ‰ãƒ«')) {
             throw new Error('lessKey');
           }
-          if (!h1.textContent.includes('ƒAƒCƒeƒ€ƒoƒbƒO')) {
-            throw new Error('•s–¾‚ÈƒGƒ‰[1');
+          if (!h1.textContent.includes('ã‚¢ã‚¤ãƒ†ãƒ ãƒãƒƒã‚°')) {
+            throw new Error('ä¸æ˜ãªã‚¨ãƒ©ãƒ¼1');
           }
 
-          if(h1.textContent.includes('ƒAƒCƒeƒ€ƒoƒbƒO')){
+          if(h1.textContent.includes('ã‚¢ã‚¤ãƒ†ãƒ ãƒãƒƒã‚°')){
             const itemLockLinks = doc.querySelectorAll('a[href^="https://donguri.5ch.net/lock/"]');
 
             for(const elm of itemLockLinks){
               const itemName = elm.closest('tr').firstChild.textContent;
-              // UR‚ÆSSR‚ğ•\¦
+              // URã¨SSRã‚’è¡¨ç¤º
               if(itemName.includes('[UR]') || itemName.includes('[SSR]')) {
                 const p = document.createElement('p');
                 p.textContent = itemName;
@@ -393,7 +393,7 @@
             }
 
             if(!shouldNotRecycle.checked){
-              // ƒAƒCƒeƒ€ƒƒbƒN
+              // ã‚¢ã‚¤ãƒ†ãƒ ãƒ­ãƒƒã‚¯
               try {
                 await itemLocking(doc);
               } catch (error) {
@@ -401,7 +401,7 @@
                 break;
               }
 
-              // c‚è‚ğ•ª‰ğ
+              // æ®‹ã‚Šã‚’åˆ†è§£
               try {
                 const response = await fetch('https://donguri.5ch.net/recycleunlocked', {method: 'POST'});
                 if (!response.ok) {
@@ -418,7 +418,7 @@
             stat = 'success';
           }
           if(stat !== 'success') {
-            throw new Error('•s–¾‚ÈƒGƒ‰[2');
+            throw new Error('ä¸æ˜ãªã‚¨ãƒ©ãƒ¼2');
           }
         } catch (error) {
           forceStop(error);
@@ -426,7 +426,7 @@
         }
 
         if(pausePressed) {
-          forceStop('’†’f');
+          forceStop('ä¸­æ–­');
           break;
         }
 
@@ -454,14 +454,14 @@
       const rank = input.dataset.rank;
       const value = input.value.trim();
   
-      // “ü—Í’l‚ª‚È‚¢ê‡‚Í‚»‚Ìrank‚Ì‘S‚Ä‚ğ‘ÎÛ
+      // å…¥åŠ›å€¤ãŒãªã„å ´åˆã¯ãã®rankã®å…¨ã¦ã‚’å¯¾è±¡
       const patterns = value
         ? value.split(',').map(item => {
             const match = item.match(/^([^[]*)(?:\[(.+)\])?/);
             return {
               name: match[1].trim(),
               elems: match[2] 
-                ? match[2].replace('–³', '‚È').split('')
+                ? match[2].replace('ç„¡', 'ãª').split('')
                 : null,
             };
           })
@@ -476,7 +476,7 @@
         if (!checkedRanks.includes(rank)) return;
         if (!itemName.includes(rank)) return;
   
-        // “ü—Í’l‚ª‚È‚¢ê‡
+        // å…¥åŠ›å€¤ãŒãªã„å ´åˆ
         if (!patterns) {
           results.push(link);
           return;
@@ -508,7 +508,7 @@
     battleChestButton.style.display = 'none';
     pauseButton.style.display = '';
 
-    // too fast‘Îô‚Ì‘Ò‹@
+    // too fastå¯¾ç­–ã®å¾…æ©Ÿ
     async function waitRemainingTime(startTime) {
       const elapsed = Date.now() - startTime;
       const remaining = 1200 - elapsed;
@@ -544,8 +544,8 @@
       maxDebuffs[rank] = Number(elm.value);
     });
 
-    const buffs = ['‘•‚³‚ê‚½','‹­‰»‚³‚ê‚½','‰Á‘¬‚µ‚½','‚‚Ü‚Á‚½','—Í‚ğ‘‚µ‚½','ƒNƒŠƒA‚É‚È‚Á‚½','‘•‚³‚ê‚½','ŒÅ‚­‚È‚Á‚½','ë‚ç‚¹‚½'];
-    const debuffs = ['Ã‚Ü‚Á‚½','”–‚Ü‚Á‚½','ã‚Ü‚Á‚½','Œ¸‘¬‚µ‚½','Œ¸­‚µ‚½','Ó‚¯‚½','‚Ú‚â‚¯‚½','§ŒÀ‚³‚ê‚½','ŠÉ‚ñ‚¾','“İ‚ç‚¹‚½','NH‚³‚ê‚½'];
+    const buffs = ['å¢—å¹…ã•ã‚ŒãŸ','å¼·åŒ–ã•ã‚ŒãŸ','åŠ é€Ÿã—ãŸ','é«˜ã¾ã£ãŸ','åŠ›ã‚’å¢—ã—ãŸ','ã‚¯ãƒªã‚¢ã«ãªã£ãŸ','å¢—å¹…ã•ã‚ŒãŸ','å›ºããªã£ãŸ','å°–ã‚‰ã›ãŸ'];
+    const debuffs = ['é™ã¾ã£ãŸ','è–„ã¾ã£ãŸ','å¼±ã¾ã£ãŸ','æ¸›é€Ÿã—ãŸ','æ¸›å°‘ã—ãŸ','ç •ã‘ãŸ','ã¼ã‚„ã‘ãŸ','åˆ¶é™ã•ã‚ŒãŸ','ç·©ã‚“ã ','éˆã‚‰ã›ãŸ','ä¾µé£Ÿã•ã‚ŒãŸ'];
   
     while (loopCond === 'max' || chestCount < maxCount){
       const startTime = Date.now();
@@ -566,8 +566,8 @@
           if (res.includes('Left No room in inventory')){
             throw new Error('Left No room in Inventory');
           }
-          if (res.includes('‚Ç‚ñ‚®‚è‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B')){
-            throw new Error('‚Ç‚ñ‚®‚è‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B');
+          if (res.includes('ã©ã‚“ãã‚ŠãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚')){
+            throw new Error('ã©ã‚“ãã‚ŠãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚');
           }
           if (res.includes('too fast')){
             throw new Error('too fast');
@@ -576,18 +576,18 @@
             throw new Error('Left Not enough battle tokens');
           }
           if (res.includes('Left Wrong chest')){
-            throw new Error('•ó” ‚ª‚ ‚è‚Ü‚¹‚ñB*—v•s‹ï‡•ñ');
+            throw new Error('å®ç®±ãŒã‚ã‚Šã¾ã›ã‚“ã€‚*è¦ä¸å…·åˆå ±å‘Š');
           }
           const parser = new DOMParser();
           const doc = parser.parseFromString(res, 'text/html');
   
           const h1 = doc.querySelector('h1');
   
-          if (!h1.textContent.includes('ƒAƒCƒeƒ€ƒoƒbƒO')) {
-            throw new Error('•s–¾‚ÈƒGƒ‰[1');
+          if (!h1.textContent.includes('ã‚¢ã‚¤ãƒ†ãƒ ãƒãƒƒã‚°')) {
+            throw new Error('ä¸æ˜ãªã‚¨ãƒ©ãƒ¼1');
           }
   
-          if(h1.textContent.includes('ƒAƒCƒeƒ€ƒoƒbƒO')){
+          if(h1.textContent.includes('ã‚¢ã‚¤ãƒ†ãƒ ãƒãƒƒã‚°')){
             const necklaceTable = doc.querySelector('#necklaceTable');
             const lastItem = necklaceTable.rows.item(necklaceTable.rows.length - 1);
             const itemName = lastItem.firstChild.textContent;
@@ -617,7 +617,7 @@
               
               const buffCount = itemEffects.filter(effects => buffs.includes(effects[1])).length;
               const debuffCount = itemEffects.filter(effects => debuffs.includes(effects[1])).length;
-              // •ª‰ğ
+              // åˆ†è§£
               if (buffCount < minBuffs[itemRank] || debuffCount > maxDebuffs[itemRank]) {
                 console.log(itemEffects);
                 try {
@@ -639,7 +639,7 @@
           }
 
           if(stat !== 'success') {
-            throw new Error('•s–¾‚ÈƒGƒ‰[2');
+            throw new Error('ä¸æ˜ãªã‚¨ãƒ©ãƒ¼2');
           }
         } catch (error) {
           forceStop(error);
@@ -647,7 +647,7 @@
         }
 
         if(pausePressed) {
-          forceStop('’†’f');
+          forceStop('ä¸­æ–­');
           break;
         }
 
