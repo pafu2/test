@@ -290,7 +290,7 @@
   transfer.textContent = '→どんぐりを送らないでおｋ';
   transfer.style.fontSize = '12px';
   transfer.style.background = '#212121';
-  transfer.style.color = '#ff0000';
+  transfer.style.color = '#ffffff';
   transfer.style.marginLeft = '6px';
   transfer.href = 'https://donguri.5ch.net/transfer';
 
@@ -711,3 +711,4 @@
     }
   }
 })();
+
