@@ -11,7 +11,7 @@
 (()=>{
   const container = document.createElement('div');
   const details = document.createElement('details');
-  //details.open = true; /* bookmarklet用 true */
+  details.open = true;
   details.classList.add('chest-opener');
   details.style.background = '#ddd';
   const summary = document.createElement('summary');
@@ -711,4 +711,5 @@
     }
   }
 })();
+
 
