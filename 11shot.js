@@ -3157,7 +3157,7 @@ async function fetchSingleArenaInfo(elm) {
     if (!isAutoJoinRunning) {
       attackRegion();
     }
-    autoJoinIntervalId = setInterval(attackRegion,20000);
+    autoJoinIntervalId = setInterval(attackRegion,15000);
   };
 
   async function drawProgressBar(){
@@ -3230,5 +3230,6 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
+
 
 
