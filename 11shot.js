@@ -2922,8 +2922,6 @@ async function fetchSingleArenaInfo(elm) {
                 nextProgress = 39;
                } else if (currentProgress < 41) {
                 nextProgress = 43;
-               } else if (currentProgress < 45) {
-                nextProgress = 47;
                } else if (currentProgress < 50) {
                 nextProgress = 53;
                } else if (currentProgress < 55) {
@@ -2946,8 +2944,6 @@ async function fetchSingleArenaInfo(elm) {
                 nextProgress = 89;
                } else if (currentProgress < 91) {
                 nextProgress = 93;
-               } else if (currentProgress < 95) {
-                nextProgress = 97;
                } else {
                 nextProgress = 3;
                }
@@ -3234,4 +3230,5 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
+
 
