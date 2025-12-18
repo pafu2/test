@@ -2592,7 +2592,8 @@ async function fetchSingleArenaInfo(elm) {
         '装備している防具と武器が力不足です。',
         '装備している防具と武器が強すぎます',
         '装備しているものは改造が多すぎます。改造の少ない他のものをお試しください',
-        '参加するには、装備中の武器と防具のアイテムID'
+        '参加するには、装備中の武器と防具のアイテムID',
+        '[警備員]だけ'
       ],
       nonAdjacent: [
         'このタイルは攻撃できません。あなたのチームが首都を持つまで、どの首都にも隣接するタイルを主張することはできません。',
@@ -2671,7 +2672,7 @@ async function fetchSingleArenaInfo(elm) {
            let sleepTime = 2.0;
 
             if (messageType === 'capitalAttack') {
-                if (loop < 100){
+                if (loop < 149){
                   loop += 1;
                   sleepTime = 1.5;
                   message = '(' + loop + '発目)［陥落］'+ lastLine;
@@ -2684,7 +2685,7 @@ async function fetchSingleArenaInfo(elm) {
                   i++;
                 }
             } else if (messageType === 'reinforceAttack') {
-                if (loop < 100){
+                if (loop < 149){
                   loop += 1;
                   sleepTime = 1.5;
                   message = '(' + loop + '発目)［破壊］'+ lastLine;
@@ -2697,7 +2698,7 @@ async function fetchSingleArenaInfo(elm) {
                   i++;
                 }
             } else if (text.startsWith('リーダーになった')) {
-                if (loop < 100){
+                if (loop < 149){
                   loop += 1;
                   sleepTime = 1.5;
                   message = '(' + loop + '発目) '+ lastLine;
@@ -2710,7 +2711,7 @@ async function fetchSingleArenaInfo(elm) {
                 }
                 i++;
             } else if (text.startsWith('アリーナチャレンジ開始')) {
-                if (loop < 100) {
+                if (loop < 149) {
                      if (text.endsWith('アリーナチャレンジは失敗しました。')) {
                        success = true;
                        loop += 1;
@@ -2742,7 +2743,7 @@ async function fetchSingleArenaInfo(elm) {
               processType = 'continue';
               i++;
             } else if (messageType === 'equipError'){
-                if (loop < 100){
+                if (loop < 149){
                   loop += 1;
                   sleepTime = 5.1;
                   message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
@@ -3167,5 +3168,6 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
+
 
 
