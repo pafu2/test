@@ -2012,7 +2012,7 @@ async function fetchSingleArenaInfo(elm) {
     const rank = doc.querySelector('small')?.textContent || '';
     if(!rank) return Promise.reject(`rank.ng [${row}][${col}][${h1}]`);
     const leader = doc.querySelector('strong')?.textContent || '';
-    const shortenRank = rank.replace('[エリート]','e').replace('から','-').replace(/(まで|\[|\]|\||\s)/g,'');
+    const shortenRank = rank.replace('[エリート]','e').replace('[警備員]だけ','警').replace('から','-').replace(/(まで|\[|\]|\||\s)/g,'');
     const teamname = doc.querySelector('table').rows[1]?.cells[2].textContent;
 
     const cell = elm.cloneNode();
@@ -3173,6 +3173,7 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
+
 
 
 
