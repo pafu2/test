@@ -36,7 +36,7 @@
  if (MODEQ === 'm=l') {
      MODENAME = '[ﾗﾀﾞｰ]';
  } else if (MODEQ === 'm=rb') {
-    MODENAME = '[ﾚﾄﾞﾌﾞﾙ]';
+     MODENAME = '[ﾚﾄﾞﾌﾞﾙ]';
  } else {
      MODENAME = '[ﾊｰﾄﾞｺｱ]';
  }
@@ -45,7 +45,7 @@
  if (MODEQ === 'm=l') {
      MODEM = 'l';
  } else if (MODEQ === 'm=rb') {
-    MODEM = 'rb';
+     MODEM = 'rb';
  } else {
      MODEM = 'hc';
  }
