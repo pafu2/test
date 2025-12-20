@@ -2639,7 +2639,7 @@ async function fetchSingleArenaInfo(elm) {
     async function attackRegion () {
       if (randomTryCount >= MAX_RANDOM_TRY) return; // ← 追加
       await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 5) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
         return;
       }
       let regions = await getRegions();
@@ -2726,12 +2726,20 @@ async function fetchSingleArenaInfo(elm) {
             }
             if (success) {
               randomTryCount = 0;// ←追加
-              if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 10) + 70; // 70 ~ 80 +- 5
+              if (currentProgress < 16) {
+                nextProgress = 29;
+               } else if (currentProgress < 32) {
+                nextProgress = 45;
+               } else if (currentProgress < 48) {
+                nextProgress = 63;
+               } else if (currentProgress < 66) {
+                nextProgress = 79;
+               } else if (currentProgress < 82) {
+                nextProgress = 97;
                } else {
-                nextProgress = Math.floor(Math.random() * 10) + 20; // 20 ~ 30 +- 5
+                nextProgress = 13;
                }
-              next = `→ ${nextProgress}±5%`;
+              next = `→ ${nextProgress}±2%`;
               isAutoJoinRunning = false;
             } else if (processType === 'return') {
               next = '';
@@ -2792,24 +2800,31 @@ async function fetchSingleArenaInfo(elm) {
           }
         }
         if (!success && regions[cellType].length === 0) {
-              if (currentProgress < 50) {
-                      nextProgress = Math.floor(Math.random() * 10) + 70; // 70 ~ 80 ±5
-                  } else {
-                      nextProgress = Math.floor(Math.random() * 10) + 20; // 20 ~ 30 ±5
-                  }
-                  randomTryCount++;// ランダム試行カウンタ
-                    if (randomTryCount < MAX_RANDOM_TRY) {
-                      // まだ10回未満 → 再試行
-                      isAutoJoinRunning = false;
-                      logMessage(null,`攻撃可能なタイルが見つかりませんでした（再試行 ${randomTryCount}/${MAX_RANDOM_TRY}）`,'→ retry');
+              if (currentProgress < 16) {
+                nextProgress = 29;
+               } else if (currentProgress < 32) {
+                nextProgress = 45;
+               } else if (currentProgress < 48) {
+                nextProgress = 63;
+               } else if (currentProgress < 66) {
+                nextProgress = 79;
+               } else if (currentProgress < 82) {
+                nextProgress = 97;
+               } else {
+                nextProgress = 13;
+               }
+               randomTryCount++;// ランダム試行カウンタ
+              if (randomTryCount < MAX_RANDOM_TRY) {
+                  isAutoJoinRunning = false;
+                  logMessage(null,`攻撃可能なタイルが見つかりませんでした（${randomTryCount}/${MAX_RANDOM_TRY}）`,'→ retry');
                       return;
-                    }
+               }
                   randomTryCount = 0;
                   isAutoJoinRunning = false;
-                  const next = `→ ${nextProgress}±5%`;
+                  const next = `→ ${nextProgress}±2%`;
                   logMessage(null,'攻撃可能なタイルが見つかりませんでした（10回ランダム試行）',next);
-          return;
-        }
+                  return;
+               }
       }
     }
 
@@ -3015,7 +3030,7 @@ async function fetchSingleArenaInfo(elm) {
     if (!isAutoJoinRunning) {
       attackRegion();
     }
-    autoJoinIntervalId = setInterval(attackRegion,300000);
+    autoJoinIntervalId = setInterval(attackRegion,60000);
   };
 
   async function drawProgressBar(){
