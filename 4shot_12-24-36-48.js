@@ -34,6 +34,8 @@
  let MODENAME;
  if (MODEQ === 'm=l') {
      MODENAME = '[ﾗﾀﾞｰ]';
+ } else if (MODEQ === 'm=rb') {
+     MODENAME = '[ﾚﾄﾞﾌﾞﾙ]';
  } else {
      MODENAME = '[ﾊｰﾄﾞｺｱ]';
  }
@@ -41,6 +43,8 @@
  let MODEM;
  if (MODEQ === 'm=l') {
      MODEM = 'l';
+ } else if (MODEQ === 'm=rb') {
+     MODEM = 'rb';
  } else {
      MODEM = 'hc';
  }
@@ -3175,6 +3179,7 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
+
 
 
 
