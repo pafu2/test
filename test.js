@@ -2532,7 +2532,8 @@ async function fetchSingleArenaInfo(elm) {
   
   let randomTryCount = 0;// ランダム試行回数カウンタ
   const MAX_RANDOM_TRY = 10;// ランダム試行回数カウンタ
-  
+  let isRandomRetry = false;
+
   async function autoJoin() {
     const dialog = document.querySelector('.auto-join');
 
@@ -2635,13 +2636,17 @@ async function fetchSingleArenaInfo(elm) {
     }
 
 
-    let nextProgress;
-    async function attackRegion () {
-      if (randomTryCount >= MAX_RANDOM_TRY) return; // ← 追加
-      await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
-        return;
-      }
+async function attackRegion () {
+  if (randomTryCount >= MAX_RANDOM_TRY) return;
+
+  await drawProgressBar();
+
+  if (
+    isAutoJoinRunning ||
+    (!isRandomRetry && Math.abs(nextProgress - currentProgress) >= 3)
+  ) {
+    return;
+  }
       let regions = await getRegions();
       const excludeSet = new Set();
 
@@ -2817,8 +2822,16 @@ async function fetchSingleArenaInfo(elm) {
               if (randomTryCount < MAX_RANDOM_TRY) {
                   isAutoJoinRunning = false;
                   logMessage(null,`攻撃可能なタイルが見つかりませんでした（${randomTryCount}/${MAX_RANDOM_TRY}）`,'→ retry');
-                      return;
-               }
+  if (randomTryCount < MAX_RANDOM_TRY) {
+    await sleep(5000);   // ★ 5秒待つ
+    continue;            // ★ while(dialog.open) を続行
+  }
+
+  // 10回到達時だけ抜ける
+  randomTryCount = 0;
+  isRandomRetry = false;
+  return;
+}
                   randomTryCount = 0;
                   isAutoJoinRunning = false;
                   const next = `→ ${nextProgress}±2%`;
