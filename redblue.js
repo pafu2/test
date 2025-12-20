@@ -2716,14 +2716,14 @@ async function fetchSingleArenaInfo(elm) {
             }
             if (success) {
               if (currentProgress < 16) {
-                nextProgress = 29;
-               } else if (currentProgress < 32) {
-                nextProgress = 45;
-               } else if (currentProgress < 48) {
+                nextProgress = 30;
+               } else if (currentProgress < 33) {
+                nextProgress = 47;
+               } else if (currentProgress < 50) {
                 nextProgress = 63;
                } else if (currentProgress < 66) {
-                nextProgress = 79;
-               } else if (currentProgress < 82) {
+                nextProgress = 80;
+               } else if (currentProgress < 83) {
                 nextProgress = 97;
                } else {
                 nextProgress = 13;
@@ -2790,14 +2790,14 @@ async function fetchSingleArenaInfo(elm) {
         }
         if (!success && regions[cellType].length === 0) {
               if (currentProgress < 16) {
-                nextProgress = 29;
-               } else if (currentProgress < 32) {
-                nextProgress = 45;
-               } else if (currentProgress < 48) {
+                nextProgress = 30;
+               } else if (currentProgress < 33) {
+                nextProgress = 47;
+               } else if (currentProgress < 50) {
                 nextProgress = 63;
                } else if (currentProgress < 66) {
-                nextProgress = 79;
-               } else if (currentProgress < 82) {
+                nextProgress = 80;
+               } else if (currentProgress < 83) {
                 nextProgress = 97;
                } else {
                 nextProgress = 13;
