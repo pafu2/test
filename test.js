@@ -5,7 +5,6 @@
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
 // @match        https://donguri.5ch.net/teambattle?m=l
-// @match        https://donguri.5ch.net/teambattle?m=rb
 // @match        https://donguri.5ch.net/bag
 // ==/UserScript==
 
@@ -34,20 +33,16 @@
 
  let MODENAME;
  if (MODEQ === 'm=l') {
-    MODENAME = '[ﾗﾀﾞｰ]';
- } else if (MODEQ === 'm=rb') {
-    MODENAME = '[ﾚﾄﾞﾌﾞﾙ]';
+     MODENAME = '[ﾗﾀﾞｰ]';
  } else {
-    MODENAME = '[ﾊｰﾄﾞｺｱ]';
+     MODENAME = '[ﾊｰﾄﾞｺｱ]';
  }
 
  let MODEM;
  if (MODEQ === 'm=l') {
-    MODEM = 'l';
- } else if (MODEQ === 'm=rb') {
-    MODEM = 'rb';
+     MODEM = 'l';
  } else {
-    MODEM = 'hc';
+     MODEM = 'hc';
  }
 
   const vw = Math.min(document.documentElement.clientWidth, window.innerWidth || 0);
@@ -2529,11 +2524,6 @@ async function fetchSingleArenaInfo(elm) {
   let autoJoinIntervalId;
   let isAutoJoinRunning = false;
   const sleep = s => new Promise(r=>setTimeout(r,s));
-  
-  let randomTryCount = 0;// ランダム試行回数カウンタ
-  const MAX_RANDOM_TRY = 10;// ランダム試行回数カウンタ
-  let isRandomRetry = false;
-
   async function autoJoin() {
     const dialog = document.querySelector('.auto-join');
 
@@ -2636,17 +2626,12 @@ async function fetchSingleArenaInfo(elm) {
     }
 
 
-async function attackRegion () {
-  if (randomTryCount >= MAX_RANDOM_TRY) return;
-
-  await drawProgressBar();
-
-  if (
-    isAutoJoinRunning ||
-    (!isRandomRetry && Math.abs(nextProgress - currentProgress) >= 3)
-  ) {
-    return;
-  }
+    let nextProgress;
+    async function attackRegion () {
+      await drawProgressBar();
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
+        return;
+      }
       let regions = await getRegions();
       const excludeSet = new Set();
 
@@ -2730,7 +2715,6 @@ async function attackRegion () {
               }
             }
             if (success) {
-              randomTryCount = 0;// ←追加
               if (currentProgress < 16) {
                 nextProgress = 29;
                } else if (currentProgress < 32) {
@@ -2818,26 +2802,11 @@ async function attackRegion () {
                } else {
                 nextProgress = 13;
                }
-               randomTryCount++;// ランダム試行カウンタ
-              if (randomTryCount < MAX_RANDOM_TRY) {
-                  isAutoJoinRunning = false;
-                  logMessage(null,`攻撃可能なタイルが見つかりませんでした（${randomTryCount}/${MAX_RANDOM_TRY}）`,'→ retry');
-  if (randomTryCount < MAX_RANDOM_TRY) {
-    await sleep(5000);   // ★ 5秒待つ
-    continue;            // ★ while(dialog.open) を続行
-  }
-
-  // 10回到達時だけ抜ける
-  randomTryCount = 0;
-  isRandomRetry = false;
-  return;
-}
-                  randomTryCount = 0;
-                  isAutoJoinRunning = false;
-                  const next = `→ ${nextProgress}±2%`;
-                  logMessage(null,'攻撃可能なタイルが見つかりませんでした（10回ランダム試行）',next);
-                  return;
-               }
+          const next = `→ ${nextProgress}±2%`;
+          isAutoJoinRunning = false;
+          logMessage(null, '攻撃可能なタイルが見つかりませんでした。', next);
+          return;
+        }
       }
     }
 
