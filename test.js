@@ -2725,7 +2725,7 @@ async function fetchSingleArenaInfo(elm) {
               }
             }
             if (success) {
-              randomTryCount = 0; // ←追加
+              randomTryCount = 0;// ←追加
               if (currentProgress < 50) {
                 nextProgress = Math.floor(Math.random() * 10) + 70; // 70 ~ 80 +- 5
                } else {
@@ -2791,39 +2791,25 @@ async function fetchSingleArenaInfo(elm) {
             }
           }
         }
-if (!success && regions[cellType].length === 0) {
-    // nextProgress の計算は元のまま
-    if (currentProgress < 50) {
-        nextProgress = Math.floor(Math.random() * 10) + 70; // 70 ~ 80 ±5
-    } else {
-        nextProgress = Math.floor(Math.random() * 10) + 20; // 20 ~ 30 ±5
-    }
-
-    // ランダム試行カウンタ
-    randomTryCount++;
-
-    if (randomTryCount < MAX_RANDOM_TRY) {
-        // まだ10回未満 → 再試行
-        isAutoJoinRunning = false;
-        logMessage(
-            null,
-            `攻撃可能なタイルが見つかりませんでした（再試行 ${randomTryCount}/${MAX_RANDOM_TRY}）`,
-            '→ retry'
-        );
-        return; // interval や次の呼び出しに任せる
-    }
-
-    // 10回失敗 → 本当に諦め
-    randomTryCount = 0;
-    isAutoJoinRunning = false;
-    const next = `→ ${nextProgress}±5%`;
-    logMessage(
-        null,
-        '攻撃可能なタイルが見つかりませんでした（10回ランダム試行）',
-        next
-    );
-    return;
-}
+        if (!success && regions[cellType].length === 0) {
+              if (currentProgress < 50) {
+                      nextProgress = Math.floor(Math.random() * 10) + 70; // 70 ~ 80 ±5
+                  } else {
+                      nextProgress = Math.floor(Math.random() * 10) + 20; // 20 ~ 30 ±5
+                  }
+                  randomTryCount++;// ランダム試行カウンタ
+                    if (randomTryCount < MAX_RANDOM_TRY) {
+                      // まだ10回未満 → 再試行
+                      isAutoJoinRunning = false;
+                      logMessage(null,`攻撃可能なタイルが見つかりませんでした（再試行 ${randomTryCount}/${MAX_RANDOM_TRY}）`,'→ retry');
+                      return;
+                    }
+                  randomTryCount = 0;
+                  isAutoJoinRunning = false;
+                  const next = `→ ${nextProgress}±5%`;
+                  logMessage(null,'攻撃可能なタイルが見つかりませんでした（10回ランダム試行）',next);
+          return;
+        }
       }
     }
 
