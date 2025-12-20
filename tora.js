@@ -34,6 +34,8 @@
  let MODENAME;
  if (MODEQ === 'm=l') {
      MODENAME = '[ﾗﾀﾞｰ]';
+ } else if (MODEQ === 'm=rb') {
+     MODENAME = '[ﾚﾄﾞﾌﾞﾙ]';
  } else {
      MODENAME = '[ﾊｰﾄﾞｺｱ]';
  }
@@ -41,6 +43,8 @@
  let MODEM;
  if (MODEQ === 'm=l') {
      MODEM = 'l';
+ } else if (MODEQ === 'm=rb') {
+     MODEM = 'rb';
  } else {
      MODEM = 'hc';
  }
@@ -2600,7 +2604,8 @@ async function fetchSingleArenaInfo(elm) {
         '装備している防具と武器が力不足です。',
         '装備している防具と武器が強すぎます',
         '装備しているものは改造が多すぎます。改造の少ない他のものをお試しください',
-        '参加するには、装備中の武器と防具のアイテムID'
+        '参加するには、装備中の武器と防具のアイテムID',
+        '[警備員]だけ'
       ],
       nonAdjacent: [
         'このタイルは攻撃できません。あなたのチームが首都を持つまで、どの首都にも隣接するタイルを主張することはできません。',
@@ -3165,4 +3170,5 @@ async function getRegions () {
       attributeFilter: ['open']
     });
   })();
+
 })();
