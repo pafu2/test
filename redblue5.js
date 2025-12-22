@@ -2628,6 +2628,7 @@ async function fetchSingleArenaInfo(elm) {
 
     let nextProgress;
     async function attackRegion () {
+
       await drawProgressBar();
       if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
         return;
@@ -2643,7 +2644,10 @@ async function fetchSingleArenaInfo(elm) {
       } else {
         cellType = 'mapEdge';
       }
-
+  console.log('current cellType:', cellType);
+  console.log('regions:', regions);
+  console.log('regions[cellType]:', regions[cellType]);
+  console.log('excludeSet:', Array.from(excludeSet));
       while(dialog.open) {
         let success = false;
         isAutoJoinRunning = true;
