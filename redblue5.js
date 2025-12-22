@@ -2628,7 +2628,6 @@ async function fetchSingleArenaInfo(elm) {
 
     let nextProgress;
     async function attackRegion () {
-
       await drawProgressBar();
       if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
         return;
@@ -2644,10 +2643,7 @@ async function fetchSingleArenaInfo(elm) {
       } else {
         cellType = 'mapEdge';
       }
-  console.log('current cellType:', cellType);
-  console.log('regions:', regions);
-  console.log('regions[cellType]:', regions[cellType]);
-  console.log('excludeSet:', Array.from(excludeSet));
+
       while(dialog.open) {
         let success = false;
         isAutoJoinRunning = true;
@@ -2658,13 +2654,11 @@ async function fetchSingleArenaInfo(elm) {
           let errorCount = 0;
           let next;
           try {
-const [cellRank, equipChangeStat] = await equipChange(region);
-console.log('equipChangeStat:', equipChangeStat, 'region:', region);
-if (equipChangeStat === 'noEquip') {
-  excludeSet.add(region.join(','));
-  console.log('region excluded due to noEquip:', region);
-  continue;
-}
+            const [cellRank, equipChangeStat] = await equipChange(region);
+            if (equipChangeStat === 'noEquip') {
+              excludeSet.add(region.join(','));
+              continue;
+            }
 
             const [ text, lastLine ] = await challenge(region);
             const messageType = getMessageType(lastLine);
@@ -2813,123 +2807,128 @@ if (equipChangeStat === 'noEquip') {
       }
     }
 
-async function getRegions () {
-  try {
-    const res = await fetch('');
-    if (!res.ok) throw new Error(`[${res.status}] /teambattle`);
-    const text = await res.text();
-    const doc = new DOMParser().parseFromString(text, 'text/html');
-    const h1 = doc?.querySelector('h1')?.textContent;
-    if (h1 !== 'どんぐりチーム戦い') throw new Error('title.ng info');
+    async function getRegions () {
+      try {
+        const res = await fetch('');
+        if (!res.ok) throw new Error(`[${res.status}] /teambattle`);
+        const text = await res.text();
+        const doc = new DOMParser().parseFromString(text, 'text/html');
+        const h1 = doc?.querySelector('h1')?.textContent;
+        if (h1 !== 'どんぐりチーム戦い') throw new Error('title.ng info');
 
-    const scriptContent = doc.querySelector('.grid > script')?.textContent || '';
-
-    // cellColors パース
-    const cellColorsMatch = scriptContent.match(/const cellColors = ({.+?})/s);
-    let cellColors = {};
-    if (cellColorsMatch) {
-      const validJsonStr = cellColorsMatch[1].replace(/'/g, '"').replace(/,\s*}/, '}');
-      try { cellColors = JSON.parse(validJsonStr); } 
-      catch(e) { console.error('cellColors JSON parse error:', e); cellColors = {}; }
-    }
-
-    // capitalMap パース
-    const capitalMapMatch = scriptContent.match(/const capitalMap = (\[\[.+?\]\])/s);
-    let capitalMap = [];
-    if (capitalMapMatch) {
-      try { capitalMap = JSON.parse(capitalMapMatch[1]); } 
-      catch(e) { console.error('capitalMap JSON parse error:', e); capitalMap = []; }
-    }
-
-    const grid = doc.querySelector('.grid');
-    const rows = Number(grid.style.gridTemplateRows.match(/repeat\((\d+), 35px\)/)[1]) - 1;
-    const cols = Number(grid.style.gridTemplateColumns.match(/repeat\((\d+), 35px\)/)[1]) - 1;
-
-    const cells = [];
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        cells.push([r, c]);
-      }
-    }
-
-    const directions = [
-      [-1, 0], [1, 0], [0, -1], [0, 1]
-    ];
-
-    // capitalAdjacentCells 作成
-    const capitalAdjacentSet = new Set();
-    const capitalAdjacentCells = [];
-    for (const [r, c] of capitalMap) {
-      for (const [dr, dc] of directions) {
-        const nr = r + dr;
-        const nc = c + dc;
-        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
-          capitalAdjacentCells.push([nr, nc]);
-          capitalAdjacentSet.add(`${nr}-${nc}`);
+        const scriptContent = doc.querySelector('.grid > script')?.textContent || '';
+        const cellColorsMatch = scriptContent.match(/const cellColors = ({.+?})/s);
+        let cellColors = {};
+        if (cellColorsMatch) {
+          const validJsonStr = cellColorsMatch[1]
+            .replace(/'/g, '"')
+            .replace(/,\s*}/, '}');
+          try {
+            cellColors = JSON.parse(validJsonStr);
+          } catch (e) {
+            console.error('cellColors JSON parse error:', e);
+            cellColors = {};
+          }
         }
-      }
-    }
-    console.log('capitalAdjacentCells:', capitalAdjacentCells);
 
-    // adjacentSet 作成
-    const adjacentSet = new Set();
-    for (const [cr, cc] of capitalMap) {
-      for (const [dr, dc] of directions) {
-        const nr = cr + dr;
-        const nc = cc + dc;
-        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
-          adjacentSet.add(`${nr}-${nc}`);
+        const capitalMapMatch = scriptContent.match(/const capitalMap = (\[\[.+?\]\])/s);
+        let capitalMap = [];
+        if (capitalMapMatch) {
+          try {
+            capitalMap = JSON.parse(capitalMapMatch[1]);
+          } catch (e) {
+            console.error('capitalMap JSON parse error:', e);
+            capitalMap = [];
+          }
         }
+
+        const grid = doc.querySelector('.grid');
+        const rows = Number(grid.style.gridTemplateRows.match(/repeat\((\d+), 35px\)/)[1]) -1;
+        const cols = Number(grid.style.gridTemplateColumns.match(/repeat\((\d+), 35px\)/)[1]) -1;
+
+        const cells = [];
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            cells.push([r, c]);
+          }
+        }
+
+        const directions = [
+          [-1, 0],
+          [1, 0],
+          [0, -1],
+          [0, 1]
+        ];
+        const capitalAdjacentSet = new Set();
+        for (const [r, c] of capitalMap) {
+          for (const [dr, dc] of directions) {
+            const nr = r + dr;
+            const nc = c + dc;
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+              capitalAdjacentSet.add(`${nr}-${nc}`);
+            }
+          }
+        }
+
+        const adjacentSet = new Set();
+        for (const [cr, cc] of capitalMap) {
+          for (const [dr, dc] of directions) {
+            const nr = cr + dr;
+            const nc = cc + dc;
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+              adjacentSet.add(`${nr}-${nc}`);
+            }
+          }
+        }
+
+        const capitalSet = new Set(capitalMap.map(([r, c]) => `${r}-${c}`));
+
+        const nonAdjacentCells = cells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return !capitalSet.has(key) && !adjacentSet.has(key);
+        });
+
+        const mapEdgeSet = new Set();
+        for (let i=0; i<rows; i++) {
+          mapEdgeSet.add(`${i}-0`);
+          mapEdgeSet.add(`${i}-${cols}`);
+        }
+        for (let i=0; i<cols; i++) {
+          mapEdgeSet.add(`0-${i}`);
+          mapEdgeSet.add(`${rows}-${i}`);
+        }
+
+        const mapEdgeCells = cells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return mapEdgeSet.has(key) && !capitalSet.has(key);
+        })
+
+        function shuffle(arr) {
+          for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+          }
+          return arr;
+        }
+
+        const regions = {
+          capitalAdjacent: shuffle(capitalAdjacentCells),
+          nonAdjacent: shuffle(nonAdjacentCells),
+          mapEdge: shuffle(mapEdgeCells)
+        };
+
+        return regions;
+
+      } catch (e) {
+        console.error(e);
+        return {
+          nonAdjacent: [],
+          capitalAdjacent: [],
+          teamAdjacent: [],
+          mapEdge: []
+        };
       }
     }
-
-    const capitalSet = new Set(capitalMap.map(([r, c]) => `${r}-${c}`));
-
-    // nonAdjacentCells 作成
-    const nonAdjacentCells = cells.filter(([r, c]) => {
-      const key = `${r}-${c}`;
-      return !capitalSet.has(key) && !adjacentSet.has(key);
-    });
-    console.log('nonAdjacentCells:', nonAdjacentCells);
-
-    // mapEdgeCells 作成
-    const mapEdgeSet = new Set();
-    for (let i=0; i<rows; i++) { mapEdgeSet.add(`${i}-0`); mapEdgeSet.add(`${i}-${cols}`); }
-    for (let i=0; i<cols; i++) { mapEdgeSet.add(`0-${i}`); mapEdgeSet.add(`${rows}-${i}`); }
-
-    const mapEdgeCells = cells.filter(([r, c]) => {
-      const key = `${r}-${c}`;
-      return mapEdgeSet.has(key) && !capitalSet.has(key);
-    });
-    console.log('mapEdgeCells:', mapEdgeCells);
-
-    function shuffle(arr) {
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    }
-
-    const regions = {
-      capitalAdjacent: shuffle(capitalAdjacentCells),
-      nonAdjacent: shuffle(nonAdjacentCells),
-      mapEdge: shuffle(mapEdgeCells)
-    };
-
-    console.log('regions:', regions);
-    return regions;
-
-  } catch (e) {
-    console.error(e);
-    return {
-      nonAdjacent: [],
-      capitalAdjacent: [],
-      teamAdjacent: [],
-      mapEdge: []
-    };
-  }
-}
 
     async function challenge (region) {
       const [ row, col ] = region;
