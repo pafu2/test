@@ -2658,11 +2658,13 @@ async function fetchSingleArenaInfo(elm) {
           let errorCount = 0;
           let next;
           try {
-            const [cellRank, equipChangeStat] = await equipChange(region);
-            if (equipChangeStat === 'noEquip') {
-              excludeSet.add(region.join(','));
-              continue;
-            }
+const [cellRank, equipChangeStat] = await equipChange(region);
+console.log('equipChangeStat:', equipChangeStat, 'region:', region);
+if (equipChangeStat === 'noEquip') {
+  excludeSet.add(region.join(','));
+  console.log('region excluded due to noEquip:', region);
+  continue;
+}
 
             const [ text, lastLine ] = await challenge(region);
             const messageType = getMessageType(lastLine);
