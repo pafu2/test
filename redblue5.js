@@ -2916,7 +2916,10 @@ async function fetchSingleArenaInfo(elm) {
           nonAdjacent: shuffle(nonAdjacentCells),
           mapEdge: shuffle(mapEdgeCells)
         };
-
+console.log('capitalAdjacentCells:', capitalAdjacentCells);
+console.log('nonAdjacentCells:', nonAdjacentCells);
+console.log('mapEdgeCells:', mapEdgeCells);
+console.log('regions:', regions);
         return regions;
 
       } catch (e) {
