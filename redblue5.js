@@ -2883,6 +2883,11 @@ async function fetchSingleArenaInfo(elm) {
 
         const capitalSet = new Set(capitalMap.map(([r, c]) => `${r}-${c}`));
 
+const teamAdjacentCells = cells.filter(([r, c]) => {
+  const key = `${r}-${c}`;
+  return adjacentSet.has(key) && !capitalSet.has(key);
+});
+
         const nonAdjacentCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
           return !capitalSet.has(key) && !adjacentSet.has(key);
@@ -2911,11 +2916,12 @@ async function fetchSingleArenaInfo(elm) {
           return arr;
         }
 
-        const regions = {
-          capitalAdjacent: shuffle(capitalAdjacentCells),
-          nonAdjacent: shuffle(nonAdjacentCells),
-          mapEdge: shuffle(mapEdgeCells)
-        };
+const regions = {
+  capitalAdjacent: shuffle(capitalAdjacentCells),
+  teamAdjacent: shuffle(teamAdjacentCells), // ← これを足す
+  nonAdjacent: shuffle(nonAdjacentCells),
+  mapEdge: shuffle(mapEdgeCells)
+};
 
         return regions;
 
