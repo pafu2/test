@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d.パクリ9.4改 連射版 - 5発撃ち
+// @version      1.2.2d.パクリ9.4改 連射版 - hoge3
 // @description fixes and additions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -1122,7 +1122,7 @@
       const link = document.createElement('a');
       link.style.color = '#666';
       link.style.textDecoration = 'underline';
-      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改 連射版 - 5発撃ち';
+      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改 連射版 - hoge3';
       link.href = 'https://donguri-k.github.io/tools/arena-assist-tool';
       link.target = '_blank';
       const author = document.createElement('input');
@@ -3217,6 +3217,7 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
+
 
 
 
