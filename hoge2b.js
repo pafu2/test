@@ -5,6 +5,7 @@
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
 // @match        https://donguri.5ch.net/teambattle?m=l
+// @match        https://donguri.5ch.net/teambattle?m=rb
 // @match        https://donguri.5ch.net/bag
 // ==/UserScript==
 
@@ -3172,6 +3173,7 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
+
 
 
 
