@@ -2827,7 +2827,7 @@ async function fetchSingleArenaInfo(elm) {
                } else {
                 nextProgress = 0;
                }
-              next = `終了`;
+              next = `打ち止め`;
               isAutoJoinRunning = false;
             } else if (processType === 'return') {
               next = '';
@@ -2897,7 +2897,7 @@ async function fetchSingleArenaInfo(elm) {
                } else {
                 nextProgress = 0;
                }
-          const next = `→ ${nextProgress}±1%`;
+          const next = `打ち止め`;
           isAutoJoinRunning = false;
           logMessage(null, '攻撃可能なタイルが見つかりませんでした。', next);
           return;
