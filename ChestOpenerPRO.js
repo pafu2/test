@@ -15,7 +15,7 @@
   details.classList.add('chest-opener');
   details.style.background = '#ddd';
   const summary = document.createElement('summary');
-  summary.textContent = 'Chest Opener v1.2c改 プロ用';
+  summary.textContent = 'Chest Opener v1.2c改 プロフェッショナル';
 
   const fieldset = document.createElement('fieldset');
   fieldset.style.border = 'none';
@@ -744,3 +744,4 @@
     }
   }
 })();
+
