@@ -10,12 +10,12 @@
 
 (()=>{
     const style = document.createElement('style');
-  style.textContent = `
+    style.textContent = `
     .chest-opener fieldset,
     .chest-opener div,
     .chest-opener p {
-      margin: 0;
-      padding: 0;
+      margin: 5;
+      padding: 5;
     }
   `;
   document.head.appendChild(style);
@@ -754,6 +754,7 @@
     }
   }
 })();
+
 
 
 
