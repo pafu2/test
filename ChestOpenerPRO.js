@@ -131,7 +131,7 @@
     };
 
     const description = document.createElement('p');
-    description.innerHTML = '残しておきたいレアリティにチェック。<br>&quot;,&quot;区切りでアイテム名の指定が可能。アイテム名[属性]で対象の属性も指定。<br>例: どんぐり大砲[火風], どんぐりかたびら<br>属性なしは[無]か[な]。詳細は<a href="https://donguri-k.github.io/tools/chest-opener" target="_blank">こちら</a>を参照';
+    description.innerHTML = 'さらなる条件を追加したプロ仕様。<br>硬化木の鎧 → 全属性対象<br>硬化木の鎧[水] → 水属性対象<br>硬化木の鎧:10 → DEF最小最大の合計13以上対象<br>硬化木の鎧::8 → WT8以上対象<br>硬化木の鎧[水]:10 → 水属性でDEF最小最大の合計13以上対象<br>硬化木の鎧[水]:10:8 → 水属性でDEF最小最大の合計13以上でWT8以上対象';
     description.style.fontSize = '14px';
     div.append(description);
     equipChestField.append(div);
@@ -744,4 +744,3 @@
     }
   }
 })();
-
