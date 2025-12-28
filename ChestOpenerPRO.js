@@ -134,6 +134,8 @@
     description.innerHTML = 'さらなる条件を追加したプロ仕様。<br>F5:20 → ATK最小最大の合計20以上対象<br>F5::25 → SPD25以上対象<br>F5[火]:20 → 火属性でATK最小最大の合計20以上対象<br>F5[火]:20:25 → 火属性でATK最小最大の合計20以上でSPD25以上対象<br><br>硬化木の鎧:13 → DEF最小最大の合計13以上対象<br>硬化木の鎧::8 → WT8以上対象<br>硬化木の鎧[水]:13 → 水属性でDEF最小最大の合計13以上対象<br>硬化木の鎧[水]:10:8 → 水属性でDEF最小最大の合計13以上でWT8以上対象';
     description.style.fontSize = '14px';
     div.append(description);
+    description.style.margin = '0';
+    fieldset.style.margin = '0';
     equipChestField.append(div);
   })();
 
@@ -744,4 +746,5 @@
     }
   }
 })();
+
 
