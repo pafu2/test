@@ -9,16 +9,6 @@
 // ==/UserScript==
 
 (()=>{
-    const style = document.createElement('style');
-    style.textContent = `
-    .chest-opener fieldset,
-    .chest-opener div,
-    .chest-opener p {
-      margin: 5;
-      padding: 5;
-    }
-  `;
-  document.head.appendChild(style);
   const container = document.createElement('div');
   const details = document.createElement('details');
   details.open = true;
@@ -754,6 +744,7 @@
     }
   }
 })();
+
 
 
 
