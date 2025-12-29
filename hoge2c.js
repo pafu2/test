@@ -2827,7 +2827,7 @@ async function fetchSingleArenaInfo(elm) {
                } else {
                 nextProgress = 0;
                }
-              next = `打ち止め`;
+              next = `→ ${nextProgress}±2%`;
               isAutoJoinRunning = false;
             } else if (processType === 'return') {
               next = '';
@@ -3197,4 +3197,5 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
+
 
