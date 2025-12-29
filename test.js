@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d.パクリ9.4改 標準仕様
+// @version      1.2.2d.パクリ9.4改 連射版 - 2発撃ち
 // @description fixes and additions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -1122,7 +1122,7 @@
       const link = document.createElement('a');
       link.style.color = '#666';
       link.style.textDecoration = 'underline';
-      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改 標準仕様';
+      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改 連射版 - 2発撃ち';
       link.href = 'https://donguri-k.github.io/tools/arena-assist-tool';
       link.target = '_blank';
       const author = document.createElement('input');
@@ -2287,7 +2287,7 @@ async function fetchSingleArenaInfo(elm) {
     }
     rank = rank
       .replace('エリート','e')
-      .replace(/.+から|\w+-|まで|だけ|\[警備員\]|警|\s|\[|\]|\|/g,'');
+      .replace(/.+から|\w+-|まで|だけ|警|\s|\[|\]|\|/g,'');
     const autoEquipItems = JSON.parse(localStorage.getItem('autoEquipItems')) || {};
     if (autoEquipItems[rank] && !autoEquipItems[rank]?.includes(currentEquipName)) {
       if (autoEquipItems[rank].length === 0) {
@@ -2573,8 +2573,10 @@ async function fetchSingleArenaInfo(elm) {
     }
 
     const messageTypes = {
-      afterRetry: [
-        '再建が必要です。',
+      capitalAttack: [
+        '再建が必要です。'
+      ],
+      reinforceAttack: [
         '防御設備を破壊しました。'
       ],
       breaktime: [
@@ -2639,6 +2641,7 @@ async function fetchSingleArenaInfo(elm) {
       }
       let regions = await getRegions();
       const excludeSet = new Set();
+      let loop = 0;
 
       let cellType;
       if (regions.nonAdjacent.length > 0) {
@@ -2652,78 +2655,160 @@ async function fetchSingleArenaInfo(elm) {
       }
 
 
-      while(dialog.open) {
-        let success = false;
-        isAutoJoinRunning = true;
+     while (dialog.open) {
+       let success = false;
+       isAutoJoinRunning = true;
 
-        regions[cellType] = regions[cellType]
-          .filter(e => !excludeSet.has(e.join(',')));
-        for (const region of regions[cellType]) {
-          let errorCount = 0;
-          let next;
-          try {
-            const [cellRank, equipChangeStat] = await equipChange(region);
-            if (equipChangeStat === 'noEquip') {
-              excludeSet.add(region.join(','));
-              continue;
-            }
+       regions[cellType] = regions[cellType].filter(e => !excludeSet.has(e.join(',')));
 
-            const [ text, lastLine ] = await challenge(region);
-            const messageType = getMessageType(lastLine);
-            let message = lastLine;
-            let processType;
-            let sleepTime = 1.5;
+       for (let i = 0; i < regions[cellType].length;) {
+         const region = regions[cellType][i];
+         let errorCount = 0;
+         let next;
 
-            if (text.startsWith('アリーナチャレンジ開始')
-              || text.startsWith('リーダーになった')
-            ) {
+         try {
+           const [cellRank, equipChangeStat] = await equipChange(region);
+           if (equipChangeStat === 'noEquip') {
+             excludeSet.add(region.join(','));
+             i++;
+             continue;
+           }
+
+           const [text, lastLine] = await challenge(region);
+           const messageType = getMessageType(lastLine);
+           let message = lastLine;
+           let processType;
+           let sleepTime = 3.0;
+
+            if (messageType === 'capitalAttack') {
+                if (loop < 9){
+                  loop += 1;
+                  sleepTime = 1.5;
+                  message = '(' + loop + '発目)［陥落］'+ lastLine;
+                  processType = 'continue';
+                } else {
+                  success = true;
+                  loop += 1;
+                  message = '(' + loop + '発目)［陥落］【打止】'+ lastLine;
+                  processType = 'return';
+                  i++;
+                }
+            } else if (messageType === 'reinforceAttack') {
               success = true;
-              message = '[成功] ' + lastLine;
+              loop += 1;
+              message = '(' + loop + '発目)［破壊］【成功】'+ lastLine;
               processType = 'return';
+              i++;
+//              if (loop < 9){
+//                loop += 1;
+//                sleepTime = 1.5;
+//                message = '(' + loop + '発目)［破壊］'+ lastLine;
+//                processType = 'continue';
+//              } else {
+//                success = true;
+//                loop += 1;
+//                message = '(' + loop + '発目)［破壊］【打止】'+ lastLine;
+//                processType = 'return';
+//                i++;
+//              }
+            } else if (text.startsWith('リーダーになった')) {
+                if (loop < 9){
+                  loop += 1;
+                  message = '(' + loop + '発目) '+ lastLine;
+                  processType = 'continue';
+                } else {
+                  success = true;
+                  loop += 1;
+                  message = '(' + loop + '発目)【打止】'+ lastLine;
+                  processType = 'return';
+                }
+                i++;
+            } else if (text.startsWith('アリーナチャレンジ開始')) {
+                if (text.endsWith('アリーナチャレンジは失敗しました。')) {
+                  success = true;
+                  loop += 1;
+                  message = '(' + loop + '発目)【失敗】'+ lastLine;
+                  processType = 'return';
+                } else {
+                  success = true;
+                  loop += 1;
+                  message = '(' + loop + '発目)【成功】'+ lastLine;
+                  processType = 'return';
+                }
+                i++;
             } else if (messageType === 'breaktime') {
               success = true;
               message = lastLine;
               processType = 'return';
-            } else if (messageType === 'afterRetry') {
-              processType = 'continue';
+              i++;
             } else if (messageType === 'retry') {
               sleepTime = 10.1;
+              message = lastLine;
               processType = 'continue';
+              i++;
             } else if (messageType === 'equipError'){
-              processType = 'continue';
-              message += ` (${cellRank}, ${currentEquipName})`;
+                if (loop < 9){
+                  loop += 1;
+                  sleepTime = 5.1;
+                  message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
+                  processType = 'continue';
+                } else {
+                  success = true;
+                  loop += 1;
+                  message = '(' + loop + '発目)【打止】'+ lastLine;
+                  processType = 'return';
+                }
+                i++;
             } else if (lastLine.length > 100) {
               message = 'どんぐりシステム';
               processType = 'continue';
+              i++;
             } else if (messageType === 'quit') {
               message = '[停止] ' + lastLine;
               processType = 'return';
               clearInterval(autoJoinIntervalId);
+              i++;
             } else if (messageType === 'reset') {
               processType = 'break';
+              i++;
             } else if (messageType in regions) {
               excludeSet.add(region.join(','));
               if (messageType === cellType) {
+                loop += 1;
+                message = '(' + loop + '発目) '+ lastLine;
                 processType = 'continue';
               } else if (messageType === 'nonAdjacent') {
                 cellType = 'nonAdjacent';
+                loop += 1;
+                message = '(' + loop + '発目) '+ lastLine;
                 processType = 'break';
               } else if (messageType === 'teamAdjacent') {
                 cellType = 'teamAdjacent';
+                loop += 1;
+                message = '(' + loop + '発目) '+ lastLine;
                 processType = 'break';
               } else if (messageType === 'capitalAdjacent') {
                 cellType = 'capitalAdjacent';
+                loop += 1;
+                message = '(' + loop + '発目) '+ lastLine;
                 processType = 'break';
               } else if (messageType === 'mapEdge') {
                 cellType = 'mapEdge';
+                loop += 1;
+                message = '(' + loop + '発目) '+ lastLine;
                 processType = 'break';
               }
+              i++;
             }
             if (success) {
-              if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 10) + 70; // 70 ~ 80 +- 5
+              if (currentProgress < 25) {
+                nextProgress = Math.floor(Math.random() * 2 ) + 38;
+               } else if (currentProgress < 50) {
+                nextProgress = Math.floor(Math.random() * 2 ) + 65;
+               } else if (currentProgress < 75) {
+                nextProgress = Math.floor(Math.random() * 2 ) + 88;
                } else {
-                nextProgress = Math.floor(Math.random() * 10) + 20; // 20 ~ 30 +- 5
+                nextProgress = Math.floor(Math.random() * 2 ) + 15;
                }
               next = `→ ${nextProgress}±5%`;
               isAutoJoinRunning = false;
@@ -2783,13 +2868,18 @@ async function fetchSingleArenaInfo(elm) {
               logMessage(region, e, `→ ${sleepTime}s`);
               await sleep(sleepTime * 1000);
             }
+            i++;
           }
         }
         if (!success && regions[cellType].length === 0) {
-              if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 10) + 70; // 70 ~ 80 +- 5
+              if (currentProgress < 25) {
+                nextProgress = Math.floor(Math.random() * 2 ) + 38;
+               } else if (currentProgress < 50) {
+                nextProgress = Math.floor(Math.random() * 2 ) + 65;
+               } else if (currentProgress < 75) {
+                nextProgress = Math.floor(Math.random() * 2 ) + 88;
                } else {
-                nextProgress = Math.floor(Math.random() * 10) + 20; // 20 ~ 30 +- 5
+                nextProgress = Math.floor(Math.random() * 2 ) + 15;
                }
           const next = `→ ${nextProgress}±5%`;
           isAutoJoinRunning = false;
@@ -2977,7 +3067,7 @@ async function fetchSingleArenaInfo(elm) {
         const equipCond = table.querySelector('td small').textContent;
         const rank = equipCond
           .replace('エリート','e')
-          .replace(/.+から|\w+-|まで|だけ|\[警備員\]|警|\s|\[|\]|\|/g,'');
+          .replace(/.+から|\w+-|まで|だけ|警|\s|\[|\]|\|/g,'');
         const autoEquipItems = JSON.parse(localStorage.getItem('autoEquipItems')) || {};
         const autoEquipItemsAutojoin = JSON.parse(localStorage.getItem('autoEquipItemsAutojoin')) || {};
 
