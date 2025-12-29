@@ -2729,13 +2729,13 @@ async function fetchSingleArenaInfo(elm) {
             } else if (text.startsWith('アリーナチャレンジ開始')) {
                 if (loop < 255) {
                      if (text.endsWith('アリーナチャレンジは失敗しました。')) {
-                       success = true;
                        loop += 1;
+                       sleepTime = 1.5;
                        message = '(' + loop + '発目)【失敗】'+ lastLine;
                        processType = 'reload';
                      } else {
-                       success = true;
                        loop += 1;
+                       sleepTime = 1.5;
                        message = '(' + loop + '発目)【成功】'+ lastLine;
                        processType = 'reload';
                      }
@@ -2827,7 +2827,7 @@ async function fetchSingleArenaInfo(elm) {
                } else {
                 nextProgress = 0;
                }
-              next = `→ ${nextProgress}±2%`;
+              next = `→ ${sleepTime}s`;
               isAutoJoinRunning = false;
             } else if (processType === 'return') {
               next = '';
@@ -3197,5 +3197,6 @@ async function fetchSingleArenaInfo(elm) {
     });
   })();
 })();
+
 
 
