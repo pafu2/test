@@ -131,7 +131,7 @@
     };
 
     const description = document.createElement('p');
-    description.innerHTML = 'さらなる条件を追加したプロ仕様 - ATK&DEF最大値Ver.<br>F5アタック:15 → ATK最大値15以上対象<br>F5アタック::25 → SPD25以上対象<br>F5アタック[火]:15 → 火属性でATK最大値15以上対象<br>F5アタック[火]:15:25 → 火属性でATK最大値15以上かつSPD25以上対象<br><br>硬化木の鎧:13 → DEF最大値13以上対象<br>硬化木の鎧::8 → WT8以上対象<br>硬化木の鎧[水]:13 → 水属性でDEF値13以上対象<br>硬化木の鎧[水]:13:8 → 水属性でDEF最大値13以上かつWT8以上対象';
+    description.innerHTML = 'さらなる条件を追加したプロ仕様 - ATK&DEF最大値Ver.<br>F5アタック:15 → ATK最大値15以上対象<br>F5アタック::25 → SPD25以上対象<br>F5アタック[火]:15 → 火属性でATK最大値15以上対象<br>F5アタック[火]:15:25 → 火属性でATK最大値15以上かつSPD25以上対象<br><br>硬化木の鎧:13 → DEF最大値13以上対象<br>硬化木の鎧::8 → WT8以上対象<br>硬化木の鎧[水]:13 → 水属性でDEF最大値13以上対象<br>硬化木の鎧[水]:13:8 → 水属性でDEF最大値13以上かつWT8以上対象';
     description.style.fontSize = '14px';
     div.append(description);
     equipChestField.append(div);
@@ -744,4 +744,5 @@
     }
   }
 })();
+
 
