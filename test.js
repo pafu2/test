@@ -2287,8 +2287,7 @@ async function fetchSingleArenaInfo(elm) {
     }
     rank = rank
       .replace('エリート','e')
-      .replace('[警備員]だけ','警')
-      .replace(/.+から|\w+-|まで|だけ|\s|\[|\]|\|/g,'');
+      .replace(/.+から|\w+-|\[警備員\]|まで|だけ|\s|\[|\]|\|/g,'');
     const autoEquipItems = JSON.parse(localStorage.getItem('autoEquipItems')) || {};
     if (autoEquipItems[rank] && !autoEquipItems[rank]?.includes(currentEquipName)) {
       if (autoEquipItems[rank].length === 0) {
@@ -2978,8 +2977,7 @@ async function fetchSingleArenaInfo(elm) {
         const equipCond = table.querySelector('td small').textContent;
         const rank = equipCond
           .replace('エリート','e')
-          .replace('[警備員]だけ','警')
-          .replace(/.+から|\w+-|まで|だけ|\s|\[|\]|\|/g,'');
+          .replace(/.+から|\w+-|[\警備員\]|まで|だけ|\s|\[|\]|\|/g,'');
         const autoEquipItems = JSON.parse(localStorage.getItem('autoEquipItems')) || {};
         const autoEquipItemsAutojoin = JSON.parse(localStorage.getItem('autoEquipItemsAutojoin')) || {};
 
