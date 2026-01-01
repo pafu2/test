@@ -738,23 +738,41 @@ itemInputs.forEach(input => {
     }
     localStorage.setItem('chestOpener', JSON.stringify(data));
   }
-  function loadInputData(){
-    if(localStorage.hasOwnProperty('chestOpener')){
-      const data = JSON.parse(localStorage.getItem('chestOpener'));
-      if(data.shouldNotRecycle) shouldNotRecycle.checked = true;
-      data.ranks.forEach(rank => {
-        document.querySelector('.keep-item[value="'+rank+'"]').checked = true;
-      })
-      for(const [key,value] of Object.entries(data.itemFilters)){
-        document.querySelector('.wishlist[data-rank="'+key+'"]').value = value;
-      }
-      for(const [key,value] of Object.entries(data.minBuffs)){
-        document.querySelector('.min-buffs[data-rank="'+key+'"]').value = value;
-      }
-      for(const [key,value] of Object.entries(data.maxDebuffs)){
-        document.querySelector('.max-debuffs[data-rank="'+key+'"]').value = value;
-      }
+function loadInputData() {
+  if (localStorage.hasOwnProperty('chestOpener')) {
+    const data = JSON.parse(localStorage.getItem('chestOpener'));
+
+    // 「ロック・分解しないモード」のチェックを反映
+    if (data.shouldNotRecycle) shouldNotRecycle.checked = true;
+
+    // 「残すアイテム」のチェックを反映
+    data.ranks.forEach(rank => {
+      document.querySelector('.keep-item[value="' + rank + '"]').checked = true;
+    });
+
+    // 「アイテムフィルタ」の値を設定
+    for (const [key, value] of Object.entries(data.itemFilters)) {
+      const elements = document.querySelectorAll('.wishlist[data-rank="' + key + '"]');
+      elements.forEach((element) => {
+        element.value = value; // 一致するすべての要素に値を設定
+      });
+    }
+
+    // 「最小バフ数」の値を設定
+    for (const [key, value] of Object.entries(data.minBuffs)) {
+      const elements = document.querySelectorAll('.min-buffs[data-rank="' + key + '"]');
+      elements.forEach((element) => {
+        element.value = value; // 最小バフ数に対応するすべての要素に値を設定
+      });
+    }
+
+    // 「最大デバフ数」の値を設定
+    for (const [key, value] of Object.entries(data.maxDebuffs)) {
+      const elements = document.querySelectorAll('.max-debuffs[data-rank="' + key + '"]');
+      elements.forEach((element) => {
+        element.value = value; // 最大デバフ数に対応するすべての要素に値を設定
+      });
     }
   }
+}
 })();
-
