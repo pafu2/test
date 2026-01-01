@@ -215,7 +215,7 @@ input_2.dataset.rank = v + "_2";  // rankにユニークな識別子を追加
     for(const key of Object.keys(ranks)){
       const label = document.createElement('label');
       label.style.display = 'flex';
-      label.style.display.whiteSpace = 'nowrap';
+      label.style.whiteSpace = 'nowrap';
       
       const span_ = span.cloneNode();
       span_.textContent = `[${key}]`;
@@ -757,3 +757,4 @@ itemInputs.forEach(input => {
     }
   }
 })();
+
