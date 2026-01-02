@@ -464,8 +464,12 @@ input_2.dataset.rank = v + "_2";  // rankにユニークな識別子を追加
 
       if (!checkedRanks.includes(rank)) return;
 
-      const patterns = rawValue
-        ? rawValue.split(',').map(item => {
+const patterns = rawValue
+  ? rawValue
+      .split(',')
+      .map(item => item.trim())
+      .filter(item => item !== '')
+      .map(item => {
             const parts = item.split(':').map(v => v.trim());
             const namePart = parts[0] ?? '';
             const minRangeSum = parts[1] !== undefined && parts[1] !== '' ? Number(parts[1]) : undefined;
@@ -482,6 +486,9 @@ input_2.dataset.rank = v + "_2";  // rankにユニークな識別子を追加
             };
           })
         : null;
+if (patterns && patterns.length === 0) {
+  patterns = null;
+}
 
       itemLockLinks.forEach(link => {
         const row = link.closest('tr');
