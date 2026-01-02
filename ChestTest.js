@@ -459,7 +459,7 @@ input_2.dataset.rank = v + "_2";  // rankにユニークな識別子を追加
     const results = [];
 
     itemInputs.forEach(input => {
-      const rank = input.dataset.rank;
+      const rank = input.dataset.rank.replace(/_.+$/, '');
       const rawValue = input.value.trim();
 
       if (!checkedRanks.includes(rank)) return;
