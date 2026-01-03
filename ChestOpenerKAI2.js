@@ -620,7 +620,7 @@
               const buffCount = itemEffects.filter(effects => buffs.includes(effects[1])).length;
               const debuffCount = itemEffects.filter(effects => debuffs.includes(effects[1])).length;
 
-              if(itemRank === 'Pt' || itemRank === 'Au'){
+              if(itemRank === 'Pt' || itemRank === 'Au' || itemRank === 'CuSn'){
                   try {
                       const lockLink = lastItem.querySelector('a[href^="https://donguri.5ch.net/lock/"]');
                       if (lockLink) {
