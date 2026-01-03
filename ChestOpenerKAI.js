@@ -65,12 +65,12 @@
     const div = document.createElement('div');
     const label = document.createElement('label');
     label.style.fontSize = '16px';
-  
+
     label.append(shouldNotRecycle, 'ロック・分解しないモード');
     div.append(label);
     details.append(div);
   })();
-  
+
   const form = document.createElement('form');
   const equipChestField = fieldset.cloneNode();
   if(isBattleChestPage) equipChestField.style.display = 'none';
@@ -90,7 +90,7 @@
     const p = document.createElement('p');
     p.textContent = '== 残すアイテム([錠]) ==';
     div.append(p);
-  
+
     const ranks = ['[UR]','[SSR]','[SR]','[R]','[N]'];
     const span = document.createElement('span');
     span.style.width = '64px';
@@ -148,7 +148,7 @@
     div.append(p);
     loopNum.type = 'number';
     loopNum.style.width = '5em';
-  
+
     const loopConds = [
       {value:'max',item:'無制限',checked:true},
       {value:'num',item:loopNum,checked:false},
@@ -207,7 +207,7 @@
       const label = document.createElement('label');
       label.style.display = 'flex';
       label.style.display.whiteSpace = 'nowrap';
-      
+
       const span_ = span.cloneNode();
       span_.textContent = `[${key}]`;
 
@@ -446,42 +446,42 @@
   async function itemLocking(doc) {
     const itemLockLinks = doc.querySelectorAll('a[href^="https://donguri.5ch.net/lock/"]');
     const checkedRanks = Array.from(document.querySelectorAll('.keep-item:checked')).map(elm => elm.value);
-  
+
     const itemInputs = document.querySelectorAll('.wishlist');
     const results = [];
-  
+
     itemInputs.forEach(input => {
       const rank = input.dataset.rank;
       const value = input.value.trim();
-  
+
       // 入力値がない場合はそのrankの全てを対象
       const patterns = value
         ? value.split(',').map(item => {
             const match = item.match(/^([^[]*)(?:\[(.+)\])?/);
             return {
               name: match[1].trim(),
-              elems: match[2] 
+              elems: match[2]
                 ? match[2].replace('無', 'な').split('')
                 : null,
             };
           })
         : null;
-  
+
       itemLockLinks.forEach(link => {
         const row = link.closest('tr');
         const cells = row.querySelectorAll('td');
         const itemName = cells[0].textContent;
         const itemElem = cells[6].textContent;
-  
+
         if (!checkedRanks.includes(rank)) return;
         if (!itemName.includes(rank)) return;
-  
+
         // 入力値がない場合
         if (!patterns) {
           results.push(link);
           return;
         }
-  
+
         for (const pattern of patterns) {
           if (!itemName.includes(pattern.name)) continue;
           if (pattern.elems && !pattern.elems.some(e=>itemElem.includes(e))) continue;
@@ -490,7 +490,7 @@
         }
       });
     });
-  
+
     const promises = results.map(async (link) => {
       const response = await fetch(link.href,{method:'GET'});
       if (!response.ok) {
@@ -546,7 +546,7 @@
 
     const buffs = ['増幅された','強化された','加速した','高まった','力を増した','クリアになった','増幅された','固くなった','尖らせた'];
     const debuffs = ['静まった','薄まった','弱まった','減速した','減少した','砕けた','ぼやけた','制限された','緩んだ','鈍らせた','侵食された'];
-  
+
     while (loopCond === 'max' || chestCount < maxCount){
       const startTime = Date.now();
       let stat = 'initial';
@@ -580,13 +580,13 @@
           }
           const parser = new DOMParser();
           const doc = parser.parseFromString(res, 'text/html');
-  
+
           const h1 = doc.querySelector('h1');
-  
+
           if (!h1.textContent.includes('アイテムバッグ')) {
             throw new Error('不明なエラー1');
           }
-  
+
           if(h1.textContent.includes('アイテムバッグ')){
             const necklaceTable = doc.querySelector('#necklaceTable');
             const lastItem = necklaceTable.rows.item(necklaceTable.rows.length - 1);
@@ -614,7 +614,7 @@
                 const [, type, value, effect] = match;
                 return [type, effect, value];
               });
-              
+
               const buffCount = itemEffects.filter(effects => buffs.includes(effects[1])).length;
               const debuffCount = itemEffects.filter(effects => debuffs.includes(effects[1])).length;
               // 分解
@@ -711,5 +711,3 @@
     }
   }
 })();
-
-
