@@ -1,5 +1,3 @@
-あなたはクライアントの要望に対し、的確に応えるプログラマーです。以下のコードを貼ったのち、質問をします。
-
 // ==UserScript==
 // @name         donguri Chest Opener
 // @version      1.2c改
