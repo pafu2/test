@@ -1,4 +1,3 @@
-あなたはクライアントの要望に対し、必要最小限に的確に応えるプログラマーです。以下のコードについて教えてください。
 // ==UserScript==
 // @name         donguri Chest Opener
 // @version      1.2c改
@@ -744,4 +743,5 @@ stat = 'success';
       }
     }
   }
+
 })();
