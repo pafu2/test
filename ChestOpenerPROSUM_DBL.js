@@ -15,7 +15,7 @@
   details.classList.add('chest-opener');
   details.style.background = '#ddd';
   const summary = document.createElement('summary');
-  summary.textContent = 'Chest Opener v1.2c改 プロフェッショナル ATK&DEF合算値Ver.';
+  summary.textContent = 'Chest Opener v1.2c改 プロフェッショナル ATK&DEF合算値ダブルフォームVer.';
 
   const fieldset = document.createElement('fieldset');
   fieldset.style.border = 'none';
@@ -140,7 +140,7 @@ for(const v of ranks){
 };
 
     const description = document.createElement('p');
-    description.innerHTML = 'さらなる条件を追加したプロ仕様 - ATK&DEF合算値Ver.<br>F5アタック:20 → ATK最小最大の合計20以上対象<br>F5アタック::25 → SPD25以上対象<br>F5アタック[火]:20 → 火属性でATK最小最大の合計20以上対象<br>F5アタック[火]:20:25 → 火属性でATK最小最大の合計20以上かつSPD25以上対象<br><br>硬化木の鎧:13 → DEF最小最大の合計13以上対象<br>硬化木の鎧::8 → WT8以上対象<br>硬化木の鎧[水]:13 → 水属性でDEF最小最大の合計13以上対象<br>硬化木の鎧[水]:13:8 → 水属性でDEF最小最大の合計13以上かつWT8以上対象';
+    description.innerHTML = 'さらなる条件を追加したプロ仕様 - ATK&DEF合算値ダブルフォームVer.<br>F5アタック:20 → ATK最小最大の合計20以上対象<br>F5アタック::25 → SPD25以上対象<br>F5アタック[火]:20 → 火属性でATK最小最大の合計20以上対象<br>F5アタック[火]:20:25 → 火属性でATK最小最大の合計20以上かつSPD25以上対象<br><br>硬化木の鎧:13 → DEF最小最大の合計13以上対象<br>硬化木の鎧::8 → WT8以上対象<br>硬化木の鎧[水]:13 → 水属性でDEF最小最大の合計13以上対象<br>硬化木の鎧[水]:13:8 → 水属性でDEF最小最大の合計13以上かつWT8以上対象';
     description.style.fontSize = '14px';
     div.append(description);
     equipChestField.append(div);
@@ -782,3 +782,4 @@ function loadInputData() {
   }
 }
 })();
+
