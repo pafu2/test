@@ -1,3 +1,4 @@
+あなたはクライアントの要望に対し、必要最小限に的確に応えるプログラマーです。以下のコードについて教えてください。
 // ==UserScript==
 // @name         donguri Chest Opener
 // @version      1.2c改
@@ -604,7 +605,19 @@
               p.style.margin = '1px';
               epic.prepend(p);
             }
+if (itemRank === 'Pt' || itemRank === 'Au') {
+  // PtとAuは強制的にロック
+  const lockLinks = lastItem.querySelectorAll('a[href^="https://donguri.5ch.net/lock/"]');
+  for (const link of lockLinks) {
+    await fetch(link.href, { method: 'GET' });
+  }
 
+  // ロック後、カウントを更新
+  chestCount++;
+  count.textContent = chestCount;
+  if (loopCond === 'num') loopNum.value = maxCount - chestCount;
+  return; // 分解処理をスキップして次に進む
+}
 
             if(!shouldNotRecycle.checked){
               const itemEffectsLi = lastItem.cells[3].querySelectorAll('li');
@@ -617,47 +630,26 @@
 
               const buffCount = itemEffects.filter(effects => buffs.includes(effects[1])).length;
               const debuffCount = itemEffects.filter(effects => debuffs.includes(effects[1])).length;
-
-              if(itemRank === 'Pt' || itemRank === 'Au' || itemRank === 'CuSn'){
-                  try {
-                      const lockLink = lastItem.querySelector('a[href^="https://donguri.5ch.net/lock/"]');
-                      if (lockLink) {
-                          const response = await fetch(lockLink.href, { method: 'GET' });
-                          if (!response.ok) {
-                              throw new Error('Failed to lock item');
-                          }
-                      }
-                      chestCount++;
-                      count.textContent = chestCount;
-                      if (loopCond === 'num') loopNum.value = maxCount - chestCount;
-                      stat = 'success';
-                  } catch (error) {
-                      forceStop(error);
-                      break;
+              // 分解
+              if (buffCount < minBuffs[itemRank] || debuffCount > maxDebuffs[itemRank]) {
+                console.log(itemEffects);
+                try {
+                  const recycleLink = lastItem.querySelectorAll('a')[3];
+                  const response = await fetch(recycleLink.href);
+                  if (!response.ok) {
+                    throw new Error('Fail to recycle an item');
                   }
+                } catch (error) {
+                  forceStop(error);
+                  break;
+                }
               }
-              else if (buffCount < minBuffs[itemRank] || debuffCount > maxDebuffs[itemRank]) {
-                  console.log(itemEffects);
-                  try {
-                      const recycleLink = lastItem.querySelectorAll('a')[3];
-                      const response = await fetch(recycleLink.href);
-                      if (!response.ok) {
-                          throw new Error('Fail to recycle an item');
-                      }
-                  } catch (error) {
-                      forceStop(error);
-                      break;
-                  }
-                  chestCount++;
-                  count.textContent = chestCount;
-                  if (loopCond === 'num') loopNum.value = maxCount - chestCount;
-                  stat = 'success';
-              } else {
-                  chestCount++;
-                  count.textContent = chestCount;
-                  if (loopCond === 'num') loopNum.value = maxCount - chestCount;
-                  stat = 'success';
-              }
+              chestCount++;
+              count.textContent = chestCount;
+              if (loopCond === 'num') loopNum.value = maxCount - chestCount;
+              stat = 'success';
+            }
+          }
 
           if(stat !== 'success') {
             throw new Error('不明なエラー2');
@@ -732,3 +724,5 @@
     }
   }
 })();
+
+PtとAuをプルダウンの条件を無視してロックするようにするにはどうすればいいでしょうか？
