@@ -604,7 +604,7 @@
               p.style.margin = '1px';
               epic.prepend(p);
             }
-if (itemRank === 'Pt' || itemRank === 'Au'|| itemRank === 'CuSn') {
+if (itemRank === 'Pt' || itemRank === 'Au' || itemRank === 'Cu') {
   // PtとAuは強制的にロック
   const lockLinks = lastItem.querySelectorAll('a[href^="https://donguri.5ch.net/lock/"]');
 
@@ -623,8 +623,8 @@ if (itemRank === 'Pt' || itemRank === 'Au'|| itemRank === 'CuSn') {
     return true;  // 成功した場合は次へ進む
   };
 
-  // ロック処理を順番に実行
-  const delayBetweenRequests = 1000; // 1秒の遅延
+  // ロック処理を逐次的に実行（非同期処理が重ならないようにする）
+  const delayBetweenRequests = 1500; // 1.5秒の遅延に変更
 
   for (let i = 0; i < lockLinks.length; i++) {
     const success = await lockItem(lockLinks[i]);
@@ -632,7 +632,7 @@ if (itemRank === 'Pt' || itemRank === 'Au'|| itemRank === 'CuSn') {
       return;  // 失敗した場合は処理を中断
     }
 
-    // リクエスト間に遅延を入れる
+    // リクエスト間に遅延を入れる（サーバーに負担をかけないように）
     if (i < lockLinks.length - 1) {
       await new Promise(resolve => setTimeout(resolve, delayBetweenRequests));
     }
