@@ -604,7 +604,7 @@
               p.style.margin = '1px';
               epic.prepend(p);
             }
-if (itemRank === 'Pt' || itemRank === 'Au') {
+if (itemRank === 'Pt' || itemRank === 'Au' || itemRank === 'CuSn') {
   // PtとAuは強制的にロック
   const lockLinks = lastItem.querySelectorAll('a[href^="https://donguri.5ch.net/lock/"]');
   
