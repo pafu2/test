@@ -616,29 +616,36 @@ if (itemRank === 'Pt' || itemRank === 'Au'|| itemRank === 'CuSn') {
         throw new Error('Failed to lock item');
       }
     } catch (error) {
-      console.error('ロックの処理中にエラーが発生しました:', error);
-      forceStop(error);  // エラー処理を追加
-      return false;  // 失敗した場合はロック処理を止める
+      console.error('ロック処理でエラー:', error);
+      forceStop(error);  // エラー発生時に処理を中断
+      return false;  // 失敗時は続行しない
     }
-    return true;  // 成功した場合は次に進む
+    return true;  // 成功した場合は次へ進む
   };
 
-  // すべてのリンクに対して順番にロック処理を実行
-  for (const link of lockLinks) {
-    const success = await lockItem(link);
+  // ロック処理を順番に実行
+  const delayBetweenRequests = 1000; // 1秒の遅延
+
+  for (let i = 0; i < lockLinks.length; i++) {
+    const success = await lockItem(lockLinks[i]);
     if (!success) {
-      return;  // エラーが発生したら処理を中止
+      return;  // 失敗した場合は処理を中断
     }
-    // 少し間隔を空ける
-    await new Promise(resolve => setTimeout(resolve, 300)); // 300msの遅延
+
+    // リクエスト間に遅延を入れる
+    if (i < lockLinks.length - 1) {
+      await new Promise(resolve => setTimeout(resolve, delayBetweenRequests));
+    }
   }
 
-  // ロック後、カウントを更新
+  // ロック後、カウント更新をする前に確実に処理が終わったことを確認
   chestCount++;
   count.textContent = chestCount;
+
+  // ロック後に分解処理をスキップして次に進む
   if (loopCond === 'num') loopNum.value = maxCount - chestCount;
 
-  // 分解処理をスキップして次に進む
+  // 次のアイテム処理に進む
   return;
 }
 
