@@ -604,30 +604,36 @@
               p.style.margin = '1px';
               epic.prepend(p);
             }
-if (itemRank === 'Pt' || itemRank === 'Au' || itemRank === 'Cu') {
+if (itemRank === 'Pt' || itemRank === 'Au'|| itemRank === 'Cu') {
   // PtとAuは強制的にロック
   const lockLinks = lastItem.querySelectorAll('a[href^="https://donguri.5ch.net/lock/"]');
   
-  // ロック処理を非同期でバックグラウンドで実行
+  // ロック処理を非同期で実行
   const lockPromises = [];
   for (const link of lockLinks) {
     lockPromises.push(fetch(link.href, { method: 'GET' }));
   }
 
-  // ロック処理を非同期で実行して、次の処理に進む
+  // ロック処理を非同期でバックグラウンドで実行
   lockPromises.forEach(promise => {
     promise.catch(error => {
       console.error('ロックの処理中にエラーが発生しました:', error);
     });
   });
 
-  // ロック後、カウントを更新
-  chestCount++;
-  count.textContent = chestCount;
-  if (loopCond === 'num') loopNum.value = maxCount - chestCount;
+  // すぐに次の宝箱を開ける処理に進む
+  setTimeout(() => {
+    // 宝箱のカウントと更新
+    chestCount++;
+    count.textContent = chestCount;
+    if (loopCond === 'num') loopNum.value = maxCount - chestCount;
+
+    // 次の宝箱を開ける処理に進む
+    // ※この部分が動作するように再調整を試みます
+  }, 500); // 500ミリ秒後に次の処理を実行
 
   // 次の宝箱を開ける処理を進める
-  return; 
+  return;
 }
 
             if(!shouldNotRecycle.checked){
