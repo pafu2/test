@@ -1,3 +1,4 @@
+あなたはクライアントの要望に対し、必要最小限に的確に応えるプログラマーです。以下のコードについて教えてください。
 // ==UserScript==
 // @name         donguri Chest Opener
 // @version      1.2c改
@@ -604,18 +605,32 @@
               p.style.margin = '1px';
               epic.prepend(p);
             }
-if (itemRank === 'Pt' || itemRank === 'Au' || itemRank === 'CuSn') {
+if (itemRank === 'Pt' || itemRank === 'Au') {
   // PtとAuは強制的にロック
   const lockLinks = lastItem.querySelectorAll('a[href^="https://donguri.5ch.net/lock/"]');
+  
+  // ロック処理を順番に実行
+  const lockPromises = [];
   for (const link of lockLinks) {
-    await fetch(link.href, { method: 'GET' });
+    lockPromises.push(fetch(link.href, { method: 'GET' }));
+  }
+
+  // 全てのロック処理が終わるのを待つ
+  try {
+    await Promise.all(lockPromises);
+  } catch (error) {
+    console.error('ロックの処理中にエラーが発生しました:', error);
+    forceStop(error);  // エラー処理を追加
+    return;
   }
 
   // ロック後、カウントを更新
   chestCount++;
   count.textContent = chestCount;
   if (loopCond === 'num') loopNum.value = maxCount - chestCount;
-  return; // 分解処理をスキップして次に進む
+
+  // 分解処理をスキップして次に進む
+  return; 
 }
 
             if(!shouldNotRecycle.checked){
@@ -723,3 +738,5 @@ if (itemRank === 'Pt' || itemRank === 'Au' || itemRank === 'CuSn') {
     }
   }
 })();
+
+PtとAuをプルダウンの条件を無視してロックするようにするにはどうすればいいでしょうか？
