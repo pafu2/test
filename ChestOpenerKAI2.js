@@ -593,7 +593,19 @@
             const itemName = lastItem.firstChild.textContent;
 
             const itemRank = itemName.match(/\[(\w+)\d\]/)[1];
-
+// PtまたはAuの場合、無条件でロック処理を実行
+        if (itemRank === 'Pt' || itemRank === 'Au' || itemRank === 'CuSn') {
+              try {
+                  const lockLink = lastItem.querySelectorAll('a')[1];
+                  if (lockLink && lockLink.href.includes('/lock/')) {
+                      await fetch(lockLink.href);
+            // ロック処理直後に少しだけ休ませる
+                      await new Promise(resolve => setTimeout(resolve, 200));
+                  }
+              } catch (error) {
+                  count.textContent = chestCount + ', ロック失敗: ' + error.message;
+              }
+          }
             if(itemRank === 'Pt' || itemRank === 'Au' || itemRank === 'Ag'){
               const p = document.createElement('p');
               p.textContent = itemName;
@@ -604,37 +616,6 @@
               p.style.margin = '1px';
               epic.prepend(p);
             }
-if (itemRank === 'Pt' || itemRank === 'Au'|| itemRank === 'Cu') {
-  // PtとAuは強制的にロック
-  const lockLinks = lastItem.querySelectorAll('a[href^="https://donguri.5ch.net/lock/"]');
-  
-  // ロック処理を非同期で実行
-  const lockPromises = [];
-  for (const link of lockLinks) {
-    lockPromises.push(fetch(link.href, { method: 'GET' }));
-  }
-
-  // ロック処理を非同期でバックグラウンドで実行
-  lockPromises.forEach(promise => {
-    promise.catch(error => {
-      console.error('ロックの処理中にエラーが発生しました:', error);
-    });
-  });
-
-  // すぐに次の宝箱を開ける処理に進む
-  setTimeout(() => {
-    // 宝箱のカウントと更新
-    chestCount++;
-    count.textContent = chestCount;
-    if (loopCond === 'num') loopNum.value = maxCount - chestCount;
-
-    // 次の宝箱を開ける処理に進む
-    // ※この部分が動作するように再調整を試みます
-  }, 500); // 500ミリ秒後に次の処理を実行
-
-  // 次の宝箱を開ける処理を進める
-  return;
-}
 
             if(!shouldNotRecycle.checked){
               const itemEffectsLi = lastItem.cells[3].querySelectorAll('li');
@@ -648,7 +629,7 @@ if (itemRank === 'Pt' || itemRank === 'Au'|| itemRank === 'Cu') {
               const buffCount = itemEffects.filter(effects => buffs.includes(effects[1])).length;
               const debuffCount = itemEffects.filter(effects => debuffs.includes(effects[1])).length;
               // 分解
-              if (buffCount < minBuffs[itemRank] || debuffCount > maxDebuffs[itemRank]) {
+              if (itemRank !== 'Pt' && itemRank !== 'Au' && itemRank !== 'CuSn' && (buffCount < minBuffs[itemRank] || debuffCount > maxDebuffs[itemRank])) {
                 console.log(itemEffects);
                 try {
                   const recycleLink = lastItem.querySelectorAll('a')[3];
