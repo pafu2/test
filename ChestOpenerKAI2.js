@@ -1,4 +1,3 @@
-あなたはクライアントの要望に対し、必要最小限に的確に応えるプログラマーです。以下のコードについて教えてください。
 // ==UserScript==
 // @name         donguri Chest Opener
 // @version      1.2c改
@@ -605,7 +604,7 @@
               p.style.margin = '1px';
               epic.prepend(p);
             }
-if (itemRank === 'Pt' || itemRank === 'Au') {
+if (itemRank === 'Pt' || itemRank === 'Au' || itemRank === 'CuSn') {
   // PtとAuは強制的にロック
   const lockLinks = lastItem.querySelectorAll('a[href^="https://donguri.5ch.net/lock/"]');
   for (const link of lockLinks) {
@@ -724,5 +723,3 @@ if (itemRank === 'Pt' || itemRank === 'Au') {
     }
   }
 })();
-
-PtとAuをプルダウンの条件を無視してロックするようにするにはどうすればいいでしょうか？
