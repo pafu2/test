@@ -604,23 +604,33 @@
               p.style.margin = '1px';
               epic.prepend(p);
             }
-if (itemRank === 'Pt' || itemRank === 'Au' || itemRank === 'CuSn') {
+if (itemRank === 'Pt' || itemRank === 'Au'|| itemRank === 'CuSn') {
   // PtとAuは強制的にロック
   const lockLinks = lastItem.querySelectorAll('a[href^="https://donguri.5ch.net/lock/"]');
-  
-  // ロック処理を順番に実行
-  const lockPromises = [];
-  for (const link of lockLinks) {
-    lockPromises.push(fetch(link.href, { method: 'GET' }));
-  }
 
-  // 全てのロック処理が終わるのを待つ
-  try {
-    await Promise.all(lockPromises);
-  } catch (error) {
-    console.error('ロックの処理中にエラーが発生しました:', error);
-    forceStop(error);  // エラー処理を追加
-    return;
+  // ロック処理を順番に実行するための関数
+  const lockItem = async (link) => {
+    try {
+      const response = await fetch(link.href, { method: 'GET' });
+      if (!response.ok) {
+        throw new Error('Failed to lock item');
+      }
+    } catch (error) {
+      console.error('ロックの処理中にエラーが発生しました:', error);
+      forceStop(error);  // エラー処理を追加
+      return false;  // 失敗した場合はロック処理を止める
+    }
+    return true;  // 成功した場合は次に進む
+  };
+
+  // すべてのリンクに対して順番にロック処理を実行
+  for (const link of lockLinks) {
+    const success = await lockItem(link);
+    if (!success) {
+      return;  // エラーが発生したら処理を中止
+    }
+    // 少し間隔を空ける
+    await new Promise(resolve => setTimeout(resolve, 300)); // 300msの遅延
   }
 
   // ロック後、カウントを更新
@@ -629,7 +639,7 @@ if (itemRank === 'Pt' || itemRank === 'Au' || itemRank === 'CuSn') {
   if (loopCond === 'num') loopNum.value = maxCount - chestCount;
 
   // 分解処理をスキップして次に進む
-  return; 
+  return;
 }
 
             if(!shouldNotRecycle.checked){
