@@ -284,26 +284,7 @@
   epic.style.fontSize = '80%';
   stats.append(count,epic);
 
-  const credit = document.createElement('div');
-  const author = document.createElement('input');
-  author.value = '作者 ぱふぱふ';
-  author.style.fontSize = '9px';
-  author.style.border = 'none';
-  author.readOnly = 'true';
-  author.addEventListener('click',()=>{
-    author.select();
-    navigator.clipboard.writeText('7234e634');
-  })
-  const transfer = document.createElement('a');
-  transfer.textContent = '→どんぐりを送らないでおｋ';
-  transfer.style.fontSize = '12px';
-  transfer.style.background = '#212121';
-  transfer.style.color = '#ffffff';
-  transfer.style.marginLeft = '6px';
-  transfer.href = 'https://donguri.5ch.net/transfer';
-
-  credit.append(author, transfer);
-  details.append(stats,credit);
+  details.append(stats);
   container.append(details);
   document.body.prepend(container);
   loadInputData();
@@ -764,6 +745,7 @@
     }
   }
 })();
+
 
 
 
