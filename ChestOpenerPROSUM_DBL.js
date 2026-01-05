@@ -195,6 +195,11 @@ for(const v of ranks){
     p.textContent = '== 残すアイテム ==';
     div.append(p);
 
+    const lockInfo = document.createElement('p');
+    lockInfo.textContent = '[Pt]・[Au] は強制ロック';
+    div.append(lockInfo);
+
+  // アイテムランク
     const ranks = {
       Pt:7,
       Au:6,
@@ -213,9 +218,12 @@ for(const v of ranks){
     select.style.width = 'fit-content';
 
     for(const key of Object.keys(ranks)){
+      if (key === 'Pt' || key === 'Au') {
+    continue; // Pt と Au をスキップ
+  }
       const label = document.createElement('label');
       label.style.display = 'flex';
-      label.style.whiteSpace = 'nowrap';
+      label.style.display.whiteSpace = 'nowrap';
 
       const span_ = span.cloneNode();
       span_.textContent = `[${key}]`;
@@ -642,6 +650,18 @@ for(const v of ranks){
 
             const itemRank = itemName.match(/\[(\w+)\d\]/)[1];
 
+// PtまたはAuの場合、無条件でロック処理を実行
+        if (itemRank === 'Pt' || itemRank === 'Au') {
+              try {
+                  const lockLink = lastItem.querySelectorAll('a')[1];
+                  if (lockLink && lockLink.href.includes('/lock/')) {
+                      await fetch(lockLink.href);
+                      await new Promise(resolve => setTimeout(resolve, 200));
+                  }
+              } catch (error) {
+                  count.textContent = chestCount + ', ロック失敗: ' + error.message;
+              }
+          }
             if(itemRank === 'Pt' || itemRank === 'Au' || itemRank === 'Ag'){
               const p = document.createElement('p');
               p.textContent = itemName;
@@ -666,7 +686,7 @@ for(const v of ranks){
               const buffCount = itemEffects.filter(effects => buffs.includes(effects[1])).length;
               const debuffCount = itemEffects.filter(effects => debuffs.includes(effects[1])).length;
               // 分解
-              if (buffCount < minBuffs[itemRank] || debuffCount > maxDebuffs[itemRank]) {
+              if (itemRank !== 'Pt' && itemRank !== 'Au' && (buffCount < minBuffs[itemRank] || debuffCount > maxDebuffs[itemRank])) {
                 console.log(itemEffects);
                 try {
                   const recycleLink = lastItem.querySelectorAll('a')[3];
@@ -782,5 +802,6 @@ function loadInputData() {
   }
 }
 })();
+
 
 
