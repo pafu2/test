@@ -15,7 +15,7 @@
   details.classList.add('chest-opener');
   details.style.background = '#ddd';
   const summary = document.createElement('summary');
-  summary.textContent = 'Chest Opener v1.2c改 プロフェッショナル ATK&DEF最大値Ver.';
+  summary.textContent = 'Chest Opener v1.2c改 ATK&DEF最大値Ver.';
 
   const fieldset = document.createElement('fieldset');
   fieldset.style.border = 'none';
@@ -783,5 +783,6 @@ function loadInputData() {
   }
 }
 })();
+
 
 
