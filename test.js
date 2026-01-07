@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d.パクリ9.4改 連射版 - 2発撃ち
+// @version      1.2.2d.パクリ9.4改 連射版 - 1発撃ち
 // @description fixes and additions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -1122,7 +1122,7 @@
       const link = document.createElement('a');
       link.style.color = '#666';
       link.style.textDecoration = 'underline';
-      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改 連射版 - 2発撃ち';
+      link.textContent = 'arena assist tool - v1.2.2d.パクリ9.4改 連射版 - 1発撃ち';
       link.href = 'https://donguri-k.github.io/tools/arena-assist-tool';
       link.target = '_blank';
       const author = document.createElement('input');
@@ -2287,7 +2287,7 @@ async function fetchSingleArenaInfo(elm) {
     }
     rank = rank
       .replace('エリート','e')
-      .replace(/.+から|\w+-|まで|だけ|警|\s|\[|\]|\|/g,'');
+      .replace(/.+から|\w+-|まで|だけ|警|警備員|\s|\[|\]|\|/g,'');
     const autoEquipItems = JSON.parse(localStorage.getItem('autoEquipItems')) || {};
     if (autoEquipItems[rank] && !autoEquipItems[rank]?.includes(currentEquipName)) {
       if (autoEquipItems[rank].length === 0) {
@@ -2801,14 +2801,10 @@ async function fetchSingleArenaInfo(elm) {
               i++;
             }
             if (success) {
-              if (currentProgress < 25) {
-                nextProgress = Math.floor(Math.random() * 2 ) + 38;
-               } else if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 2 ) + 65;
-               } else if (currentProgress < 75) {
-                nextProgress = Math.floor(Math.random() * 2 ) + 88;
+              if (currentProgress < 50) {
+                nextProgress = Math.floor(Math.random() * 10) + 70; // 70 ~ 80 +- 5
                } else {
-                nextProgress = Math.floor(Math.random() * 2 ) + 15;
+                nextProgress = Math.floor(Math.random() * 10) + 20; // 20 ~ 30 +- 5
                }
               next = `→ ${nextProgress}±5%`;
               isAutoJoinRunning = false;
@@ -2872,16 +2868,12 @@ async function fetchSingleArenaInfo(elm) {
           }
         }
         if (!success && regions[cellType].length === 0) {
-              if (currentProgress < 25) {
-                nextProgress = Math.floor(Math.random() * 2 ) + 38;
-               } else if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 2 ) + 65;
-               } else if (currentProgress < 75) {
-                nextProgress = Math.floor(Math.random() * 2 ) + 88;
+              if (currentProgress < 50) {
+                nextProgress = Math.floor(Math.random() * 10) + 70; // 70 ~ 80 +- 5
                } else {
-                nextProgress = Math.floor(Math.random() * 2 ) + 15;
+                nextProgress = Math.floor(Math.random() * 10) + 20; // 20 ~ 30 +- 5
                }
-          const next = `→ ${nextProgress}±5%`;
+              const next = `→ ${nextProgress}±5%`;
           isAutoJoinRunning = false;
           logMessage(null, '攻撃可能なタイルが見つかりませんでした。', next);
           return;
@@ -2992,11 +2984,11 @@ async function fetchSingleArenaInfo(elm) {
         const mapEdgeSet = new Set();
         for (let i=0; i<rows; i++) {
           mapEdgeSet.add(`${i}-0`);
-          mapEdgeSet.add(`${i}-${cols}`);
+          mapEdgeSet.add(`${i}-${cols - 1}`);
         }
         for (let i=0; i<cols; i++) {
           mapEdgeSet.add(`0-${i}`);
-          mapEdgeSet.add(`${rows}-${i}`);
+          mapEdgeSet.add(`${rows - 1}-${i}`);
         }
 
         const mapEdgeCells = cells.filter(([r, c]) => {
@@ -3067,7 +3059,7 @@ async function fetchSingleArenaInfo(elm) {
         const equipCond = table.querySelector('td small').textContent;
         const rank = equipCond
           .replace('エリート','e')
-          .replace(/.+から|\w+-|まで|だけ|警|\s|\[|\]|\|/g,'');
+          .replace(/.+から|\w+-|まで|だけ|警|警備員|\s|\[|\]|\|/g,'');
         const autoEquipItems = JSON.parse(localStorage.getItem('autoEquipItems')) || {};
         const autoEquipItemsAutojoin = JSON.parse(localStorage.getItem('autoEquipItemsAutojoin')) || {};
 
