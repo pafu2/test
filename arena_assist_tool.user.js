@@ -3,7 +3,7 @@
 // @version      1.2.2d
 // @description  fix arena ui and add functions
 // @author       7234e634
-// @match        https://donguri.5ch.net/teambattle
+// @match        https://donguri.5ch.net/teambattle?=*
 // @match        https://donguri.5ch.net/bag
 // ==/UserScript==
 
@@ -3021,3 +3021,4 @@
     });
   })();
 })();
+
