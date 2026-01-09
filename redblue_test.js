@@ -2537,14 +2537,11 @@
 
     const logArea = dialog.querySelector('.auto-join-log');
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
-    // RBモードの時だけ、変数の中身を今の画面に合わせて動的に変える
+    //RBモードの時だけ色変え
     const isRB = location.search.includes('m=rb');
     const headerText = document.querySelector('header')?.innerText || "";
-    // RBモードなら「レッド」「ブルー」を代入、そうでなければ既存設定
     const teamName = isRB ? (headerText.includes("レッド") ? 'レッド' : 'ブルー') : settings.teamName;
-    // includesで判定するため、色のキーワード（16進数や数値の一部）を代入
-    const teamColor = isRB ? (teamName === 'レッド' ? '#d32f2f' : '#1976d2') : settings.teamColor;
-
+    const teamColor = isRB ? (teamName === 'レッド' ? 'd32f2f' : '1976d2') : settings.teamColor.replace('#', '');
 
     function logMessage(region, message, next) {
       const date = new Date();
@@ -3064,4 +3061,5 @@
     });
   })();
 })();
+
 
