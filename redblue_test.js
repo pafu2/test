@@ -2537,10 +2537,13 @@
 
     const logArea = dialog.querySelector('.auto-join-log');
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
-// 【修正】RBモードの時だけ、変数の中身を今の画面に合わせて動的に変える
+    // RBモードの時だけ、変数の中身を今の画面に合わせて動的に変える
     const isRB = location.search.includes('m=rb');
-    const teamName = isRB ? (document.querySelector('header').innerText.includes("レッド") ? 'レッド' : 'ブルー') : settings.teamName;
-    const teamColor = isRB ? (teamName === 'レッド' ? 'rgb(211, 47, 47)' : 'rgb(25, 118, 210)') : settings.teamColor;
+    const headerText = document.querySelector('header')?.innerText || "";
+    // RBモードなら「レッド」「ブルー」を代入、そうでなければ既存設定
+    const teamName = isRB ? (headerText.includes("レッド") ? 'レッド' : 'ブルー') : settings.teamName;
+    // includesで判定するため、色のキーワード（16進数や数値の一部）を代入
+    const teamColor = isRB ? (teamName === 'レッド' ? '#d32f2f' : '#1976d2') : settings.teamColor;
 
 
     function logMessage(region, message, next) {
@@ -3061,3 +3064,4 @@
     });
   })();
 })();
+
