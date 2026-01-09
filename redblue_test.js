@@ -2537,11 +2537,15 @@
 
     const logArea = dialog.querySelector('.auto-join-log');
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
-    //RBモードの時だけ色変え
-    const isRB = location.search.includes('m=rb');
-    const headerText = document.querySelector('header')?.innerText || "";
-    const teamName = isRB ? (headerText.includes("レッド") ? 'レッド' : 'ブルー') : settings.teamName;
-    const teamColor = isRB ? (teamName === 'レッド' ? 'd32f2f' : '1976d2') : settings.teamColor.replace('#', '');
+// 【修正】RBモードの時だけ、変数の中身を今の画面に合わせて動的に変える
+const isRB = location.search.includes('m=rb');
+const headerText = document.querySelector('header')?.innerText || "";
+const teamName = isRB ? (headerText.includes("レッド") ? 'レッド' : 'ブルー') : (settings?.teamName || "");
+// settings.teamColor が undefined でもエラーにならないようにする
+const defaultColor = settings?.teamColor || "#000000";
+const teamColor = isRB
+    ? (teamName === 'レッド' ? 'd32f2f' : '1976d2')
+    : defaultColor.replace('#', '');
 
     function logMessage(region, message, next) {
       const date = new Date();
@@ -2869,12 +2873,16 @@
           return adjacentSet.has(key);
         });
 
-        const teamColorSet = new Set();
-        for(const [key, value] of Object.entries(cellColors)) {
-          if (teamColor === value.replace('#','')) {
-            teamColorSet.add(key);
-          }
-        }
+// 【修正箇所】teamColorSetを作成するループ
+const teamColorSet = new Set();
+const myColor = teamColor.replace('#', '').toLowerCase(); // 自分の色を小文字で正規化
+
+for(const [key, value] of Object.entries(cellColors)) {
+  // マップ上の色も小文字にして比較
+  if (value.replace('#', '').toLowerCase() === myColor) {
+    teamColorSet.add(key);
+  }
+}
 
         const teamAdjacentSet = new Set();
         for (const key of [...teamColorSet]) {
@@ -3061,5 +3069,3 @@
     });
   })();
 })();
-
-
