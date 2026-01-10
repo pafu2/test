@@ -2742,7 +2742,7 @@ async function fetchSingleArenaInfo(elm) {
               processType = 'return';
               i++;
             } else if (messageType === 'retry') {
-              sleepTime = 60;
+              sleepTime = 120;
               message = lastLine;
               processType = 'continue';
               i++;
