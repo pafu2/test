@@ -2779,7 +2779,7 @@ async function fetchSingleArenaInfo(elm) {
               return;
             } else if ([404,500,502].includes(e)) {
               errorCount++;
-              let sleepTime = 20 * errorCount;
+              let sleepTime = 120 * errorCount;
               if(sleepTime > 600) sleepTime = 600;
               logMessage(region, message, `→ ${sleepTime}s`);
               await sleep(sleepTime * 1000);
