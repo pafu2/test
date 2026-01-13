@@ -2750,7 +2750,7 @@ async function fetchSingleArenaInfo(elm) {
             } else if (messageType === 'equipError'){
                 if (loop < 255){
                   loop += 1;
-                  sleepTime = 5.1;
+                  sleepTime = 1.5;
                   message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
                   processType = 'reload';
                 } else {
