@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d
+// @version      1.2.2d改 Red & Blue
 // @description  fix arena ui and add functions
-// @author       7234e634
+// @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
 // @match        https://donguri.5ch.net/teambattle?m=l
 // @match        https://donguri.5ch.net/teambattle?m=rb
@@ -1117,7 +1117,7 @@
     (()=>{
       const link = document.createElement('a');
       link.style.color = '#666';
-      link.textContent = 'arena assist tool - v1.2.2d';
+      link.textContent = '1.2.2d改 Red & Blue';
       footer.append(link);
     })();
 
