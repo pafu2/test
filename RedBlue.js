@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 Red & Blue
+// @version      1.2.2d.パクリ9.4改 Red & Blue
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -1117,7 +1117,7 @@
     (()=>{
       const link = document.createElement('a');
       link.style.color = '#666';
-      link.textContent = '1.2.2d改 Red & Blue';
+      link.textContent = '1.2.2d.パクリ9.4改 Red & Blue';
       footer.append(link);
     })();
 
