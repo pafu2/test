@@ -2563,6 +2563,7 @@
 
     const messageTypes = {
       breaktime: [
+        'チームに参加または離脱してから間もないため、次のバトルが始まるまでお待ちください。',
         'もう一度バトルに参加する前に、待たなければなりません。',
         'ng: ちょっとゆっくり'
       ],
@@ -2724,17 +2725,17 @@
 
             if (success) {
               if (currentProgress < 16) {
-                nextProgress = 25;
+                nextProgress = 26;
                } else if (currentProgress < 33) {
-                nextProgress = 42;
+                nextProgress = 43;
                } else if (currentProgress < 50) {
-                nextProgress = 58;
+                nextProgress = 60;
                } else if (currentProgress < 66) {
-                nextProgress = 75;
+                nextProgress = 76;
                } else if (currentProgress < 83) {
-                nextProgress = 92;
+                nextProgress = 93;
                } else {
-                nextProgress = 8;
+                nextProgress = 10;
                }
               next = `→ ${nextProgress}±2%`;
               isAutoJoinRunning = false;
@@ -2798,17 +2799,17 @@
         }
         if (!success && regions[cellType].length === 0) {
               if (currentProgress < 16) {
-                nextProgress = 25;
+                nextProgress = 26;
                } else if (currentProgress < 33) {
-                nextProgress = 42;
+                nextProgress = 43;
                } else if (currentProgress < 50) {
-                nextProgress = 58;
+                nextProgress = 60;
                } else if (currentProgress < 66) {
-                nextProgress = 75;
+                nextProgress = 76;
                } else if (currentProgress < 83) {
-                nextProgress = 92;
+                nextProgress = 93;
                } else {
-                nextProgress = 8;
+                nextProgress = 10;
                }
           const next = `→ ${nextProgress}±2%`;
           isAutoJoinRunning = false;
