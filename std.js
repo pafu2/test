@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d.パクリ9.4改 標準仕様
+// @version      1.2.2d改 Standard
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -35,11 +35,11 @@
 
   let MODENAME;
   if (MODE === 'm=hc') {
-      MODENAME = '[HC]';
+      MODENAME = '［ハード］';
   } else if (MODE === 'm=l') {
-      MODENAME = '[LA]';
+      MODENAME = '［ラダー］';
   } else {
-      MODENAME = '[RB]';
+      MODENAME = '［赤＆青］';
   }
 
   const vw = Math.min(document.documentElement.clientWidth, window.innerWidth || 0);
@@ -1116,8 +1116,8 @@
 
     (()=>{
       const link = document.createElement('a');
-      link.style.color = '#666';
-      link.textContent = '1.2.2d.パクリ9.4改 標準仕様';
+      link.style.color = '#333';
+      link.textContent = '1.2.2d改 Standard';
       footer.append(link);
     })();
 
@@ -2658,9 +2658,7 @@
             let processType;
             let sleepTime = 2;
 
-            if (text.startsWith('アリーナチャレンジ開始')
-              || text.startsWith('リーダーになった')
-            ) {
+            if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
               success = true;
               message = '[成功] ' + lastLine;
               processType = 'return';
@@ -2974,7 +2972,7 @@
       let str,min,totalSec,sec,margin;
 
       if (currentProgress === 0 || currentProgress === 50) {
-        str = '（マップ更新時）';
+        str = '（マップ更新）';
       } else {
         if (currentProgress === 100) {
           min = 0;
@@ -2986,11 +2984,11 @@
           sec = totalSec % 60;
           margin = 20;
         }
-        str = '（更新まで' + min + '分' + sec + '秒 \xb1' + margin + '秒）';
+        str = '（残り' + min + '分' + sec + '秒 \xb1' + margin + '秒）';
       }
       progressBarBody.textContent = currentProgress + '%';
       progressBarBody.style.width = currentProgress + '%';
-      progressBarInfo.textContent = `${MODENAME} 第${currentPeriod}期${str}`;
+      progressBarInfo.textContent = `${MODENAME}第${currentPeriod}期${str}`;
 
       const statBlock = doc.querySelector('.stat-block');
       wood = statBlock.textContent.match(/木材の数: (\d+)/)[1];
