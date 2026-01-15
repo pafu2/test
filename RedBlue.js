@@ -35,11 +35,11 @@
 
   let MODENAME;
   if (MODE === 'm=hc') {
-      MODENAME = '[ﾊｰﾄﾞｺｱ]';
+      MODENAME = '[HC]';
   } else if (MODE === 'm=l') {
-      MODENAME = '[ﾗﾀﾞｰ]';
+      MODENAME = '[LA]';
   } else {
-      MODENAME = '[ﾚﾄﾞﾌﾞﾙ]';
+      MODENAME = '[RB]';
   }
 
   const vw = Math.min(document.documentElement.clientWidth, window.innerWidth || 0);
@@ -2275,7 +2275,7 @@
     }
     rank = rank
       .replace('エリート','e')
-      .replace(/.+から|\w+-|まで|だけ|警|\s|\[|\]|\|/g,'');
+      .replace(/.+から|\w+-|まで|だけ|警備員|警|\s|\[|\]|\|/g,'');
     const autoEquipItems = JSON.parse(localStorage.getItem('autoEquipItems')) || {};
     if (autoEquipItems[rank] && !autoEquipItems[rank]?.includes(currentEquipName)) {
       if (autoEquipItems[rank].length === 0) {
@@ -2972,7 +2972,7 @@
         const equipCond = table.querySelector('td small').textContent;
         const rank = equipCond
           .replace('エリート','e')
-          .replace(/.+から|\w+-|まで|だけ|警|\s|\[|\]|\|/g,'');
+          .replace(/.+から|\w+-|まで|だけ|警備員|警|\s|\[|\]|\|/g,'');
         const autoEquipItems = JSON.parse(localStorage.getItem('autoEquipItems')) || {};
         const autoEquipItemsAutojoin = JSON.parse(localStorage.getItem('autoEquipItemsAutojoin')) || {};
 
