@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d.パクリ9.4改 標準仕様PRO
+// @version      1.2.2d改 Standard PRO 5shots
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -35,11 +35,11 @@
 
   let MODENAME;
   if (MODE === 'm=hc') {
-      MODENAME = '[HC]';
+      MODENAME = '［ハード］';
   } else if (MODE === 'm=l') {
-      MODENAME = '[LA]';
+      MODENAME = '［ラダー］';
   } else {
-      MODENAME = '[RB]';
+      MODENAME = '［赤＆青］';
   }
 
   const vw = Math.min(document.documentElement.clientWidth, window.innerWidth || 0);
@@ -1116,8 +1116,8 @@
 
     (()=>{
       const link = document.createElement('a');
-      link.style.color = '#666';
-      link.textContent = '1.2.2d.パクリ9.4改 標準仕様PRO';
+      link.style.color = '#333';
+      link.textContent = '1.2.2d改 Standard PRO 5shots';
       footer.append(link);
     })();
 
@@ -2275,7 +2275,7 @@
     }
     rank = rank
       .replace('エリート','e')
-      .replace(/.+から|\w+-|まで|だけ|警|\s|\[|\]|\|/g,'');
+      .replace(/.+から|\w+-|まで|だけ|警備員|警|\s|\[|\]|\|/g,'');
     const autoEquipItems = JSON.parse(localStorage.getItem('autoEquipItems')) || {};
     if (autoEquipItems[rank] && !autoEquipItems[rank]?.includes(currentEquipName)) {
       if (autoEquipItems[rank].length === 0) {
@@ -2681,7 +2681,7 @@
             let sleepTime = 2;
 
             if (text.startsWith('リーダーになった')) {
-                if (loop < 5){
+                if (loop < 4){
                   loop += 1;
                   message = '[ﾘﾄﾗｲ] ' + lastLine;
                   processType = 'continue';
@@ -2998,7 +2998,7 @@
         const equipCond = table.querySelector('td small').textContent;
         const rank = equipCond
           .replace('エリート','e')
-          .replace(/.+から|\w+-|まで|だけ|警|\s|\[|\]|\|/g,'');
+          .replace(/.+から|\w+-|まで|だけ|警備員|警|\s|\[|\]|\|/g,'');
         const autoEquipItems = JSON.parse(localStorage.getItem('autoEquipItems')) || {};
         const autoEquipItemsAutojoin = JSON.parse(localStorage.getItem('autoEquipItemsAutojoin')) || {};
 
@@ -3037,7 +3037,7 @@
       let str,min,totalSec,sec,margin;
 
       if (currentProgress === 0 || currentProgress === 50) {
-        str = '（マップ更新時）';
+        str = '（マップ更新）';
       } else {
         if (currentProgress === 100) {
           min = 0;
@@ -3049,11 +3049,11 @@
           sec = totalSec % 60;
           margin = 20;
         }
-        str = '（更新まで' + min + '分' + sec + '秒 \xb1' + margin + '秒）';
+        str = '（残り' + min + '分' + sec + '秒 \xb1' + margin + '秒）';
       }
       progressBarBody.textContent = currentProgress + '%';
       progressBarBody.style.width = currentProgress + '%';
-      progressBarInfo.textContent = `${MODENAME} 第${currentPeriod}期${str}`;
+      progressBarInfo.textContent = `${MODENAME}第${currentPeriod}期${str}`;
 
       const statBlock = doc.querySelector('.stat-block');
       wood = statBlock.textContent.match(/木材の数: (\d+)/)[1];
