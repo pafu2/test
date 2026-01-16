@@ -2758,7 +2758,6 @@ async function fetchAreaInfo(refreshAll){
             } else if (messageType === 'equipError'){
                 if (loop < 255){
                   loop += 1;
-                  sleepTime = 5.1;
                   message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
                   processType = 'reload';
                 } else {
@@ -3199,3 +3198,4 @@ async function fetchAreaInfo(refreshAll){
     });
   })();
 })();
+
