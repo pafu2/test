@@ -2971,7 +2971,7 @@
       currentProgress = parseInt(container.lastElementChild.textContent);
       let str,min,totalSec,sec,margin;
 
-      if (currentProgress === 0 || currentProgress === 50) {
+      if (currentProgress === 0 || currentProgress === 50 || (location.href.includes('/teambattle?m=rb') && (currentProgress === 16 || currentProgress === 33 || currentProgress === 66 || currentProgress === 83))) {
         str = '（マップ更新）';
       } else {
         if (currentProgress === 100) {
@@ -2979,7 +2979,24 @@
           sec = 20;
           margin = 10;
         } else {
+          if (location.href.includes('/teambattle?m=rb')) {
+             if (currentProgress <= 16) {
+               totalSec = (16 - currentProgress) * 600 / 16.6;
+             } else if (currentProgress <= 33) {
+               totalSec = (33 - currentProgress) * 600 / 16.6;
+             } else if (currentProgress <= 50) {
+               totalSec = (50 - currentProgress) * 600 / 16.6;
+             } else if (currentProgress <= 66) {
+               totalSec = (66 - currentProgress) * 600 / 16.6;
+             } else if (currentProgress <= 83) {
+               totalSec = (83 - currentProgress) * 600 / 16.6;
+             } else if (currentProgress <= 100) {
+               totalSec = (100 - currentProgress) * 600 / 16.6;
+             }
+          } else {
           totalSec = (currentProgress < 50) ? (50 - currentProgress) * 36 : (100 - currentProgress) * 36 + 10;
+          }
+          totalSec = Math.floor(totalSec);
           min = Math.trunc(totalSec / 60);
           sec = totalSec % 60;
           margin = 20;
