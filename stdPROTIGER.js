@@ -2750,9 +2750,9 @@
                 }
               } else {
                 if (currentProgress < 50) {
-                  nextProgress = 54;
+                  nextProgress = 53;
                 } else {
-                  nextProgress = 4;
+                  nextProgress = 3;
                 }
               }
               next = `→ ${nextProgress}±5%`;
@@ -3115,3 +3115,4 @@
     });
   })();
 })();
+
