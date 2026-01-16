@@ -2669,7 +2669,6 @@ async function fetchAreaInfo(refreshAll){
            const [cellRank, equipChangeStat] = await equipChange(region);
            if (equipChangeStat === 'noEquip') {
              excludeSet.add(region.join(','));
-             i++;
              continue;
            }
 
@@ -3186,3 +3185,4 @@ async function fetchAreaInfo(refreshAll){
     });
   })();
 })();
+
