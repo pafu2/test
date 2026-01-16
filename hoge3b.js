@@ -2670,7 +2670,9 @@ async function fetchAreaInfo(refreshAll){
            if (equipChangeStat === 'noEquip') {
              excludeSet.add(region.join(','));
              continue;
-           }
+} else {
+  excludeSet.add(region.join(','));
+}
 
            const [text, lastLine] = await challenge(region);
            const messageType = getMessageType(lastLine);
@@ -3185,4 +3187,5 @@ async function fetchAreaInfo(refreshAll){
     });
   })();
 })();
+
 
