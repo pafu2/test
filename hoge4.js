@@ -2689,7 +2689,7 @@
                 } else {
                   loop += 1;
                   success = true;
-                  message = '(' + loop + '発目)【打止】'+ lastLine;
+                  message = '(' + loop + '発目) [打止] '+ lastLine;
                   processType = 'return';
                 }
             } else if (messageType === 'breaktime') {
@@ -2708,7 +2708,7 @@
                 } else {
                   loop += 1;
                   success = true;
-                  message = '(' + loop + '発目)【打止】'+ lastLine;
+                  message = '(' + loop + '発目) [打止] '+ lastLine;
                   processType = 'return';
                 }
             } else if (lastLine.length > 100) {
@@ -2857,7 +2857,7 @@
                 }
                 const next = `→ ${nextProgress}±2%`;
                 isAutoJoinRunning = false;
-                logMessage(null, '攻撃可能なタイルが見つかりませんでした。', next);
+                logMessage(null, '(' + loop + '発目) [打止] 攻撃可能なタイルが見つかりませんでした。', next);
                 return;
         }
       }
