@@ -2672,7 +2672,9 @@
             if (equipChangeStat === 'noEquip') {
               excludeSet.add(region.join(','));
               continue;
-            }
+           } else {
+              excludeSet.add(region.join(','));
+           }
 
             const [ text, lastLine ] = await challenge(region);
             const messageType = getMessageType(lastLine);
@@ -2982,7 +2984,12 @@
         return regions;
       } catch (e) {
         console.error(e);
-        return;
+        return {
+          nonAdjacent: [],
+          capitalAdjacent: [],
+          teamAdjacent: [],
+          mapEdge: []
+        };
       }
     }
 
