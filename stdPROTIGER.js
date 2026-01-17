@@ -2620,7 +2620,7 @@
     let nextProgress;
     async function attackRegion () {
       await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 2) {
         return;
       }
 
@@ -2750,9 +2750,9 @@
                 }
               } else {
                 if (currentProgress < 50) {
-                  nextProgress = 53;
+                  nextProgress = 52;
                 } else {
-                  nextProgress = 3;
+                  nextProgress = 2;
                 }
               }
               next = `→ ${nextProgress}±5%`;
@@ -2835,9 +2835,9 @@
                   }
                 } else {
                   if (currentProgress < 50) {
-                    nextProgress = 53;
+                    nextProgress = 52;
                   } else {
-                    nextProgress = 3;
+                    nextProgress = 2;
                   }
                 }
                 const next = `→ ${nextProgress}±2%`;
@@ -3025,7 +3025,7 @@
     if (!isAutoJoinRunning) {
       attackRegion();
     }
-    autoJoinIntervalId = setInterval(attackRegion,60000);
+    autoJoinIntervalId = setInterval(attackRegion,20000);
   };
 
   async function drawProgressBar(){
@@ -3115,4 +3115,5 @@
     });
   })();
 })();
+
 
