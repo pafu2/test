@@ -2653,8 +2653,10 @@
         cellType = 'nonAdjacent';
       } else if (regions.teamAdjacent.length > 0) {
         cellType = 'teamAdjacent';
-      } else {
+      } else if (regions.capitalAdjacent.length > 0) {
         cellType = 'capitalAdjacent';
+      } else {
+        cellType = 'mapEdge';
       }
 
       while(dialog.open) {
