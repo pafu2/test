@@ -2670,9 +2670,9 @@ async function fetchAreaInfo(refreshAll){
            if (equipChangeStat === 'noEquip') {
              excludeSet.add(region.join(','));
              continue;
-} else {
-  excludeSet.add(region.join(','));
-}
+           } else {
+             excludeSet.add(region.join(','));
+           }
 
            const [text, lastLine] = await challenge(region);
            const messageType = getMessageType(lastLine);
@@ -2687,8 +2687,8 @@ async function fetchAreaInfo(refreshAll){
                   message = '(' + loop + '発目)［陥落］'+ lastLine;
                   processType = 'reload';
                 } else {
-                  success = true;
                   loop += 1;
+                  success = true;
                   message = '(' + loop + '発目)［陥落］【打止】'+ lastLine;
                   processType = 'return';
                 }
@@ -2699,8 +2699,8 @@ async function fetchAreaInfo(refreshAll){
                   message = '(' + loop + '発目)［破壊］'+ lastLine;
                   processType = 'reload';
                 } else {
-                  success = true;
                   loop += 1;
+                  success = true;
                   message = '(' + loop + '発目)［破壊］【打止】'+ lastLine;
                   processType = 'return';
                 }
@@ -2711,33 +2711,33 @@ async function fetchAreaInfo(refreshAll){
                   message = '(' + loop + '発目) '+ lastLine;
                   processType = 'reload';
                 } else {
-                  success = true;
                   loop += 1;
+                  success = true;
                   message = '(' + loop + '発目)【打止】'+ lastLine;
                   processType = 'return';
                 }
             } else if (text.startsWith('アリーナチャレンジ開始')) {
                 if (loop < 255) {
                      if (text.endsWith('アリーナチャレンジは失敗しました。')) {
-                  loop += 1;
-                  sleepTime = 1.5;
+                       loop += 1;
+                       sleepTime = 1.5;
                        message = '(' + loop + '発目)【失敗】'+ lastLine;
                        processType = 'reload';
                      } else {
-                  loop += 1;
-                  sleepTime = 1.5;
+                       loop += 1;
+                       sleepTime = 1.5;
                        message = '(' + loop + '発目)【成功】'+ lastLine;
                        processType = 'reload';
                      }
                 } else {
                      if (text.endsWith('アリーナチャレンジは失敗しました。')) {
-                       success = true;
                        loop += 1;
+                       success = true;
                        message = '(' + loop + '発目)【失敗】'+ lastLine;
                        processType = 'return';
                      } else {
-                       success = true;
                        loop += 1;
+                       success = true;
                        message = '(' + loop + '発目)【成功】'+ lastLine;
                        processType = 'return';
                      }
@@ -2753,11 +2753,12 @@ async function fetchAreaInfo(refreshAll){
             } else if (messageType === 'equipError'){
                 if (loop < 255){
                   loop += 1;
+                  sleepTime = 1.5;
                   message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
                   processType = 'reload';
                 } else {
-                  success = true;
                   loop += 1;
+                  success = true;
                   message = '(' + loop + '発目)【打止】'+ lastLine;
                   processType = 'return';
                 }
@@ -3187,7 +3188,3 @@ async function fetchAreaInfo(refreshAll){
     });
   })();
 })();
-
-
-
-
