@@ -2859,6 +2859,7 @@
                 }
                 const next = `→ ${nextProgress}±2%`;
                 isAutoJoinRunning = false;
+                loop += 1;
                 logMessage(null, '(' + loop + '発目) [打止] 攻撃可能なタイルが見つかりませんでした。', next);
                 return;
         }
