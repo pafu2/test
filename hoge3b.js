@@ -2719,13 +2719,13 @@ async function fetchAreaInfo(refreshAll){
             } else if (text.startsWith('アリーナチャレンジ開始')) {
                 if (loop < 255) {
                      if (text.endsWith('アリーナチャレンジは失敗しました。')) {
-                       success = true;
-                       loop += 1;
+                  loop += 1;
+                  sleepTime = 1.5;
                        message = '(' + loop + '発目)【失敗】'+ lastLine;
                        processType = 'reload';
                      } else {
-                       success = true;
-                       loop += 1;
+                  loop += 1;
+                  sleepTime = 1.5;
                        message = '(' + loop + '発目)【成功】'+ lastLine;
                        processType = 'reload';
                      }
@@ -3187,6 +3187,7 @@ async function fetchAreaInfo(refreshAll){
     });
   })();
 })();
+
 
 
 
