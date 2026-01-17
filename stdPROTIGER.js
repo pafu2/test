@@ -2620,7 +2620,7 @@
     let nextProgress;
     async function attackRegion () {
       await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 2) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
         return;
       }
 
@@ -2654,8 +2654,10 @@
         cellType = 'nonAdjacent';
       } else if (regions.teamAdjacent.length > 0) {
         cellType = 'teamAdjacent';
-      } else {
+      } else if (regions.capitalAdjacent.length > 0) {
         cellType = 'capitalAdjacent';
+      } else {
+        cellType = 'mapEdge';
       }
 
       while(dialog.open) {
@@ -2750,9 +2752,9 @@
                 }
               } else {
                 if (currentProgress < 50) {
-                  nextProgress = 52;
+                  nextProgress = 54;
                 } else {
-                  nextProgress = 2;
+                  nextProgress = 4;
                 }
               }
               next = `→ ${nextProgress}±5%`;
@@ -2835,9 +2837,9 @@
                   }
                 } else {
                   if (currentProgress < 50) {
-                    nextProgress = 52;
+                    nextProgress = 53;
                   } else {
-                    nextProgress = 2;
+                    nextProgress = 3;
                   }
                 }
                 const next = `→ ${nextProgress}±2%`;
@@ -3025,7 +3027,7 @@
     if (!isAutoJoinRunning) {
       attackRegion();
     }
-    autoJoinIntervalId = setInterval(attackRegion,20000);
+    autoJoinIntervalId = setInterval(attackRegion,60000);
   };
 
   async function drawProgressBar(){
@@ -3115,5 +3117,3 @@
     });
   })();
 })();
-
-
