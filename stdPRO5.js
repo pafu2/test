@@ -2683,6 +2683,11 @@
             let sleepTime = 2;
 
             if (text.startsWith('リーダーになった')) {
+              if (location.href.includes('/teambattle?m=rb')) {
+                  success = true;
+                  message = '[成功] ' + lastLine;
+                  processType = 'return';
+              } else {
                 if (loop < 4){
                   loop += 1;
                   message = '[ﾘﾄﾗｲ] ' + lastLine;
@@ -2693,6 +2698,7 @@
                   message = '[成功] ' + lastLine;
                   processType = 'return';
                 }
+              }
             } else if (text.startsWith('アリーナチャレンジ開始')) {
               success = true;
               message = '[成功] ' + lastLine;
@@ -2751,13 +2757,17 @@
                   nextProgress = 10;
                 }
               } else {
-                if (currentProgress < 50) {
-                  nextProgress = Math.floor(Math.random() * 10) + 80; // 80~89 -2~+1
+                if (currentProgress < 25) {
+                  nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
+                } else if (currentProgress < 50) {
+                  nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
+                } else if (currentProgress < 75) {
+                  nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
                 } else {
-                  nextProgress = Math.floor(Math.random() * 10) + 30; // 30~39 -2~+1
+                  nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
                 }
               }
-              next = `→ ${nextProgress}±5%`;
+              next = `→ ${nextProgress}±2%`;
               isAutoJoinRunning = false;
             } else if (processType === 'return') {
               next = '';
@@ -2833,10 +2843,14 @@
                    nextProgress = 10;
                   }
                 } else {
-                  if (currentProgress < 50) {
-                    nextProgress = Math.floor(Math.random() * 10) + 80;// 80~89 -2~+1
+                  if (currentProgress < 25) {
+                    nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
+                  } else if (currentProgress < 50) {
+                    nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
+                  } else if (currentProgress < 75) {
+                    nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
                   } else {
-                    nextProgress = Math.floor(Math.random() * 10) + 30;// 30~39 -2~+1
+                    nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
                   }
                 }
                 const next = `→ ${nextProgress}±2%`;
