@@ -2688,12 +2688,11 @@
                 if (loop < 3){
                   loop += 1;
                   sleepTime = 1.5;
-                  message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
+                  message = '(' + loop + '発目) '+ lastLine;
                   processType = 'reload';
                 } else if(loop === 3){
-                  loop += 1;
                   success = true;
-                  message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
+                  message = '(' + loop + '発目) '+ lastLine;
                   processType = 'return';
                 } else {
                   processType = 'return';
@@ -3112,3 +3111,4 @@
     });
   })();
 })();
+
