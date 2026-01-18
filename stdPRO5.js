@@ -39,7 +39,7 @@
   } else if (MODE === 'm=l') {
       MODENAME = '［ラダー］';
   } else {
-      MODENAME = '［赤＆青］';
+      MODENAME = '［赤vs青］';
   }
 
   const vw = Math.min(document.documentElement.clientWidth, window.innerWidth || 0);
