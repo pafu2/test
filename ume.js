@@ -2693,7 +2693,7 @@
                 } else {
                   loop += 1;
                   success = true;
-                  message = '(' + loop + '発目) '+ lastLine;
+                  message = '[打止] (' + loop + '発目) '+ lastLine;
                   processType = 'return';
                 }
             } else if (messageType === 'breaktime') {
@@ -2712,7 +2712,7 @@
                 } else {
                   loop += 1;
                   success = true;
-                  message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
+                  message = '[打止] (' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
                   processType = 'return';
                 }
             } else if (lastLine.length > 100) {
@@ -2757,7 +2757,7 @@
               autoJoinIntervalId = null;
               next = `→ 予約なし`;
               isAutoJoinRunning = false;
-              logMessage(null, '[打止] 終了です。', next);
+//              logMessage(null, '[打止] 終了です。', next);
             } else if (processType === 'return') {
               next = '';
               isAutoJoinRunning = false;
