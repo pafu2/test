@@ -2685,16 +2685,15 @@
             let sleepTime = 2;
 
             if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
-                if (loop < 3){
+                if (loop < 2){
                   loop += 1;
                   sleepTime = 1.5;
                   message = '(' + loop + '発目) '+ lastLine;
                   processType = 'reload';
-                } else if(loop === 3){
-                  success = true;
-                  message = '(' + loop + '発目) '+ lastLine;
-                  processType = 'return';
                 } else {
+                  loop += 1;
+                  success = true;
+                  message = '[打止] (' + loop + '発目) '+ lastLine;
                   processType = 'return';
                 }
             } else if (messageType === 'breaktime') {
@@ -2705,17 +2704,15 @@
               sleepTime = 10.5;
               processType = 'continue';
             } else if (messageType === 'equipError'){
-                if (loop < 3){
+                if (loop < 2){
                   loop += 1;
                   sleepTime = 1.5;
                   message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
                   processType = 'reload';
-                } else if(loop === 3){
+                } else {
                   loop += 1;
                   success = true;
-                  message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
-                  processType = 'return';
-                } else {
+                  message = '[打止] (' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
                   processType = 'return';
                 }
             } else if (lastLine.length > 100) {
@@ -2760,7 +2757,7 @@
               autoJoinIntervalId = null;
               next = `→ 予約なし`;
               isAutoJoinRunning = false;
-              logMessage(null, '[打止] 終了です。', next);
+//              logMessage(null, '[打止] 終了です。', next);
             } else if (processType === 'return') {
               next = '';
               isAutoJoinRunning = false;
@@ -3111,4 +3108,3 @@
     });
   })();
 })();
-
