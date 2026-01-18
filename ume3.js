@@ -2688,12 +2688,14 @@
                 if (loop < 3){
                   loop += 1;
                   sleepTime = 1.5;
-                  message = '(' + loop + '発目) '+ lastLine;
+                  message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
                   processType = 'reload';
-                } else {
+                } else if(loop === 3){
                   loop += 1;
                   success = true;
-                  message = '(' + loop + '発目) '+ lastLine;
+                  message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
+                  processType = 'return';
+                } else {
                   processType = 'return';
                 }
             } else if (messageType === 'breaktime') {
@@ -2709,10 +2711,12 @@
                   sleepTime = 1.5;
                   message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
                   processType = 'reload';
-                } else {
+                } else if(loop === 3){
                   loop += 1;
                   success = true;
                   message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
+                  processType = 'return';
+                } else {
                   processType = 'return';
                 }
             } else if (lastLine.length > 100) {
