@@ -2819,7 +2819,7 @@
             }
           }
         }
-        
+
         if (!success && regions[cellType].length === 0) {
                 clearInterval(autoJoinIntervalId);
                 autoJoinIntervalId = null;
@@ -3108,3 +3108,4 @@
     });
   })();
 })();
+
