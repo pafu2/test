@@ -2682,12 +2682,12 @@
             const messageType = getMessageType(lastLine);
             let message = lastLine;
             let processType;
-            let sleepTime = 2;
+            let sleepTime = 1;
 
             if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
                 if (loop < 255){
                   loop += 1;
-                  sleepTime = 1.5;
+                  sleepTime = 1;
                   message = '(' + loop + '発目) '+ lastLine;
                   processType = 'reload';
                 } else {
@@ -2706,7 +2706,7 @@
             } else if (messageType === 'equipError'){
                 if (loop < 255){
                   loop += 1;
-                  sleepTime = 1.5;
+                  sleepTime = 1;
                   message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
                   processType = 'reload';
                 } else {
