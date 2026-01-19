@@ -2663,20 +2663,9 @@
         let success = false;
         isAutoJoinRunning = true;
 
-const baseList = regions[cellType].filter(e => !excludeSet.has(e.join(',')));
-        const prioritized = [];
-        const others = [];
-
-        // 1つずつ「警備員」かチェックして仕分ける
-        for (const r of baseList) {
-          const [rank] = await equipChange(r); 
-          if (rank.includes('警')) prioritized.push(r);
-          else others.push(r);
-        }
-        
-        // 警備員を先頭にしたリストでループを開始
-        const sortedList = [...prioritized, ...others];
-        for (const region of sortedList) {
+        regions[cellType] = regions[cellType]
+          .filter(e => !excludeSet.has(e.join(',')));
+        for (const region of regions[cellType]) {
           let errorCount = 0;
           let next;
           try {
@@ -2685,7 +2674,12 @@ const baseList = regions[cellType].filter(e => !excludeSet.has(e.join(',')));
               excludeSet.add(region.join(','));
               continue;
             }
-
+// 【追加】「警」でなければ、リストの最後に回してスキップする
+if (cellRank !== '警' && !region.isDeferred) {
+region.isDeferred = true; 
+regions[cellType].push(region); 
+continue; 
+}
             const [ text, lastLine ] = await challenge(region);
             const messageType = getMessageType(lastLine);
             let message = lastLine;
@@ -2999,20 +2993,20 @@ const baseList = regions[cellType].filter(e => !excludeSet.has(e.join(',')));
         const equipCond = table.querySelector('td small').textContent;
         const rank = equipCond
           .replace('エリート','e')
-          .replace(/.+から|\w+-|まで|だけ|\s|\[|\]|\|/g,'');
+          .replace(/.+から|\w+-|まで|だけ|警備員|警|\s|\[|\]|\|/g,'');
         const autoEquipItems = JSON.parse(localStorage.getItem('autoEquipItems')) || {};
         const autoEquipItemsAutojoin = JSON.parse(localStorage.getItem('autoEquipItemsAutojoin')) || {};
 
         if (autoEquipItemsAutojoin[rank]?.length > 0) {
           const index = Math.floor(Math.random() * autoEquipItemsAutojoin[rank].length);
           await setPresetItems(autoEquipItemsAutojoin[rank][index]);
-          return [rank, 'success'];
+          return [rank.includes('警') ? '警' : rank, 'success'];
         } else if (autoEquipItems[rank]?.length > 0) {
           const index = Math.floor(Math.random() * autoEquipItems[rank].length);
           await setPresetItems(autoEquipItems[rank][index]);
-          return [rank, 'success'];
+          return [rank.includes('警') ? '警' : rank, 'success'];
         } else {
-          return [rank, 'noEquip'];
+          return [rank.includes('警') ? '警' : rank, 'noEquip'];
         }
       } catch (e) {
         console.error(e);
