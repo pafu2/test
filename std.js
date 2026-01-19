@@ -2522,8 +2522,8 @@
 
     const logArea = dialog.querySelector('.auto-join-log');
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
-    const teamColor = settings.teamColor;
-    const teamName = settings.teamName;
+    let teamColor = settings.teamColor;
+    let teamName = settings.teamName;
 
 
     function logMessage(region, message, next) {
@@ -2620,9 +2620,31 @@
     let nextProgress;
     async function attackRegion () {
       await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 5) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
         return;
       }
+
+    if (location.href.includes('/teambattle?m=rb')) {
+        try {
+          const res = await fetch(`/teambattle?m=rb&t=${Date.now()}`, { cache: 'no-store' });
+          if (res.ok) {
+            const text = await res.text();
+            const doc = new DOMParser().parseFromString(text, 'text/html');
+            const target = Array.from(doc.querySelectorAll('header span')).find(s => s.textContent.includes('チーム:'));
+            if (target) {
+              const raw = target.textContent;
+              if (raw.includes('レッド')) {
+                teamName = 'レッド';
+                teamColor = 'd32f2f';
+              } else if (raw.includes('ブルー')) {
+                teamName = 'ブルー';
+                teamColor = '1976d2';
+              }
+            }
+          }
+        } catch (e) { console.error(e); }
+      }
+
       let regions = await getRegions();
       const excludeSet = new Set();
 
@@ -2636,7 +2658,6 @@
       } else {
         cellType = 'mapEdge';
       }
-
 
       while(dialog.open) {
         let success = false;
@@ -2703,10 +2724,26 @@
             }
 
             if (success) {
-              if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 10) + 70; // 70 ~ 80 +- 5
+              if (location.href.includes('/teambattle?m=rb')) {
+                if (currentProgress < 16) {
+                  nextProgress = 26;
+                } else if (currentProgress < 33) {
+                  nextProgress = 43;
+                } else if (currentProgress < 50) {
+                  nextProgress = 60;
+                } else if (currentProgress < 66) {
+                  nextProgress = 76;
+                } else if (currentProgress < 83) {
+                  nextProgress = 93;
+                } else {
+                  nextProgress = 10;
+                }
               } else {
-                nextProgress = Math.floor(Math.random() * 10) + 20; // 20 ~ 30 +- 5
+                if (currentProgress < 50) {
+                  nextProgress = Math.floor(Math.random() * 10) + 80; // 80~89 -2~+1
+                } else {
+                  nextProgress = Math.floor(Math.random() * 10) + 30; // 30~39 -2~+1
+                }
               }
               next = `→ ${nextProgress}±5%`;
               isAutoJoinRunning = false;
@@ -2769,15 +2806,31 @@
           }
         }
         if (!success && regions[cellType].length === 0) {
-          if (currentProgress < 50) {
-            nextProgress = Math.floor(Math.random() * 10) + 70; // 70 ~ 80 +- 5
-          } else {
-            nextProgress = Math.floor(Math.random() * 10) + 20; // 20 ~ 30 +- 5
-          }
-          const next = `→ ${nextProgress}±5%`;
-          isAutoJoinRunning = false;
-          logMessage(null, '攻撃可能なタイルが見つかりませんでした。', next);
-          return;
+              if (location.href.includes('/teambattle?m=rb')) {
+                if (currentProgress < 16) {
+                   nextProgress = 26;
+                  } else if (currentProgress < 33) {
+                   nextProgress = 43;
+                  } else if (currentProgress < 50) {
+                   nextProgress = 60;
+                  } else if (currentProgress < 66) {
+                   nextProgress = 76;
+                  } else if (currentProgress < 83) {
+                   nextProgress = 93;
+                  } else {
+                   nextProgress = 10;
+                  }
+                } else {
+                  if (currentProgress < 50) {
+                    nextProgress = Math.floor(Math.random() * 10) + 80;// 80~89 -2~+1
+                  } else {
+                    nextProgress = Math.floor(Math.random() * 10) + 30;// 30~39 -2~+1
+                  }
+                }
+                const next = `→ ${nextProgress}±2%`;
+                isAutoJoinRunning = false;
+                logMessage(null, '攻撃可能なタイルが見つかりませんでした。', next);
+                return;
         }
       }
     }
@@ -2959,7 +3012,7 @@
     if (!isAutoJoinRunning) {
       attackRegion();
     }
-    autoJoinIntervalId = setInterval(attackRegion,300000);
+    autoJoinIntervalId = setInterval(attackRegion,60000);
   };
 
   async function drawProgressBar(){
