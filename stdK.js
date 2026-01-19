@@ -2687,6 +2687,7 @@
           let next;
           try {
             const { rank: cellRank, equipStat, isGuard } = await equipChange(region);
+const { equipStat } = await equipChange(region);  // equipStat を取得
             if (equipChangeStat === 'noEquip') {
               excludeSet.add(region.join(','));
               continue;
@@ -3012,11 +3013,9 @@
         if (autoEquipItemsAutojoin[rank]?.length > 0) {
           const index = Math.floor(Math.random() * autoEquipItemsAutojoin[rank].length);
           await setPresetItems(autoEquipItemsAutojoin[rank][index]);
-          return [rank, 'success'];
         } else if (autoEquipItems[rank]?.length > 0) {
           const index = Math.floor(Math.random() * autoEquipItems[rank].length);
           await setPresetItems(autoEquipItems[rank][index]);
-          return [rank, 'success'];
           return {
             rank,
             equipStat: 'success',
