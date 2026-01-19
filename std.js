@@ -2745,7 +2745,7 @@
                   nextProgress = Math.floor(Math.random() * 10) + 30; // 30~39 -2~+1
                 }
               }
-              next = `→ ${nextProgress}±5%`;
+              next = `→ ${nextProgress}±2%`;
               isAutoJoinRunning = false;
             } else if (processType === 'return') {
               next = '';
