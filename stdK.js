@@ -2687,7 +2687,7 @@
           let next;
           try {
             const { rank: cellRank, equipStat, isGuard } = await equipChange(region);
-const { equipStat } = await equipChange(region);  // equipStat を取得
+
             if (equipChangeStat === 'noEquip') {
               excludeSet.add(region.join(','));
               continue;
