@@ -2838,6 +2838,7 @@
             }
           }
         }
+
         if (!success && regions[cellType].length === 0) {
               if (location.href.includes('/teambattle?m=rb')) {
                 if (currentProgress < 16) {
