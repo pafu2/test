@@ -2663,31 +2663,24 @@
         let success = false;
         isAutoJoinRunning = true;
 
-        regions[cellType] = regions[cellType]
-          .filter(e => !excludeSet.has(e.join(',')));
-          
-  const guardCells = [];
-  const normalCells = [];
+const baseList = regions[cellType].filter(e => !excludeSet.has(e.join(',')));
+        const prioritized = [];
+        const others = [];
 
-  // 警備員マスを検出して分ける
-  for (const region of regions[cellType]) {
-    const { isGuard } = await equipChange(region);  // 警備員マスかどうかを確認
-    if (isGuard) {
-      guardCells.push(region);  // 警備員マス
-    } else {
-      normalCells.push(region);  // 通常マス
-    }
-  }
-
-  // 警備員マスを先頭に持ってきた新しい配列を作成
-  regions[cellType] = [...guardCells, ...normalCells];
-          
-        for (const region of regions[cellType]) {
+        // 1つずつ「警備員」かチェックして仕分ける
+        for (const r of baseList) {
+          const [rank] = await equipChange(r); 
+          if (rank.includes('警')) prioritized.push(r);
+          else others.push(r);
+        }
+        
+        // 警備員を先頭にしたリストでループを開始
+        const sortedList = [...prioritized, ...others];
+        for (const region of sortedList) {
           let errorCount = 0;
           let next;
           try {
-            const { rank: cellRank, equipStat, isGuard } = await equipChange(region);
-
+            const [cellRank, equipChangeStat] = await equipChange(region);
             if (equipChangeStat === 'noEquip') {
               excludeSet.add(region.join(','));
               continue;
@@ -3006,27 +2999,20 @@
         const equipCond = table.querySelector('td small').textContent;
         const rank = equipCond
           .replace('エリート','e')
-          .replace(/.+から|\w+-|まで|だけ|警備員|警|\s|\[|\]|\|/g,'');
+          .replace(/.+から|\w+-|まで|だけ|\s|\[|\]|\|/g,'');
         const autoEquipItems = JSON.parse(localStorage.getItem('autoEquipItems')) || {};
         const autoEquipItemsAutojoin = JSON.parse(localStorage.getItem('autoEquipItemsAutojoin')) || {};
 
         if (autoEquipItemsAutojoin[rank]?.length > 0) {
           const index = Math.floor(Math.random() * autoEquipItemsAutojoin[rank].length);
           await setPresetItems(autoEquipItemsAutojoin[rank][index]);
+          return [rank, 'success'];
         } else if (autoEquipItems[rank]?.length > 0) {
           const index = Math.floor(Math.random() * autoEquipItems[rank].length);
           await setPresetItems(autoEquipItems[rank][index]);
-          return {
-            rank,
-            equipStat: 'success',
-            isGuard: equipCond.includes('警備員')
-          };
+          return [rank, 'success'];
         } else {
-          return {
-            rank,
-            equipStat: 'noEquip',
-            isGuard: equipCond.includes('警備員')
-          };
+          return [rank, 'noEquip'];
         }
       } catch (e) {
         console.error(e);
