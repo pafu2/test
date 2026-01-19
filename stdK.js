@@ -2619,6 +2619,9 @@
 
     let nextProgress;
     async function attackRegion () {
+      //警備員仕様
+      await fetchAreaInfo(true);
+      //警備員仕様
       await drawProgressBar();
       if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
         return;
@@ -2670,11 +2673,6 @@
           let next;
           try {
             const [cellRank, equipChangeStat] = await equipChange(region);
-if (!cellRank.includes('警') && regions[cellType].some(r => !r.isChecked)) {
-              region.isChecked = true; // チェック済みフラグ
-              regions[cellType].push(region); // リストの最後に追加
-              continue; 
-}
             if (equipChangeStat === 'noEquip') {
               excludeSet.add(region.join(','));
               continue;
@@ -2951,7 +2949,29 @@ if (!cellRank.includes('警') && regions[cellType].some(r => !r.isChecked)) {
           teamAdjacent: shuffle(teamAdjacentCells),
           mapEdge: shuffle(mapEdgeCells)
         };
+
+        //警備員仕様
+        const gridCells = document.querySelectorAll('.grid .cell');
+          const rankMap = new Map();
+          gridCells.forEach(c => {
+          if (c.dataset.rank) {
+            rankMap.set(`${c.dataset.row}-${c.dataset.col}`, c.dataset.rank);
+          }
+        });
+
+        for (const key in regions) {
+          regions[key].sort((a, b) => {
+            const rankA = rankMap.get(a.join('-')) || '';
+            const rankB = rankMap.get(b.join('-')) || '';
+            const isGuardA = rankA.includes('警') ? 1 : 0;
+            const isGuardB = rankB.includes('警') ? 1 : 0;
+            return isGuardB - isGuardA; // 警備員を先頭へ
+          });
+        }
+        //警備員仕様
+
         return regions;
+
       } catch (e) {
         console.error(e);
         return;
@@ -2993,7 +3013,7 @@ if (!cellRank.includes('警') && regions[cellType].some(r => !r.isChecked)) {
         const equipCond = table.querySelector('td small').textContent;
         const rank = equipCond
           .replace('エリート','e')
-          .replace(/.+から|\w+-|まで|だけ|\s|\[|\]|\|/g,'');
+          .replace(/.+から|\w+-|まで|だけ|警備員|警|\s|\[|\]|\|/g,'');
         const autoEquipItems = JSON.parse(localStorage.getItem('autoEquipItems')) || {};
         const autoEquipItemsAutojoin = JSON.parse(localStorage.getItem('autoEquipItemsAutojoin')) || {};
 
