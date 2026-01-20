@@ -2752,9 +2752,9 @@
                 }
               } else {
                 if (currentProgress < 50) {
-                  nextProgress = 52;
+                  nextProgress = 55;
                 } else {
-                  nextProgress = 2;
+                  nextProgress = 1;
                 }
               }
               next = `→ ${nextProgress}±1%`;
@@ -2837,9 +2837,9 @@
                   }
                 } else {
                   if (currentProgress < 50) {
-                    nextProgress = 52;
+                    nextProgress = 55;
                   } else {
-                    nextProgress = 2;
+                    nextProgress = 1;
                   }
                 }
                 const next = `→ ${nextProgress}±1%`;
@@ -3027,7 +3027,7 @@
     if (!isAutoJoinRunning) {
       attackRegion();
     }
-    autoJoinIntervalId = setInterval(attackRegion,30000);
+    autoJoinIntervalId = setInterval(attackRegion,20000);
   };
 
   async function drawProgressBar(){
