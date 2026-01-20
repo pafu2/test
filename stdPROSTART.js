@@ -2750,12 +2750,6 @@
                 } else {
                   nextProgress = 10;
                 }
-              } else if (location.href.includes('/teambattle?m=hc')) {
-                  if (currentProgress < 50) {
-                    nextProgress = 53;
-                  } else {
-                    nextProgress = 1;
-                  }
               } else {
                   if (currentProgress < 50) {
                     nextProgress = 52;
@@ -2840,12 +2834,6 @@
                    nextProgress = 93;
                   } else {
                    nextProgress = 10;
-                  }
-                } else if (location.href.includes('/teambattle?m=hc')) {
-                  if (currentProgress < 50) {
-                    nextProgress = 53;
-                  } else {
-                    nextProgress = 1;
                   }
                 } else {
                   if (currentProgress < 50) {
