@@ -2750,12 +2750,18 @@
                 } else {
                   nextProgress = 10;
                 }
+              } else if (location.href.includes('/teambattle?m=hc')) {
+                  if (currentProgress < 50) {
+                    nextProgress = 52;
+                  } else {
+                    nextProgress = 2;
+                  }
               } else {
-                if (currentProgress < 50) {
-                  nextProgress = 52;
-                } else {
-                  nextProgress = 3;
-                }
+                  if (currentProgress < 50) {
+                    nextProgress = 53;
+                  } else {
+                    nextProgress = 1;
+                  }
               }
               next = `→ ${nextProgress}±1%`;
               isAutoJoinRunning = false;
@@ -2835,11 +2841,17 @@
                   } else {
                    nextProgress = 10;
                   }
-                } else {
+                } else if (location.href.includes('/teambattle?m=hc')) {
                   if (currentProgress < 50) {
                     nextProgress = 52;
                   } else {
-                    nextProgress = 3;
+                    nextProgress = 2;
+                  }
+                } else {
+                  if (currentProgress < 50) {
+                    nextProgress = 53;
+                  } else {
+                    nextProgress = 1;
                   }
                 }
                 const next = `→ ${nextProgress}±1%`;
