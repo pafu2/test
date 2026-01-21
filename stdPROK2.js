@@ -2990,56 +2990,48 @@
           return arr;
         }
 
-// 1. 各セルの座標を収集（既存の変数を使用）
+// 1. 各カテゴリを定義（既存の変数をそのまま使用）
         const regions = {
-            nonAdjacent: nonAdjacentCells,
-            capitalAdjacent: capitalAdjacentCells,
-            teamAdjacent: teamAdjacentCells,
-            mapEdge: mapEdgeCells
+          nonAdjacent: nonAdjacentCells || [],
+          capitalAdjacent: capitalAdjacentCells || [],
+          teamAdjacent: teamAdjacentCells || [],
+          mapEdge: mapEdgeCells || []
         };
 
         // 2. ランク情報の取得
         const gridCells = document.querySelectorAll('.grid .cell');
         const rankMap = new Map();
         gridCells.forEach(c => {
-            if (c.dataset.rank) {
-                rankMap.set(`${c.dataset.row}-${c.dataset.col}`, c.dataset.rank);
-            }
+          if (c.dataset.rank) {
+            rankMap.set(`${c.dataset.row}-${c.dataset.col}`, c.dataset.rank);
+          }
         });
 
-        // 3. すべての候補マスを一つの配列にまとめる
-        let allTargets = [];
+        // 3. 各カテゴリ（小部屋）の中で、それぞれ「警備員を先頭」にする
+        // こうすることで、呼び出し元の「カテゴリの優先順位」を壊さずに済みます
         for (const key in regions) {
-            if (regions[key]) {
-                allTargets = allTargets.concat(regions[key]);
-            }
-        }
+          // まずそのカテゴリ内をランダムにする
+          shuffle(regions[key]);
 
-        // 4. 全体をシャッフル（これで警備員同士がランダムになる）
-        shuffle(allTargets);
-
-        // 5. 警備員を最優先に並び替える
-        allTargets.sort((a, b) => {
+          // その中で「警備員」がいれば一番上に持ってくる
+          regions[key].sort((a, b) => {
             const rankA = rankMap.get(a.join('-')) || '';
             const rankB = rankMap.get(b.join('-')) || '';
             const isGuardA = rankA.includes('警') ? 1 : 0;
             const isGuardB = rankB.includes('警') ? 1 : 0;
+            
+            // 警備員を前へ、平民を後ろへ
             return isGuardB - isGuardA;
-        });
+          });
+        }
 
-        // 6. 呼び出し元が壊れないように、元の形式（regions）の構造で返す
-        // nonAdjacentを「すべてのターゲット」として扱い、他を空にする
-        return {
-            nonAdjacent: allTargets,
-            capitalAdjacent: [],
-            teamAdjacent: [],
-            mapEdge: []
-        };
+        // 4. すべてのカテゴリを維持したまま返す
+        return regions;
 
-    } catch (e) {
+      } catch (e) {
         console.error(e);
         return;
-    }
+      }
 }
 
     async function challenge (region) {
