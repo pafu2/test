@@ -2806,31 +2806,31 @@
           }
         }
         if (!success && regions[cellType].length === 0) {
-              if (location.href.includes('/teambattle?m=rb')) {
-                if (currentProgress < 16) {
-                   nextProgress = 26;
-                  } else if (currentProgress < 33) {
-                   nextProgress = 43;
-                  } else if (currentProgress < 50) {
-                   nextProgress = 60;
-                  } else if (currentProgress < 66) {
-                   nextProgress = 76;
-                  } else if (currentProgress < 83) {
-                   nextProgress = 93;
-                  } else {
-                   nextProgress = 10;
-                  }
-                } else {
-                  if (currentProgress < 50) {
-                    nextProgress = Math.floor(Math.random() * 10) + 80;// 80~89 -2~+1
-                  } else {
-                    nextProgress = Math.floor(Math.random() * 10) + 30;// 30~39 -2~+1
-                  }
-                }
-                const next = `→ ${nextProgress}±2%`;
-                isAutoJoinRunning = false;
-                logMessage(null, '攻撃可能なタイルが見つかりませんでした。', next);
-                return;
+            if (location.href.includes('/teambattle?m=rb')) {
+              if (currentProgress < 16) {
+                 nextProgress = 26;
+                } else if (currentProgress < 33) {
+                 nextProgress = 43;
+                } else if (currentProgress < 50) {
+                 nextProgress = 60;
+                } else if (currentProgress < 66) {
+                 nextProgress = 76;
+                } else if (currentProgress < 83) {
+                 nextProgress = 93;
+              } else {
+                 nextProgress = 10;
+              }
+            } else {
+              if (currentProgress < 50) {
+                nextProgress = Math.floor(Math.random() * 10) + 80;// 80~89 -2~+1
+              } else {
+                nextProgress = Math.floor(Math.random() * 10) + 30;// 30~39 -2~+1
+              }
+            }
+            const next = `→ ${nextProgress}±2%`;
+            isAutoJoinRunning = false;
+            logMessage(null, '攻撃可能なタイルが見つかりませんでした。', next);
+            return;
         }
       }
     }
