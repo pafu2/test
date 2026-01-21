@@ -16,7 +16,8 @@ const statusEl = document.createElement('div');
     document.body.appendChild(statusEl);
 
     const lastReloadTime = Date.now();
-    const reloadInterval = 60000;// 60秒ごとにリロード（単位はミリ秒）
+// 180秒ごとにリロード（単位はミリ秒）
+    const reloadInterval = 180000;
 
     function autoSwitch() {
         let elapsedPercent = -1;
@@ -47,12 +48,12 @@ const statusEl = document.createElement('div');
         });
 
         let target = "";
-        // 48%以上50%以下、99%以上（100%含まれる）、0%を採掘に設定
-        if (elapsedPercent === 0 || (elapsedPercent >= 48 && elapsedPercent <= 50) || elapsedPercent >= 99) {
+        // 45%以上50%以下、95%以上（100%含まれる）、0%を採掘に設定
+        if (elapsedPercent === 0 || (elapsedPercent >= 45 && elapsedPercent <= 50) || elapsedPercent >= 95) {
             target = "mining";
         }
-        // 1%以上47%以下、51%以上98%以下 を探検に設定
-        else if ((elapsedPercent >= 1 && elapsedPercent <= 47) || (elapsedPercent >= 51 && elapsedPercent <= 98)) {
+        // 1%以上44%以下、51%以上94%以下 を探検に設定
+        else if ((elapsedPercent >= 1 && elapsedPercent <= 44) || (elapsedPercent >= 51 && elapsedPercent <= 94)) {
             target = "exploration";
         }
 
