@@ -2997,36 +2997,40 @@
           mapEdge: shuffle(mapEdgeCells)
         };
 
-        //警備員仕様
+//警備員仕様
 const gridCells = document.querySelectorAll('.grid .cell');
 const rankMap = new Map();
 gridCells.forEach(c => {
-  if (c.dataset.rank) {
-    // dataset.row-dataset.col をキーにしてランク文字列（'警'など）を保存
-    rankMap.set(`${c.dataset.row}-${c.dataset.col}`, c.dataset.rank);
-  }
+if (c.dataset.rank) {
+rankMap.set(`${c.dataset.row}-${c.dataset.col}`, c.dataset.rank);
+}
 });
 
-// 2. 各カテゴリ（非隣接、味方隣接など）ごとに並び替え
+// 2. すべてのカテゴリ(regions)のマスを一つの配列にまとめる
+let allTargets = [];
 for (const key in regions) {
-  // まず、そのカテゴリ内の全マスをランダムにシャッフル
-  // これにより(0,0),(1,0)などの座標順がバラバラになる
-  shuffle(regions[key]);
-
-  // 次に、警備員マスを先頭へ移動させる
-  // 同じ「警」同士、または同じ「平民」同士なら、上のシャッフル順が維持される
-  regions[key].sort((a, b) => {
-    const rankA = rankMap.get(a.join('-')) || '';
-    const rankB = rankMap.get(b.join('-')) || '';
-    const isGuardA = rankA.includes('警') ? 1 : 0;
-    const isGuardB = rankB.includes('警') ? 1 : 0;
-    
-    return isGuardB - isGuardA; // 1(警備員)を0(その他)より優先
-  });
+allTargets = allTargets.concat(regions[key]);
 }
-        //警備員仕様
-return regions;
-      } catch (e) {
+
+// 3. 全体をシャッフルする（これにより警備員同士・平民同士の並びがランダムになる）
+shuffle(allTargets);
+
+allTargets.sort((a, b) => {
+            const rankA = rankMap.get(a.join('-')) || '';
+            const rankB = rankMap.get(b.join('-')) || '';
+            const isGuardA = rankA.includes('警') ? 1 : 0;
+            const isGuardB = rankB.includes('警') ? 1 : 0;
+            return isGuardB - isGuardA;
+        });
+
+        // 【ここが重要】 
+        // 呼び出し元が regions.nonAdjacent などを参照しているはずなので、
+        // 整理した allTargets をひとつのカテゴリとして返します。
+        return {
+            all: allTargets 
+        };
+
+    } catch (e) {
         console.error(e);
         return;
       }
