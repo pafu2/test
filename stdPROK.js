@@ -3012,9 +3012,6 @@
             const rankB = rankMap.get(b.join('-')) || '';
             const isGuardA = rankA.includes('警') ? 1 : 0;
             const isGuardB = rankB.includes('警') ? 1 : 0;
-              if (isGuardA === isGuardB) {
-                return Math.random() - 0.5; // ランダムに並べ替える
-              }
             return isGuardB - isGuardA; // 警備員を先頭へ
           });
         }
