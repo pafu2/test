@@ -2990,15 +2990,13 @@
           return arr;
         }
 
-// 1. 各カテゴリを定義（既存の変数をそのまま使用）
         const regions = {
           nonAdjacent: nonAdjacentCells || [],
           capitalAdjacent: capitalAdjacentCells || [],
           teamAdjacent: teamAdjacentCells || [],
           mapEdge: mapEdgeCells || []
         };
-
-        // 2. ランク情報の取得
+        //警備員仕様
         const gridCells = document.querySelectorAll('.grid .cell');
         const rankMap = new Map();
         gridCells.forEach(c => {
@@ -3007,32 +3005,23 @@
           }
         });
 
-        // 3. 各カテゴリ（小部屋）の中で、それぞれ「警備員を先頭」にする
-        // こうすることで、呼び出し元の「カテゴリの優先順位」を壊さずに済みます
         for (const key in regions) {
-          // まずそのカテゴリ内をランダムにする
           shuffle(regions[key]);
-
-          // その中で「警備員」がいれば一番上に持ってくる
           regions[key].sort((a, b) => {
             const rankA = rankMap.get(a.join('-')) || '';
             const rankB = rankMap.get(b.join('-')) || '';
             const isGuardA = rankA.includes('警') ? 1 : 0;
             const isGuardB = rankB.includes('警') ? 1 : 0;
-            
-            // 警備員を前へ、平民を後ろへ
             return isGuardB - isGuardA;
           });
         }
-
-        // 4. すべてのカテゴリを維持したまま返す
+        //警備員仕様
         return regions;
-
       } catch (e) {
         console.error(e);
         return;
       }
-}
+    }
 
     async function challenge (region) {
       const [ row, col ] = region;
