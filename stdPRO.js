@@ -2562,6 +2562,9 @@
     }
 
     const messageTypes = {
+      capitalAttack: [
+        '再建が必要です。'
+      ],
       breaktime: [
         'チームに参加または離脱してから間もないため、次のバトルが始まるまでお待ちください。',
         'もう一度バトルに参加する前に、待たなければなりません。',
@@ -2666,13 +2669,15 @@
 
         regions[cellType] = regions[cellType]
           .filter(e => !excludeSet.has(e.join(',')));
-        for (const region of regions[cellType]) {
+        for (let i = 0; i < regions[cellType].length;) {
+          const region = regions[cellType][i];
           let errorCount = 0;
           let next;
           try {
             const [cellRank, equipChangeStat] = await equipChange(region);
             if (equipChangeStat === 'noEquip') {
               excludeSet.add(region.join(','));
+              i++;
               continue;
             }
 
@@ -2682,46 +2687,60 @@
             let processType;
             let sleepTime = 2;
 
-            if (text.startsWith('リーダーになった')) {
-              if (location.href.includes('/teambattle?m=rb')) {
-                  success = true;
-                  message = '[成功] ' + lastLine;
-                  processType = 'return';
+            if (messageType === 'capitalAttack') {
+              if (loop < 4){
+                loop += 1;
+                message = '[ﾘﾄﾗｲ] '+ lastLine;
+                processType = 'continue';
               } else {
-                if (loop < 4){
-                  loop += 1;
-                  message = '[ﾘﾄﾗｲ] ' + lastLine;
-                  processType = 'continue';
-                } else {
-                  success = true;
-                  loop += 1;
-                  message = '[成功] ' + lastLine;
-                  processType = 'return';
-                }
+                success = true;
+                loop += 1;
+                message = '[成功] ' + lastLine;
+                processType = 'return';
+                i++;
               }
+            } else if (text.startsWith('リーダーになった')) {
+              if (loop < 4){
+                loop += 1;
+                message = '[ﾘﾄﾗｲ] ' + lastLine;
+                processType = 'continue';
+              } else {
+                success = true;
+                loop += 1;
+                message = '[成功] ' + lastLine;
+                processType = 'return';
+              }
+              i++;
             } else if (text.startsWith('アリーナチャレンジ開始')) {
               success = true;
               message = '[成功] ' + lastLine;
               processType = 'return';
+              i++;
             } else if (messageType === 'breaktime') {
               success = true;
               message = lastLine;
               processType = 'return';
+              i++;
             } else if (messageType === 'retry') {
               sleepTime = 20;
               processType = 'continue';
+              i++;
             } else if (messageType === 'equipError'){
               processType = 'continue';
               message += ` (${cellRank}, ${currentEquipName})`;
+              i++;
             } else if (lastLine.length > 100) {
               message = 'どんぐりシステム';
               processType = 'continue';
+              i++;
             } else if (messageType === 'quit') {
               message = '[停止] ' + lastLine;
               processType = 'return';
               clearInterval(autoJoinIntervalId);
+              i++;
             } else if (messageType === 'reset') {
               processType = 'break';
+              i++;
             } else if (messageType in regions) {
               excludeSet.add(region.join(','));
               if (messageType === cellType) {
@@ -2739,6 +2758,7 @@
                 cellType = 'mapEdge';
                 processType = 'break';
               }
+              i++;
             }
 
             if (success) {
@@ -2825,38 +2845,39 @@
               logMessage(region, e, `→ ${sleepTime}s`);
               await sleep(sleepTime * 1000);
             }
+            i++;
           }
         }
         if (!success && regions[cellType].length === 0) {
-              if (location.href.includes('/teambattle?m=rb')) {
-                if (currentProgress < 16) {
-                   nextProgress = 26;
-                  } else if (currentProgress < 33) {
-                   nextProgress = 43;
-                  } else if (currentProgress < 50) {
-                   nextProgress = 60;
-                  } else if (currentProgress < 66) {
-                   nextProgress = 76;
-                  } else if (currentProgress < 83) {
-                   nextProgress = 93;
-                  } else {
-                   nextProgress = 10;
-                  }
-                } else {
-                  if (currentProgress < 25) {
-                    nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
-                  } else if (currentProgress < 50) {
-                    nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
-                  } else if (currentProgress < 75) {
-                    nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
-                  } else {
-                    nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
-                  }
-                }
-                const next = `→ ${nextProgress}±2%`;
-                isAutoJoinRunning = false;
-                logMessage(null, '攻撃可能なタイルが見つかりませんでした。', next);
-                return;
+            if (location.href.includes('/teambattle?m=rb')) {
+              if (currentProgress < 16) {
+                 nextProgress = 26;
+                } else if (currentProgress < 33) {
+                 nextProgress = 43;
+                } else if (currentProgress < 50) {
+                 nextProgress = 60;
+                } else if (currentProgress < 66) {
+                 nextProgress = 76;
+                } else if (currentProgress < 83) {
+                 nextProgress = 93;
+              } else {
+                 nextProgress = 10;
+              }
+            } else {
+              if (currentProgress < 25) {
+                nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
+              } else if (currentProgress < 50) {
+                nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
+              } else if (currentProgress < 75) {
+                nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
+              } else {
+                nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
+              }
+            }
+            const next = `→ ${nextProgress}±2%`;
+            isAutoJoinRunning = false;
+            logMessage(null, '攻撃可能なタイルが見つかりませんでした。', next);
+            return;
         }
       }
     }
