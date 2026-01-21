@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         スキル自動切替
+// @name         探検⇔採掘自動切替
 // @namespace    http://tampermonkey.net/
 // @version      1.0
 // @description  探検→採掘→探検の切替
@@ -16,7 +16,7 @@ const statusEl = document.createElement('div');
     document.body.appendChild(statusEl);
 
     const lastReloadTime = Date.now();
-    const reloadInterval = 60000;// 60秒ごとにリロード、単位はミリ秒
+    const reloadInterval = 60000;// 60秒ごとにリロード（単位はミリ秒）
 
     function autoSwitch() {
         let elapsedPercent = -1;
@@ -58,7 +58,7 @@ const statusEl = document.createElement('div');
 
         const nextReloadIn = Math.max(0, Math.round((reloadInterval - (Date.now() - lastReloadTime)) / 1000));
 
-        statusEl.innerHTML = `<b>【スキル自動切替】</b><br>経過: ${elapsedPercent}%<br>現在: ${isMiningNow ? '採掘中' : isExplorationNow ? '探検中' : 'その他'}<br><small>次回更新まで: ${nextReloadIn}秒</small>`;
+        statusEl.innerHTML = `<b>探検⇔採掘自動切替</b><br>経過: ${elapsedPercent}%<br>現在: ${isMiningNow ? '採掘中' : isExplorationNow ? '探検中' : 'その他'}<br><small>次回更新まで: ${nextReloadIn}秒</small>`;
 
         if (target === "mining" && !isMiningNow) {
             window.location.href = "/focus/mining";
