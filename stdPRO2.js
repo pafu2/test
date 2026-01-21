@@ -2996,7 +2996,12 @@
         return regions;
       } catch (e) {
         console.error(e);
-        return;
+        return {
+          nonAdjacent: [],
+          capitalAdjacent: [],
+          teamAdjacent: [],
+          mapEdge: []
+        };
       }
     }
 
