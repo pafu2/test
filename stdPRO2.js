@@ -2699,7 +2699,7 @@
                 processType = 'return';
                 i++;
               }
-            if (text.startsWith('リーダーになった')) {
+            } else if (text.startsWith('リーダーになった')) {
               if (loop < 4){
                 loop += 1;
                 message = '[ﾘﾄﾗｲ] ' + lastLine;
@@ -2996,12 +2996,7 @@
         return regions;
       } catch (e) {
         console.error(e);
-        return {
-          nonAdjacent: [],
-          capitalAdjacent: [],
-          teamAdjacent: [],
-          mapEdge: []
-        };
+        return;
       }
     }
 
