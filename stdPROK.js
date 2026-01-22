@@ -2991,32 +2991,31 @@
         }
 
         const regions = {
-          nonAdjacent: shuffle(nonAdjacentCells),
-          capitalAdjacent: shuffle(capitalAdjacentCells),
-          teamAdjacent: shuffle(teamAdjacentCells),
-          mapEdge: shuffle(mapEdgeCells)
+          nonAdjacent: nonAdjacentCells || [],
+          capitalAdjacent: capitalAdjacentCells || [],
+          teamAdjacent: teamAdjacentCells || [],
+          mapEdge: mapEdgeCells || []
         };
-
         //警備員仕様
         const gridCells = document.querySelectorAll('.grid .cell');
-          const rankMap = new Map();
-          gridCells.forEach(c => {
+        const rankMap = new Map();
+        gridCells.forEach(c => {
           if (c.dataset.rank) {
             rankMap.set(`${c.dataset.row}-${c.dataset.col}`, c.dataset.rank);
           }
         });
 
         for (const key in regions) {
+          shuffle(regions[key]);
           regions[key].sort((a, b) => {
             const rankA = rankMap.get(a.join('-')) || '';
             const rankB = rankMap.get(b.join('-')) || '';
             const isGuardA = rankA.includes('警') ? 1 : 0;
             const isGuardB = rankB.includes('警') ? 1 : 0;
-            return isGuardB - isGuardA; // 警備員を先頭へ
+            return isGuardB - isGuardA;
           });
         }
         //警備員仕様
-
         return regions;
       } catch (e) {
         console.error(e);
