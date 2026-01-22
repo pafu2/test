@@ -2650,7 +2650,6 @@
 
       let regions = await getRegions();
       const excludeSet = new Set();
-      let loop = 0;
 
       let cellType;
       if (regions.nonAdjacent.length > 0) {
@@ -2684,6 +2683,7 @@
             let message = lastLine;
             let processType;
             let sleepTime = 2;
+            let loop = 0;
 
             if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
               if (loop < 2){
