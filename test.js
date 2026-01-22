@@ -2691,8 +2691,8 @@
             if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
               if (loop < 1){
                 loop += 1;
-                sleepTime = 1800000;
-                message = '[30分後] ' + lastLine;
+                sleepTime = 30000;
+                message = '[30秒後] ' + lastLine;
                 processType = 'continue';
               } else {
                 success = true;
