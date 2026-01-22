@@ -3005,29 +3005,29 @@
           }
         });
 
-for (const key in regions) {
-      regions[key] = sortRegionByGuard(regions[key], rankMap);
-    }
-    
-    return regions;
+        for (const key in regions) {
+          if (!regions[key]) continue;
+          regions[key] = regions[key]
+            .map(cell => {
+              const rowColKey = Array.isArray(cell) ? cell.join('-') : "";
+              const rank = rankMap.get(rowColKey) || '';
+              const isGuard = rank.includes('警') ? 1 : 0;
+              return {
+                cell: cell,
+                score: isGuard + Math.random()
+              };
+            })
+            .sort((a, b) => b.score - a.score)
+            .map(item => item.cell);
+        }
+        //警備員仕様
+        return regions;
       } catch (e) {
         console.error(e);
         return;
       }
     }
-function sortRegionByGuard(cells, rankMap) {
-  if (!cells || !Array.isArray(cells)) return [];
-  
-  return cells
-    .map(cell => {
-      const key = Array.isArray(cell) ? cell.join('-') : "";
-      const rank = rankMap.get(key) || '';
-      const isGuard = rank.includes('警') ? 1 : 0;
-      return { cell, score: isGuard + Math.random() };
-    })
-    .sort((a, b) => b.score - a.score)
-    .map(item => item.cell);
-}
+
     async function challenge (region) {
       const [ row, col ] = region;
       const body = `row=${row}&col=${col}`;
