@@ -3005,23 +3005,32 @@
           }
         });
 
-        for (const key in regions) {
-          shuffle(regions[key]);
-          regions[key].sort((a, b) => {
-            const rankA = rankMap.get(a.join('-')) || '';
-            const rankB = rankMap.get(b.join('-')) || '';
-            const isGuardA = rankA.includes('警') ? 1 : 0;
-            const isGuardB = rankB.includes('警') ? 1 : 0;
-            return isGuardB - isGuardA;
-          });
-        }
+for (const key in regions) {
+  // 各セルに対して、ソート用の「重み」を事前に計算する
+  const scoredRegion = regions[key].map(cell => {
+    const rank = rankMap.get(cell.join('-')) || '';
+    const isGuard = rank.includes('警') ? 1 : 0;
+    
+    return {
+      cell: cell,
+      // 警備員(isGuard=1)は大きな値を持ち、かつ同じランク内でもランダムになるようMath.randomを加える
+      // 例: 警備員は 1.0?2.0、それ以外は 0.0?1.0 の値を持つ
+      score: isGuard + Math.random()
+    };
+  });
+
+  // スコアの高い順（降順）にソート
+  scoredRegion.sort((a, b) => b.score - a.score);
+
+  // cellデータのみを配列に戻す
+  regions[key] = scoredRegion.map(item => item.cell);
+}
         //警備員仕様
         return regions;
       } catch (e) {
         console.error(e);
         return;
       }
-    }
 
     async function challenge (region) {
       const [ row, col ] = region;
