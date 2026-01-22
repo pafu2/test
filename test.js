@@ -2623,7 +2623,7 @@
       await fetchAreaInfo(true);
       //警備員仕様
       await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
+      if (isAutoJoinRunning || nextProgress === currentProgress) {
         return;
       }
 
@@ -2688,7 +2688,7 @@
             if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
               if (loop < 2){
                 loop += 1;
-                let sleepTime = 1800000;
+                sleepTime = 1800000;
                 message = '[30分後] ' + lastLine;
                 processType = 'continue';
               } else {
