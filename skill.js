@@ -16,7 +16,8 @@ const statusEl = document.createElement('div');
     document.body.appendChild(statusEl);
 
     const lastReloadTime = Date.now();
-    const reloadInterval = 180000;//180秒ごとにリロード（単位はミリ秒）
+    //180秒ごとにリロード（単位はミリ秒）、もし変えるならこの部分を希望のミリ秒数にする
+    const reloadInterval = 180000;
 
     function autoSwitch() {
         let elapsedPercent = -1;
@@ -47,18 +48,18 @@ const statusEl = document.createElement('div');
         });
 
         let target = "";
-        // 45～50%、95～100%、0% を採掘に設定
+        // 45～50%・95～100%・0% を採掘に設定、もし変えるならこの部分をリロード秒数から逆算して変える
         if (elapsedPercent === 0 || (elapsedPercent >= 45 && elapsedPercent <= 50) || elapsedPercent >= 95) {
             target = "mining";
         }
-        // 1～44%、51～94% を探検に設定
+        // 1～44%・51～94% を探検に設定、もし変えるならこの部分をリロード秒数から逆算して変える
         else if ((elapsedPercent >= 1 && elapsedPercent <= 44) || (elapsedPercent >= 51 && elapsedPercent <= 94)) {
             target = "exploration";
         }
 
         const nextReloadIn = Math.max(0, Math.round((reloadInterval - (Date.now() - lastReloadTime)) / 1000));
 
-        statusEl.innerHTML = `<b>探検⇔採掘自動切替</b><br>経過: ${elapsedPercent}%<br>現在: ${isMiningNow ? '<span style="color:#ca4252;font-weight:bold;background:#fff0f2;padding:2px 6px;border-radius:6px;">採掘中</span>' : isExplorationNow ? '<span style="color:#005bbb;font-weight:bold;background:#e6f3ff;padding:2px 6px;border-radius:6px;">探検中</span>' : 'その他'}<br><small>次回更新まで: ${nextReloadIn}秒</small>`;
+        statusEl.innerHTML = `<b>探検⇔採掘自動切替</b><br>経過: ${elapsedPercent}%<br>現在: ${isMiningNow ? '<span style="color:#ca4252;font-weight:bold;background:#fff0f2;padding:2px 6px;border-radius:6px;">採掘中</span>' : isExplorationNow ? '<span style="color:#005bbb;font-weight:bold;background:#e6f3ff;padding:2px 6px;border-radius:6px;">探検中</span>' : 'その他'}<br><small>更新まで: ${nextReloadIn}秒</small>`;
 
         if (target === "mining" && !isMiningNow) {
             window.location.href = "/focus/mining";
