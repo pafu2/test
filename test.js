@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 Standard警備員仕様
+// @version      1.2.2d改 Standard PRO警備員仕様
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -1117,7 +1117,7 @@
     (()=>{
       const link = document.createElement('a');
       link.style.color = '#333';
-      link.textContent = '1.2.2d改 Standard警備員仕様';
+      link.textContent = '1.2.2d改 Standard PRO警備員仕様';
       footer.append(link);
     })();
 
@@ -2562,6 +2562,9 @@
     }
 
     const messageTypes = {
+      capitalAttack: [
+        '再建が必要です。'
+      ],
       breaktime: [
         'チームに参加または離脱してから間もないため、次のバトルが始まるまでお待ちください。',
         'もう一度バトルに参加する前に、待たなければなりません。',
@@ -2623,7 +2626,7 @@
       await fetchAreaInfo(true);
       //警備員仕様
       await drawProgressBar();
-      if (isAutoJoinRunning || nextProgress === currentProgress) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
         return;
       }
 
@@ -2650,6 +2653,7 @@
 
       let regions = await getRegions();
       const excludeSet = new Set();
+      let loop = 0;
 
       let cellType;
       if (regions.nonAdjacent.length > 0) {
@@ -2683,10 +2687,9 @@
             let message = lastLine;
             let processType;
             let sleepTime = 2;
-            let loop = 0;
 
             if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
-              if (loop < 2){
+              if (loop < 1){
                 loop += 1;
                 sleepTime = 1800000;
                 message = '[30分後] ' + lastLine;
@@ -2697,9 +2700,6 @@
                 message = '[成功] ' + lastLine;
                 processType = 'return';
               }
-              success = true;
-              message = '[成功] ' + lastLine;
-              processType = 'return';
             } else if (messageType === 'breaktime') {
               success = true;
               message = lastLine;
@@ -2916,34 +2916,32 @@
         }
 
         const regions = {
-          nonAdjacent: shuffle(nonAdjacentCells),
-          capitalAdjacent: shuffle(capitalAdjacentCells),
-          teamAdjacent: shuffle(teamAdjacentCells),
-          mapEdge: shuffle(mapEdgeCells)
+          nonAdjacent: nonAdjacentCells || [],
+          capitalAdjacent: capitalAdjacentCells || [],
+          teamAdjacent: teamAdjacentCells || [],
+          mapEdge: mapEdgeCells || []
         };
-
         //警備員仕様
         const gridCells = document.querySelectorAll('.grid .cell');
-          const rankMap = new Map();
-          gridCells.forEach(c => {
+        const rankMap = new Map();
+        gridCells.forEach(c => {
           if (c.dataset.rank) {
             rankMap.set(`${c.dataset.row}-${c.dataset.col}`, c.dataset.rank);
           }
         });
 
         for (const key in regions) {
+          shuffle(regions[key]);
           regions[key].sort((a, b) => {
             const rankA = rankMap.get(a.join('-')) || '';
             const rankB = rankMap.get(b.join('-')) || '';
             const isGuardA = rankA.includes('警') ? 1 : 0;
             const isGuardB = rankB.includes('警') ? 1 : 0;
-            return isGuardB - isGuardA; // 警備員を先頭へ
+            return isGuardB - isGuardA;
           });
         }
         //警備員仕様
-
         return regions;
-
       } catch (e) {
         console.error(e);
         return;
@@ -3009,7 +3007,7 @@
     if (!isAutoJoinRunning) {
       attackRegion();
     }
-    autoJoinIntervalId = setInterval(attackRegion,20000);
+    autoJoinIntervalId = setInterval(attackRegion,60000);
   };
 
   async function drawProgressBar(){
