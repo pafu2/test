@@ -2626,7 +2626,7 @@
       await fetchAreaInfo(true);
       //警備員仕様
       await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) === 0) {
         return;
       }
 
@@ -3007,7 +3007,7 @@
     if (!isAutoJoinRunning) {
       attackRegion();
     }
-    autoJoinIntervalId = setInterval(attackRegion,60000);
+    autoJoinIntervalId = setInterval(attackRegion,18000);
   };
 
   async function drawProgressBar(){
