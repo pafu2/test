@@ -48,7 +48,7 @@ const statusEl = document.createElement('div');
         });
 
         let target = "";
-        // 45～50%・95～100%・0% を採掘に設定、もし変えるならこの部分をリロード秒数から逆算して変える
+        // 0%・45～50%・95～100% を採掘に設定、もし変えるならこの部分をリロード秒数から逆算して変える
         if (elapsedPercent === 0 || (elapsedPercent >= 45 && elapsedPercent <= 50) || elapsedPercent >= 95) {
             target = "mining";
         }
