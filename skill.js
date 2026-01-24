@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         探検⇔採掘自動切替
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  探検→採掘→探検の切替
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/
@@ -12,11 +12,11 @@
     'use strict';
 
 const statusEl = document.createElement('div');
-    statusEl.style = "position:fixed;top:10px;left:10px;z-index:9999;padding:10px;background:white;color:black;font-size:18px;border-radius:5px;pointer-events:none;line-height:1.4;border:2px solid #c0c0c0;box-shadow: 2px 2px 5px rgba(0,0,0,0.2);";
+    statusEl.style = "position:fixed;top:10px;left:10px;z-index:9999;padding:10px;background:white;color:black;font-size:18px;border-radius:5px;pointer-events:none;line-height:1.5;border:2px solid #c0c0c0;box-shadow: 2px 2px 5px rgba(0,0,0,0.2);";
     document.body.appendChild(statusEl);
 
     const lastReloadTime = Date.now();
-    //180秒ごとにリロード（単位はミリ秒）、もし変えるならこの部分を希望のミリ秒数にする
+    //180秒ごとに再認証（単位はミリ秒）、もし変えるならこの部分を希望のミリ秒数にする
     const reloadInterval = 180000;
 
     function autoSwitch() {
@@ -48,18 +48,18 @@ const statusEl = document.createElement('div');
         });
 
         let target = "";
-        // 0%・45～50%・95～100% を採掘に設定、もし変えるならこの部分をリロード秒数から逆算して変える
-        if (elapsedPercent === 0 || (elapsedPercent >= 45 && elapsedPercent <= 50) || elapsedPercent >= 95) {
+        // 0～1%・45～51%・95～100% を採掘に設定、もし変えるなら数字部分をリロード秒数から逆算して希望の数値に変える
+        if ( (elapsedPercent >= 0 && elapsedPercent <= 1) || (elapsedPercent >= 45 && elapsedPercent <= 51) || elapsedPercent >= 95) {
             target = "mining";
         }
-        // 1～44%・51～94% を探検に設定、もし変えるならこの部分をリロード秒数から逆算して変える
-        else if ((elapsedPercent >= 1 && elapsedPercent <= 44) || (elapsedPercent >= 51 && elapsedPercent <= 94)) {
+        // 2～44%・52～94% を探検に設定、もし変えるなら数字部分をリロード秒数から逆算して希望の数値に変える
+        else if ((elapsedPercent >= 2 && elapsedPercent <= 44) || (elapsedPercent >= 52 && elapsedPercent <= 94)) {
             target = "exploration";
         }
 
         const nextReloadIn = Math.max(0, Math.round((reloadInterval - (Date.now() - lastReloadTime)) / 1000));
 
-        statusEl.innerHTML = `<b>探検⇔採掘自動切替</b><br>経過: ${elapsedPercent}%<br>現在: ${isMiningNow ? '<span style="color:#ca4252;font-weight:bold;background:#fff0f2;padding:2px 6px;border-radius:6px;">採掘中</span>' : isExplorationNow ? '<span style="color:#005bbb;font-weight:bold;background:#e6f3ff;padding:2px 6px;border-radius:6px;">探検中</span>' : 'その他'}<br><small>更新まで: ${nextReloadIn}秒</small>`;
+        statusEl.innerHTML = `<b>探検⇔採掘自動切替</b><br>経過: ${elapsedPercent}%<br>現在: ${isMiningNow ? '<span style="color:#ca4252;font-weight:bold;background:#fff0f2;padding:2px 4px 0px 4px;border-radius:6px;border:1px solid #ca4252;">採掘中</span>' : isExplorationNow ? '<span style="color:#005bbb;font-weight:bold;background:#e6f3ff;padding:2px 4px 0px 4px;border-radius:6px;border:1px solid #005bbb;">探検中</span>' : 'その他'}<br>更新まで: ${nextReloadIn}秒`;
 
         if (target === "mining" && !isMiningNow) {
             window.location.href = "/focus/mining";
@@ -70,7 +70,8 @@ const statusEl = document.createElement('div');
         }
 
         if (Date.now() - lastReloadTime > reloadInterval) {
-            window.location.reload();
+        // リロードではなく再認証ポチッに変更、もしリロードがよければ以下を window.location.reload(); に変える
+            window.location.href = "/auth";
         }
     }
 
