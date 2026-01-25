@@ -2567,9 +2567,11 @@
         'もう一度バトルに参加する前に、待たなければなりません。',
         'ng: ちょっとゆっくり'
       ],
-      retry: [
-        'あなたのチームは動きを使い果たしました。しばらくお待ちください。',
+      toofast: [
         'ng<>too fast'
+      ],
+      retry: [
+        'あなたのチームは動きを使い果たしました。しばらくお待ちください。'
       ],
       reset: [
         'このタイルは攻撃できません。範囲外です。'
@@ -2689,6 +2691,9 @@
               success = true;
               message = lastLine;
               processType = 'return';
+            } else if (messageType === 'toofast') {
+              sleepTime = 3;
+              processType = 'continue';
             } else if (messageType === 'retry') {
               sleepTime = 20;
               processType = 'continue';
