@@ -2656,7 +2656,10 @@
       let loop = 0;
 
       let cellType;
-      if (regions.nonAdjacent.length > 0) {
+      //警備員仕様
+      if (regions.guard && regions.guard.length > 0) {
+        cellType = 'guard';
+      } else if (regions.nonAdjacent.length > 0) {
         cellType = 'nonAdjacent';
       } else if (regions.teamAdjacent.length > 0) {
         cellType = 'teamAdjacent';
@@ -2665,6 +2668,7 @@
       } else {
         cellType = 'mapEdge';
       }
+      //警備員仕様
 
       while(dialog.open) {
         let success = false;
@@ -2989,65 +2993,42 @@
           }
           return arr;
         }
+        //警備員仕様
+        const guardCells = cells.filter(([r, c]) => rankMap.has(`${r}-${c}`));
 
         const regions = {
+          guard: guardCells,
           nonAdjacent: nonAdjacentCells || [],
           capitalAdjacent: capitalAdjacentCells || [],
           teamAdjacent: teamAdjacentCells || [],
           mapEdge: mapEdgeCells || []
         };
+
+        const gridCells = document.querySelectorAll('.grid .cell');
+        const rankMap = new Map();
+        gridCells.forEach(c => {
+          if (c.dataset.rank) {
+            rankMap.set(`${c.dataset.row}-${c.dataset.col}`, c.dataset.rank);
+          }
+        });
+
+        for (const key in regions) {
+          if (!regions[key]) continue;
+          regions[key] = regions[key]
+            .map(cell => {
+              const rowColKey = Array.isArray(cell) ? cell.join('-') : "";
+              const rank = rankMap.get(rowColKey) || '';
+              const isGuard = rank.includes('警') ? 1 : 0;
+              return {
+                cell: cell,
+                score: isGuard + Math.random()
+              };
+            })
+            .sort((a, b) => b.score - a.score)
+            .map(item => item.cell);
+        }
         //警備員仕様
-// 1. まず全てのセルに対して「警備員かどうか」のスコアを計算したマップを作成
-const gridCells = document.querySelectorAll('.grid .cell');
-const cellDataMap = new Map();
-
-gridCells.forEach(c => {
-    const key = `${c.dataset.row}-${c.dataset.col}`;
-    const rank = c.dataset.rank || '';
-    // 警備員なら高いベーススコア(100)を与え、そこにランダム値を足して優先順位を作る
-    const score = rank.includes('警') ? 100 + Math.random() : Math.random();
-    cellDataMap.set(key, {
-        cell: [Number(c.dataset.row), Number(c.dataset.col)],
-        score: score
-    });
-});
-
-// 2. 各リージョンの分類（既存のロジックを整理）
-const regions = {
-    nonAdjacent: [],
-    capitalAdjacent: [],
-    teamAdjacent: [],
-    mapEdge: []
-};
-
-cells.forEach(([r, c]) => {
-    const key = `${r}-${c}`;
-    const data = cellDataMap.get(key);
-    if (!data) return;
-
-    if (adjacentSet.has(key)) {
-        regions.capitalAdjacent.push(data);
-    } else {
-        regions.nonAdjacent.push(data);
-    }
-
-    if (teamColorSet.has(key) || teamAdjacentSet.has(key)) {
-        regions.teamAdjacent.push(data);
-    }
-
-    if (mapEdgeSet.has(key)) {
-        regions.mapEdge.push(data);
-    }
-});
-
-// 3. 各リージョン内をスコア順（警備員優先）にソートして、座標配列に戻す
-for (const key in regions) {
-    regions[key] = regions[key]
-        .sort((a, b) => b.score - a.score)
-        .map(item => item.cell);
-}
-
-return regions;
+        return regions;
       } catch (e) {
         console.error(e);
         return;
