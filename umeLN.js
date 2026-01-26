@@ -2899,9 +2899,9 @@
               }
             } else {
               if (currentProgress < 50) {
-                nextProgress = 75;
+                nextProgress = 85;
               } else {
-                nextProgress = 25;
+                nextProgress = 35;
               }
             }
             const next = `→ ${nextProgress}±1%`;
