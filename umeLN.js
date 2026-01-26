@@ -2717,17 +2717,10 @@
               }
               i++;
             } else if (text.startsWith('アリーナチャレンジ開始')) {
-              if (loop < 3){
-                loop += 1;
-                sleepTime = 1;
-                message = '(' + loop + '発目) '+ lastLine;
-                processType = 'reload';
-              } else {
-                loop += 1;
-                success = true;
-                message = '[打止] (' + loop + '発目) '+ lastLine;
-                processType = 'return';
-              }
+              loop += 1;
+              success = true;
+              message = '[打止] (' + loop + '発目) '+ lastLine;
+              processType = 'return';
               i++;
             } else if (messageType === 'breaktime') {
               success = true;
