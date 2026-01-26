@@ -2726,11 +2726,9 @@
             } else if (messageType === 'toofast') {
               sleepTime = 3;
               processType = 'continue';
-              i++;
             } else if (messageType === 'retry') {
               sleepTime = 20;
               processType = 'continue';
-              i++;
             } else if (messageType === 'equipError'){
               processType = 'continue';
               message += ` (${cellRank}, ${currentEquipName})`;
