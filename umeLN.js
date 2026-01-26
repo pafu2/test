@@ -2963,7 +2963,7 @@
 
         const nonAdjacentCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          return !capitalSet.has(key) && !adjacentSet.has(key);
+          return !capitalSet.has(key);
         });
 
         const capitalAdjacentCells = cells.filter(([r, c]) => {
