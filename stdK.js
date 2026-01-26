@@ -2567,9 +2567,11 @@
         'もう一度バトルに参加する前に、待たなければなりません。',
         'ng: ちょっとゆっくり'
       ],
-      retry: [
-        'あなたのチームは動きを使い果たしました。しばらくお待ちください。',
+      toofast: [
         'ng<>too fast'
+      ],
+      retry: [
+        'あなたのチームは動きを使い果たしました。しばらくお待ちください。'
       ],
       reset: [
         'このタイルは攻撃できません。範囲外です。'
@@ -2692,6 +2694,9 @@
               success = true;
               message = lastLine;
               processType = 'return';
+            } else if (messageType === 'toofast') {
+              sleepTime = 3;
+              processType = 'continue';
             } else if (messageType === 'retry') {
               sleepTime = 20;
               processType = 'continue';
@@ -2885,12 +2890,12 @@
         }
 
         const capitalSet = new Set(capitalMap.map(([r, c]) => `${r}-${c}`));
-
+        //警備員仕様
         const nonAdjacentCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          return !capitalSet.has(key) && !adjacentSet.has(key);
+          return !capitalSet.has(key);
         });
-
+        //警備員仕様
         const capitalAdjacentCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
           return adjacentSet.has(key);
@@ -2959,14 +2964,19 @@
         });
 
         for (const key in regions) {
-          shuffle(regions[key]);
-          regions[key].sort((a, b) => {
-            const rankA = rankMap.get(a.join('-')) || '';
-            const rankB = rankMap.get(b.join('-')) || '';
-            const isGuardA = rankA.includes('警') ? 1 : 0;
-            const isGuardB = rankB.includes('警') ? 1 : 0;
-            return isGuardB - isGuardA;
-          });
+          if (!regions[key]) continue;
+          regions[key] = regions[key]
+            .map(cell => {
+              const rowColKey = Array.isArray(cell) ? cell.join('-') : "";
+              const rank = rankMap.get(rowColKey) || '';
+              const isGuard = rank.includes('警') ? 1 : 0;
+              return {
+                cell: cell,
+                score: isGuard + Math.random()
+              };
+            })
+            .sort((a, b) => b.score - a.score)
+            .map(item => item.cell);
         }
         //警備員仕様
         return regions;
