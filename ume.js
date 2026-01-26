@@ -2562,6 +2562,9 @@
     }
 
     const messageTypes = {
+      capitalAttack: [
+        '再建が必要です。'
+      ],
       breaktime: [
         'チームに参加または離脱してから間もないため、次のバトルが始まるまでお待ちください。',
         'もう一度バトルに参加する前に、待たなければなりません。',
@@ -2668,13 +2671,15 @@
 
         regions[cellType] = regions[cellType]
           .filter(e => !excludeSet.has(e.join(',')));
-        for (const region of regions[cellType]) {
+        for (let i = 0; i < regions[cellType].length;) {
+          const region = regions[cellType][i];
           let errorCount = 0;
           let next;
           try {
             const [cellRank, equipChangeStat] = await equipChange(region);
             if (equipChangeStat === 'noEquip') {
               excludeSet.add(region.join(','));
+              i++;
               continue;
            } else {
               excludeSet.add(region.join(','));
@@ -2686,22 +2691,37 @@
             let processType;
             let sleepTime = 1;
 
-            if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
-                if (loop < 255){
-                  loop += 1;
-                  sleepTime = 1;
-                  message = '(' + loop + '発目) '+ lastLine;
-                  processType = 'reload';
-                } else {
-                  loop += 1;
-                  success = true;
-                  message = '[打止] (' + loop + '発目) '+ lastLine;
-                  processType = 'return';
-                }
+            if (messageType === 'capitalAttack') {
+              if (loop < 255){
+                loop += 1;
+                sleepTime = 1;
+                message = '(' + loop + '発目) '+ lastLine;
+                processType = 'continue';
+              } else {
+                loop += 1;
+                success = true;
+                message = '[打止] (' + loop + '発目) '+ lastLine;
+                processType = 'return';
+                i++;
+              }
+            } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
+              if (loop < 255){
+                loop += 1;
+                sleepTime = 1;
+                message = '(' + loop + '発目) '+ lastLine;
+                processType = 'reload';
+              } else {
+                loop += 1;
+                success = true;
+                message = '[打止] (' + loop + '発目) '+ lastLine;
+                processType = 'return';
+              }
+              i++;
             } else if (messageType === 'breaktime') {
               success = true;
               message = lastLine;
               processType = 'return';
+              i++;
             } else if (messageType === 'toofast') {
               sleepTime = 3;
               processType = 'continue';
@@ -2709,26 +2729,30 @@
               sleepTime = 20;
               processType = 'continue';
             } else if (messageType === 'equipError'){
-                if (loop < 255){
-                  loop += 1;
-                  sleepTime = 1;
-                  message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
-                  processType = 'reload';
-                } else {
-                  loop += 1;
-                  success = true;
-                  message = '[打止] (' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
-                  processType = 'return';
-                }
+              if (loop < 255){
+                loop += 1;
+                sleepTime = 1;
+                message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
+                processType = 'reload';
+              } else {
+                loop += 1;
+                success = true;
+                message = '[打止] (' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
+                processType = 'return';
+              }
+              i++;
             } else if (lastLine.length > 100) {
               message = 'どんぐりシステム';
               processType = 'continue';
+              i++;
             } else if (messageType === 'quit') {
               message = '[停止] ' + lastLine;
               processType = 'return';
               clearInterval(autoJoinIntervalId);
+              i++;
             } else if (messageType === 'reset') {
               processType = 'break';
+              i++;
             } else if (messageType in regions) {
               excludeSet.add(region.join(','));
               if (messageType === cellType) {
@@ -2756,6 +2780,7 @@
                 message = '(' + loop + '発目) '+ lastLine;
                 processType = 'break';
               }
+              i++;
             }
             if (success) {
               clearInterval(autoJoinIntervalId);
@@ -2822,16 +2847,17 @@
               logMessage(region, e, `→ ${sleepTime}s`);
               await sleep(sleepTime * 1000);
             }
+            i++;
           }
         }
 
         if (!success && regions[cellType].length === 0) {
-                clearInterval(autoJoinIntervalId);
-                autoJoinIntervalId = null;
-                const next = `→ 予約なし`;
-                isAutoJoinRunning = false;
-                logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。', next);
-                return;
+            clearInterval(autoJoinIntervalId);
+            autoJoinIntervalId = null;
+            const next = `→ 予約なし`;
+            isAutoJoinRunning = false;
+            logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。', next);
+            return;
         }
       }
     }
