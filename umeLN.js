@@ -2717,7 +2717,7 @@
               }
               i++;
             } else if (text.startsWith('アリーナチャレンジ開始')) {
-              if (loop < 4){
+              if (loop < 3){
                 loop += 1;
                 sleepTime = 1;
                 message = '(' + loop + '発目) '+ lastLine;
