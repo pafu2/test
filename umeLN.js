@@ -2585,13 +2585,15 @@
         'あなたのどんぐりが理解できませんでした。',
         'レベルが低すぎます。'
       ],
+      guardError: [
+        '[警備員]だけ'
+      ],
       equipError: [
         '武器と防具を装備しなければなりません。',
         '装備している防具と武器が力不足です。',
         '装備している防具と武器が強すぎます',
         '装備しているものは改造が多すぎます。改造の少ない他のものをお試しください',
-        '参加するには、装備中の武器と防具のアイテムID',
-        '[警備員]だけ'
+        '参加するには、装備中の武器と防具のアイテムID'
       ],
       nonAdjacent: [
         'このタイルは攻撃できません。あなたのチームが首都を持つまで、どの首都にも隣接するタイルを主張することはできません。',
@@ -2733,10 +2735,14 @@
             } else if (messageType === 'retry') {
               sleepTime = 20;
               processType = 'continue';
-            } else if (messageType === 'equipError'){
+            } else if (messageType === 'guardError') {
+              message = lastLine;
+              processType = 'reload';
+              i++;
+            } else if (messageType === 'equipError') {
               if (loop < 255){
                 loop += 1;
-                sleepTime = 1;
+                sleepTime = 3;
                 message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
                 processType = 'reload';
               } else {
@@ -2744,8 +2750,8 @@
                 success = true;
                 message = '[打止] (' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
                 processType = 'return';
+                i++;
               }
-              i++;
             } else if (lastLine.length > 100) {
               message = 'どんぐりシステム';
               processType = 'continue';
@@ -2953,11 +2959,8 @@
         }
 
         const capitalSet = new Set(capitalMap.map(([r, c]) => `${r}-${c}`));
-
-        const nonAdjacentCells = cells.filter(([r, c]) => {
-          const key = `${r}-${c}`;
-          return !capitalSet.has(key);
-        });
+        //首都および首都隣接除外
+        const nonAdjacentCells = cells;
 
         const capitalAdjacentCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
@@ -2997,10 +3000,10 @@
           mapEdgeSet.add(`0-${i}`);
           mapEdgeSet.add(`${rows-1}-${i}`);
         }
-
+        //首都除外
         const mapEdgeCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          return mapEdgeSet.has(key) && !capitalSet.has(key);
+          return mapEdgeSet.has(key);
         })
 
         function shuffle(arr) {
