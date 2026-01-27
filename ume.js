@@ -2585,13 +2585,15 @@
         'あなたのどんぐりが理解できませんでした。',
         'レベルが低すぎます。'
       ],
+      guardError: [
+        '[警備員]だけ'
+      ],
       equipError: [
         '武器と防具を装備しなければなりません。',
         '装備している防具と武器が力不足です。',
         '装備している防具と武器が強すぎます',
         '装備しているものは改造が多すぎます。改造の少ない他のものをお試しください',
-        '参加するには、装備中の武器と防具のアイテムID',
-        '[警備員]だけ'
+        '参加するには、装備中の武器と防具のアイテムID'
       ],
       nonAdjacent: [
         'このタイルは攻撃できません。あなたのチームが首都を持つまで、どの首都にも隣接するタイルを主張することはできません。',
@@ -2728,7 +2730,11 @@
             } else if (messageType === 'retry') {
               sleepTime = 20;
               processType = 'continue';
-            } else if (messageType === 'equipError'){
+            } else if (messageType === 'guardError') {
+              message = lastLine;
+              processType = 'reload';
+              i++;
+            } else if (messageType === 'equipError') {
               if (loop < 255){
                 loop += 1;
                 sleepTime = 1;
