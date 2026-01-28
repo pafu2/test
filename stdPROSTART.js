@@ -2751,11 +2751,15 @@
                   nextProgress = 10;
                 }
               } else {
-                  if (currentProgress < 50) {
-                    nextProgress = 52;
-                  } else {
-                    nextProgress = 2;
-                  }
+                if (currentProgress < 25) {
+                  nextProgress = 30;
+                } else if (currentProgress < 50) {
+                  nextProgress = 52;
+                } else if (currentProgress < 75) {
+                  nextProgress = 80;
+                } else {
+                  nextProgress = 2;
+                }
               }
               next = `→ ${nextProgress}±1%`;
               isAutoJoinRunning = false;
@@ -2836,8 +2840,12 @@
                    nextProgress = 10;
                   }
                 } else {
-                  if (currentProgress < 50) {
+                  if (currentProgress < 25) {
+                    nextProgress = 30;
+                  } else if (currentProgress < 50) {
                     nextProgress = 52;
+                  } else if (currentProgress < 75) {
+                    nextProgress = 80;
                   } else {
                     nextProgress = 2;
                   }
