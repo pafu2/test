@@ -2744,7 +2744,8 @@
                 loop += 1;
                 sleepTime = 3;
                 message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
-                processType = 'reload';
+                //ライオン用に'continue'
+                processType = 'continue';
               } else {
                 loop += 1;
                 success = true;
