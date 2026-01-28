@@ -2797,17 +2797,17 @@
             if (success) {
               if (location.href.includes('/teambattle?m=rb')) {
                 if (currentProgress < 16) {
-                  nextProgress = 18;
+                  nextProgress = 26;
                 } else if (currentProgress < 33) {
-                  nextProgress = 35;
+                  nextProgress = 43;
                 } else if (currentProgress < 50) {
-                  nextProgress = 52;
+                  nextProgress = 60;
                 } else if (currentProgress < 66) {
-                  nextProgress = 68;
+                  nextProgress = 76;
                 } else if (currentProgress < 83) {
-                  nextProgress = 85;
+                  nextProgress = 93;
                 } else {
-                  nextProgress = 2;
+                  nextProgress = 10;
                 }
               } else {
                 if (currentProgress < 50) {
@@ -2883,19 +2883,19 @@
         }
 
         if (!success && regions[cellType].length === 0) {
-          if (location.href.includes('/teambattle?m=rb')) {
-            if (currentProgress < 16) {
-               nextProgress = 18;
-              } else if (currentProgress < 33) {
-               nextProgress = 35;
-              } else if (currentProgress < 50) {
-               nextProgress = 52;
-              } else if (currentProgress < 66) {
-               nextProgress = 68;
-              } else if (currentProgress < 83) {
-               nextProgress = 85;
+            if (location.href.includes('/teambattle?m=rb')) {
+              if (currentProgress < 16) {
+                 nextProgress = 26;
+                } else if (currentProgress < 33) {
+                 nextProgress = 43;
+                } else if (currentProgress < 50) {
+                 nextProgress = 60;
+                } else if (currentProgress < 66) {
+                 nextProgress = 76;
+                } else if (currentProgress < 83) {
+                 nextProgress = 93;
               } else {
-               nextProgress = 2;
+                 nextProgress = 10;
               }
             } else {
               if (currentProgress < 50) {
