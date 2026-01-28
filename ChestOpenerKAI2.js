@@ -559,8 +559,8 @@
             throw new Error('どんぐりが見つかりませんでした。');
           }
 if (res.includes('too fast')) {
-  console.warn('too fast → retry');
-  await new Promise(r => setTimeout(r, 2000));
+  count.textContent = chestCount + ', too fast → retry';
+  await new Promise(r => setTimeout(r, 6000));
   continue; // while ループの先頭へ（カウント増えない）
 }
           if (res.includes('Left Not enough battle tokens')){
