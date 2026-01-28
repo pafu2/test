@@ -2702,7 +2702,7 @@
               message = lastLine;
               processType = 'return';
             } else if (messageType === 'retry') {
-              sleepTime = 20;
+              sleepTime = 5;
               processType = 'continue';
             } else if (messageType === 'equipError'){
               processType = 'reload';
