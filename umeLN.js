@@ -2540,7 +2540,7 @@
       const regionDiv = document.createElement('div');
       const progress = `${currentPeriod}期 ${currentProgress}%`;
       if (region) regionDiv.innerText = `${progress}\ntarget: ${region}\n${next}`;
-      else regionDiv.innerText = next;
+      else regionDiv.innerText = `${progress}\n${region ? `target: ${region}\n` : ''}${next}`;
       regionDiv.style.fontSize = '90%';
       regionDiv.style.color = '#444';
       regionDiv.style.borderRight = 'dotted 0.5px #888';
