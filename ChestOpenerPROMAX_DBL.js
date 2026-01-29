@@ -607,7 +607,6 @@ for(const v of ranks){
             throw new Error('どんぐりが見つかりませんでした。');
           }
           if (res.includes('too fast')){
-            throw new Error('too fast');
             count.textContent = chestCount + ', Please wait...';
             await new Promise(r => setTimeout(r, 10000));
             continue;
