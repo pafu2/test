@@ -2710,7 +2710,7 @@
               if (loop < 5){
                 loop += 1;
                 message = '[ﾘﾄﾗｲ] ' + lastLine;
-                processType = 'continue';
+                processType = 'reload';
               } else {
                 success = true;
                 loop += 1;
@@ -2813,6 +2813,9 @@
               break;
             } else if (processType === 'return') {
               return;
+            } else if (processType === 'reload') {
+              regions = await getRegions();
+              break;
             }
           } catch (e){
             let message = '';
