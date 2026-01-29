@@ -2630,7 +2630,7 @@
       await fetchAreaInfo(true);
       //警備員仕様
       await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 1) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 2) {
         return;
       }
 
@@ -2707,7 +2707,7 @@
                 i++;
               }
             } else if (text.startsWith('リーダーになった')) {
-              if (loop < 4){
+              if (loop < 5){
                 loop += 1;
                 message = '[ﾘﾄﾗｲ] ' + lastLine;
                 processType = 'continue';
@@ -2790,17 +2790,13 @@
                   nextProgress = 10;
                 }
               } else {
-                if (currentProgress < 25) {
-                  nextProgress = 33;
-                } else if (currentProgress < 50) {
-                  nextProgress = 51;
-                } else if (currentProgress < 75) {
-                  nextProgress = 83;
+                if (currentProgress < 50) {
+                  nextProgress = 52;
                 } else {
-                  nextProgress = 0;
+                  nextProgress = 1;
                 }
               }
-              next = `→ ${nextProgress}`;
+              next = `→ ${nextProgress}%`;
               isAutoJoinRunning = false;
             } else if (processType === 'return') {
               next = '';
@@ -2877,17 +2873,13 @@
                  nextProgress = 10;
               }
             } else {
-              if (currentProgress < 25) {
-                nextProgress = 33;
-              } else if (currentProgress < 50) {
-                nextProgress = 51;
-              } else if (currentProgress < 75) {
-                nextProgress = 83;
+              if (currentProgress < 50) {
+                nextProgress = 52;
               } else {
-                nextProgress = 0;
+                nextProgress = 1;
               }
             }
-            const next = `→ ${nextProgress}`;
+            const next = `→ ${nextProgress}%`;
             isAutoJoinRunning = false;
             logMessage(null, '攻撃可能なタイルが見つかりませんでした。', next);
             return;
@@ -3097,7 +3089,7 @@
     if (!isAutoJoinRunning) {
       attackRegion();
     }
-    autoJoinIntervalId = setInterval(attackRegion,20000);
+    autoJoinIntervalId = setInterval(attackRegion,18000);
   };
 
   async function drawProgressBar(){
