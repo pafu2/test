@@ -608,6 +608,9 @@ for(const v of ranks){
           }
           if (res.includes('too fast')){
             throw new Error('too fast');
+            count.textContent = chestCount + ', Please wait...';
+            await new Promise(r => setTimeout(r, 10000));
+            continue;
           }
           if (res.includes('Left Not enough battle tokens')){
             throw new Error('Left Not enough battle tokens');
@@ -783,6 +786,3 @@ function loadInputData() {
   }
 }
 })();
-
-
-
