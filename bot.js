@@ -3034,7 +3034,7 @@ async function attackRegion() {
 async function drawProgressBar(){
     try {
       // 監視先を「チームバトル」ページに変更（ここが戦場なので）
-      const res = await fetch('https://donguri.5ch.net/teambattle');
+      const res = await fetch('https://donguri.5ch.net/teambattle?m=hc');
       if (!res.ok) throw new Error(res.status);
       const text = await res.text();
 
