@@ -2790,11 +2790,11 @@
                 if (currentProgress < 25) {
                   nextProgress = 31;
                 } else if (currentProgress < 50) {
-                  nextProgress = 56;
+                  nextProgress = 57;
                 } else if (currentProgress < 75) {
                   nextProgress = 81;
                 } else {
-                  nextProgress = 6;
+                  nextProgress = 7;
                 }
               }
               next = `→ ${nextProgress}±2%`;
@@ -2877,11 +2877,11 @@
               if (currentProgress < 25) {
                 nextProgress = 31;
               } else if (currentProgress < 50) {
-                nextProgress = 56;
+                nextProgress = 57;
               } else if (currentProgress < 75) {
                 nextProgress = 81;
               } else {
-                nextProgress = 6;
+                nextProgress = 7;
               }
             }
             const next = `→ ${nextProgress}±2%`;
