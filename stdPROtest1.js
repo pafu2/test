@@ -3440,11 +3440,11 @@ async function attackRegionAfter4() {
                   nextProgress = 10;
                 }
               } else {
-              if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
-              } else {
-                nextProgress = Math.floor(Math.random() * 8) + 31; // 15~22 -2~+1
-              }
+                if (currentProgress < 50) {
+                  nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
+                } else {
+                  nextProgress = Math.floor(Math.random() * 8) + 31; // 15~22 -2~+1
+                }
               }
               next = `→ ${nextProgress}±2%`;
               isAutoJoinRunning = false;
@@ -3804,13 +3804,13 @@ async function attackRegionAfter4() {
     });
   })();
 })();
-}
 
+}
 async function attackRegion() {
   const hour = new Date().getHours();
 
-  if (hour >= 17 && hour < 18) {
-    // 17:00~18:59
+  if (hour >= 4 && hour < 8) {
+    // 4:00~7:59
     await attackRegionAfter4();
   } else {
     // 0:00~3:59 と 8:00~23:59
