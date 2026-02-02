@@ -3021,7 +3021,7 @@
       const url = `https://donguri.5ch.net/teambattle?r=${row}&c=${col}&`+MODE;
       try {
         const res = await fetch(url);
-        if(!res.ok) throw new Error(`[${res.status}] /teambattle?r=${row}&c=${col}}`);
+        if(!res.ok) throw new Error(`[${res.status}] /teambattle?r=${row}&c=${col}`);
         const text = await res.text();
         const doc = new DOMParser().parseFromString(text,'text/html');
         const h1 = doc?.querySelector('h1')?.textContent;
