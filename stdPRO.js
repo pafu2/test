@@ -2683,6 +2683,8 @@
               excludeSet.add(region.join(','));
               i++;
               continue;
+            } else {
+              excludeSet.add(region.join(','));
             }
 
             const [ text, lastLine ] = await challenge(region);
@@ -2692,7 +2694,7 @@
             let sleepTime = 2;
 
             if (messageType === 'capitalAttack') {
-              if (loop < 4){
+              if (loop < 7){
                 loop += 1;
                 message = '[ﾘﾄﾗｲ] '+ lastLine;
                 processType = 'continue';
@@ -2704,7 +2706,7 @@
                 i++;
               }
             } else if (text.startsWith('リーダーになった')) {
-              if (loop < 4){
+              if (loop < 7){
                 loop += 1;
                 message = '[ﾘﾄﾗｲ] ' + lastLine;
                 processType = 'continue';
@@ -3035,7 +3037,7 @@
       const url = `https://donguri.5ch.net/teambattle?r=${row}&c=${col}&`+MODE;
       try {
         const res = await fetch(url);
-        if(!res.ok) throw new Error(`[${res.status}] /teambattle?r=${row}&c=${col}}`);
+        if(!res.ok) throw new Error(`[${res.status}] /teambattle?r=${row}&c=${col}`);
         const text = await res.text();
         const doc = new DOMParser().parseFromString(text,'text/html');
         const h1 = doc?.querySelector('h1')?.textContent;
