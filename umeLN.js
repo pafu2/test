@@ -2907,7 +2907,7 @@
             const next = `→ ${nextProgress}±1%`;
             isAutoJoinRunning = false;
             loop += 1;
-            logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。', next);
+            logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。(計' + loop + '発)', next);
             return;
         }
       }
