@@ -2849,9 +2849,9 @@
                 }
               } else {
                 if (currentProgress < 50) {
-                  nextProgress = 55;
+                  nextProgress = 52;
                 } else {
-                  nextProgress = 5;
+                  nextProgress = 2;
                 }
               }
               next = `→ ${nextProgress}±1%`;
@@ -2935,9 +2935,9 @@
               }
             } else {
               if (currentProgress < 50) {
-                nextProgress = 55;
+                nextProgress = 52;
               } else {
-                nextProgress = 5;
+                nextProgress = 2;
               }
             }
             const next = `→ ${nextProgress}±1%`;
