@@ -2540,7 +2540,7 @@
       const regionDiv = document.createElement('div');
       const progress = `${currentPeriod}期 ${currentProgress}%`;
       if (region) regionDiv.innerText = `${progress}\ntarget: ${region}\n${next}`;
-      else regionDiv.innerText = next;
+      else regionDiv.innerText = `${progress}\n${region ? `target: ${region}\n` : ''}${next}`;
       regionDiv.style.fontSize = '90%';
       regionDiv.style.color = '#444';
       regionDiv.style.borderRight = 'dotted 0.5px #888';
@@ -2862,7 +2862,7 @@
             autoJoinIntervalId = null;
             const next = `→ 予約なし`;
             isAutoJoinRunning = false;
-            logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。', next);
+            logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。(計' + loop + '発)', next);
             return;
         }
       }
