@@ -2524,14 +2524,14 @@
       const now = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
       const hour = now.getHours();
       const minute = now.getMinutes();
-      return hour >= 22 || hour < 5;
+      return hour >= 22 || hour < 10;
       // 以下コメントアウトで指定例（変える時は上の return hour >= 4 && hour < 8; を書き換え）
       // 3:00～7:59
       // return hour >= 3 && hour < 8;
-      // 4:00～7:59
-      // return hour >= 4 && hour < 8;
       // 5:00～7:59
       // return hour >= 5 && hour < 8;
+      // 19:00～1:59
+      // return hour >= 19 || hour < 2;
       // 22:00～4:59
       // return hour >= 22 || hour < 5;
       // 3:20～7:59
@@ -2540,8 +2540,10 @@
       // return (hour > 4 && hour < 8) || (hour === 4 && minute >= 30);
       // 5:45～7:59
       // return (hour > 5 && hour < 8) || (hour === 5 && minute >= 45);
-      //
-      // return (hour >= 22 || hour < 5) || (hour === 22 && minute >= 20);
+      // 19:55～1:59
+      // return (hour > 19 || hour < 2) || (hour === 19 && minute >= 55);
+      // 22:15～4:59
+      // return (hour > 22 || hour < 5) || (hour === 22 && minute >= 15);
     }
 
     const logArea = dialog.querySelector('.auto-join-log');
@@ -2678,6 +2680,7 @@
 
       let regions = await getRegions();
       const excludeSet = new Set();
+      const isMorning = isMorningTime();
       let loop = 0;
 
       let cellType;
@@ -2716,8 +2719,6 @@
             let message = lastLine;
             let processType;
             let sleepTime = 1;
-
-            const isMorning = isMorningTime();
             // 255がumeのときの上限、7がstdPROのときの[ﾘﾄﾗｲ]上限
             const maxloop = isMorning ? 255 : 7;
 
@@ -2794,15 +2795,9 @@
               sleepTime = 20;
               processType = 'continue';
             } else if (messageType === 'guardError') {
-              if (isMorning) {
-                message = lastLine;
-                processType = 'reload';
-                i++;
-              } else {
-                message = lastLine;
-                processType = 'continue';
-                i++;
-              }
+              message = lastLine;
+              processType = isMorning ? 'reload' : 'continue';
+              i++;
             } else if (messageType === 'equipError') {
               if (isMorning) {
                 if (loop < maxloop){
@@ -3135,18 +3130,29 @@
           return arr;
         }
 
-        //チームメンバーを除外するフィルタリング関数
-        const filteredCells = (cells) => {
-          return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
-        };
+        const isMorning = isMorningTime();
 
-        const regions = {
-          nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
-          capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
-          teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
-          mapEdge: shuffle(filteredCells(mapEdgeCells))
-        };
-        return regions;
+        if (isMorning) {
+          // チームメンバーを除外するフィルタリング関数
+          const filteredCells = (cells) => {
+            return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
+          };
+          const regions = {
+            nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
+            capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
+            teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
+            mapEdge: shuffle(filteredCells(mapEdgeCells))
+          };
+          return regions;
+        } else {
+          const regions = {
+            nonAdjacent: shuffle(nonAdjacentCells),
+            capitalAdjacent: shuffle(capitalAdjacentCells),
+            teamAdjacent: shuffle(teamAdjacentCells),
+            mapEdge: shuffle(mapEdgeCells)
+          };
+          return regions;
+        }
       } catch (e) {
         console.error(e);
         return {
