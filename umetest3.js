@@ -2524,7 +2524,7 @@
       const now = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
       const hour = now.getHours();
       const minute = now.getMinutes();
-      return hour >= 4 && hour < 8;
+      return hour >= 22 || hour < 5;
       // 以下コメントアウトで指定例（変える時は上の return hour >= 4 && hour < 8; を書き換え）
       // 3:00～7:59
       // return hour >= 3 && hour < 8;
@@ -2532,12 +2532,16 @@
       // return hour >= 4 && hour < 8;
       // 5:00～7:59
       // return hour >= 5 && hour < 8;
+      // 22:00～4:59
+      // return hour >= 22 || hour < 5;
       // 3:20～7:59
       // return (hour > 3 && hour < 8) || (hour === 3 && minute >= 20);
       // 4:30～7:59
       // return (hour > 4 && hour < 8) || (hour === 4 && minute >= 30);
       // 5:45～7:59
       // return (hour > 5 && hour < 8) || (hour === 5 && minute >= 45);
+      //
+      // return (hour >= 22 || hour < 5) || (hour === 22 && minute >= 20);
     }
 
     const logArea = dialog.querySelector('.auto-join-log');
@@ -2912,7 +2916,7 @@
                   }
                 }
               }
-              next = `→ ${nextProgress}±2%`;
+              next = `→ ${nextProgress}±1%`;
               isAutoJoinRunning = false;
 //            logMessage(null, '[打止] 終了です。', next);
             } else if (processType === 'return') {
@@ -3011,7 +3015,7 @@
                 }
               }
             }
-            const next = `→ ${nextProgress}±2%`;
+            const next = `→ ${nextProgress}±1%`;
             isAutoJoinRunning = false;
             //loop += 1;
             logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。(計' + loop + '発)', next);
