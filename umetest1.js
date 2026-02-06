@@ -2524,7 +2524,7 @@
       const now = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
       const hour = now.getHours();
       const minute = now.getMinutes();
-      return (hour > 22 && hour < 5) || (hour === 22 && minute >= 20);
+      return (hour >= 22 || hour < 5) || (hour === 22 && minute >= 20);
       // 以下コメントアウトで指定例（変える時は上の return hour >= 4 && hour < 8; を書き換え）
       // 3:00～7:59
       // return hour >= 3 && hour < 8;
@@ -3119,18 +3119,31 @@
 
         const isMorning = isMorningTime();
 
-        //チームメンバーを除外するフィルタリング関数
-        const filteredCells = (cells) => {
-          return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
-        };
+try {
+  let regions;
 
-        const regions = {
-          nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
-          capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
-          teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
-          mapEdge: shuffle(filteredCells(mapEdgeCells))
-        };
-        return regions;
+  if (isMorning) {
+    // チームメンバーを除外するフィルタリング
+    const filteredCells = (cells) => {
+      return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
+    };
+
+    regions = {
+      nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
+      capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
+      teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
+      mapEdge: shuffle(filteredCells(mapEdgeCells)),
+    };
+  } else {
+    regions = {
+      nonAdjacent: shuffle(nonAdjacentCells),
+      capitalAdjacent: shuffle(capitalAdjacentCells),
+      teamAdjacent: shuffle(teamAdjacentCells),
+      mapEdge: shuffle(mapEdgeCells),
+    };
+  }
+
+  return regions;
       } catch (e) {
         console.error(e);
         return {
