@@ -2794,9 +2794,15 @@
               sleepTime = 20;
               processType = 'continue';
             } else if (messageType === 'guardError') {
-              message = lastLine;
-              processType = isMorning ? 'reload' : 'continue';
-              i++;
+              if (isMorning) {
+                message = lastLine;
+                processType = 'reload';
+                i++;
+              } else {
+                message = lastLine;
+                processType = 'continue';
+                i++;
+              }
             } else if (messageType === 'equipError') {
               if (isMorning) {
                 if (loop < maxloop){
