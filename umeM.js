@@ -3125,10 +3125,10 @@
         };
 
         const regions = {
-          nonAdjacent: isMorning ? filteredCells(nonAdjacentCells) : nonAdjacentCells,
-          capitalAdjacent: isMorning ? filteredCells(capitalAdjacentCells) : capitalAdjacentCells,
-          teamAdjacent: isMorning ? filteredCells(teamAdjacentCells) : teamAdjacentCells,
-          mapEdge: isMorning ? filteredCells(mapEdgeCells) : mapEdgeCells
+          nonAdjacent: isMorning ? shuffle(filteredCells(nonAdjacentCells)) : shuffle(nonAdjacentCells),
+          capitalAdjacent: isMorning ? shuffle(filteredCells(capitalAdjacentCells)) : shuffle(capitalAdjacentCells),
+          teamAdjacent: isMorning ? shuffle(filteredCells(teamAdjacentCells)) : shuffle(teamAdjacentCells),
+          mapEdge: isMorning ? shuffle(filteredCells(mapEdgeCells)) : shuffle(mapEdgeCells)
         };
         return regions;
       } catch (e) {
