@@ -3117,9 +3117,6 @@
           return arr;
         }
 
-          return arr;
-        }
-
     const isMorning = isMorningTime();
 
     let regions;
