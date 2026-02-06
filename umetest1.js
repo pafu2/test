@@ -2524,7 +2524,7 @@
       const now = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
       const hour = now.getHours();
       const minute = now.getMinutes();
-      return (hour > 21 && hour < 24) || (hour === 21 && minute >= 50);
+      return (hour > 22 && hour < 24) || (hour === 22 && minute >= 20);
       // 以下コメントアウトで指定例（変える時は上の return hour >= 4 && hour < 8; を書き換え）
       // 3:00～7:59
       // return hour >= 3 && hour < 8;
@@ -3125,10 +3125,10 @@
         };
 
         const regions = {
-          nonAdjacent: isMorning ? filteredCells(nonAdjacentCells) : nonAdjacentCells,
-          capitalAdjacent: isMorning ? filteredCells(capitalAdjacentCells) : capitalAdjacentCells,
-          teamAdjacent: isMorning ? filteredCells(teamAdjacentCells) : teamAdjacentCells,
-          mapEdge: isMorning ? filteredCells(mapEdgeCells) : mapEdgeCells
+          nonAdjacent: isMorning ? shuffle(filteredCells(nonAdjacentCells)) : shuffle(nonAdjacentCells),
+          capitalAdjacent: isMorning ? shuffle(filteredCells(capitalAdjacentCells)) : shuffle(capitalAdjacentCells),
+          teamAdjacent: isMorning ? shuffle(filteredCells(teamAdjacentCells)) : shuffle(teamAdjacentCells),
+          mapEdge: isMorning ? shuffle(filteredCells(mapEdgeCells)) : shuffle(mapEdgeCells)
         };
         return regions;
       } catch (e) {
