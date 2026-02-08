@@ -2686,8 +2686,6 @@
               excludeSet.add(region.join(','));
               i++;
               continue;
-            } else {
-              excludeSet.add(region.join(','));
             }
 
             const [ text, lastLine ] = await challenge(region);
@@ -2702,9 +2700,9 @@
                 message = '[ﾘﾄﾗｲ] '+ lastLine;
                 processType = 'continue';
               } else {
-                success = true;
                 loop += 1;
-                message = '[成功] ' + lastLine;
+                success = true;
+                message = '[成功] ' + lastLine + '(計' + loop + '発)';
                 processType = 'return';
                 i++;
               }
@@ -2714,15 +2712,16 @@
                 message = '[ﾘﾄﾗｲ] ' + lastLine;
                 processType = 'continue';
               } else {
-                success = true;
                 loop += 1;
-                message = '[成功] ' + lastLine;
+                success = true;
+                message = '[成功] ' + lastLine + '(計' + loop + '発)';
                 processType = 'return';
               }
               i++;
             } else if (text.startsWith('アリーナチャレンジ開始')) {
+              loop += 1;
               success = true;
-              message = '[成功] ' + lastLine;
+              message = '[成功] ' + lastLine + '(計' + loop + '発)';
               processType = 'return';
               i++;
             } else if (messageType === 'breaktime') {
