@@ -2677,8 +2677,6 @@
             if (equipChangeStat === 'noEquip') {
               excludeSet.add(region.join(','));
               continue;
-            } else {
-              excludeSet.add(region.join(','));
             }
 
             const [ text, lastLine ] = await challenge(region);
