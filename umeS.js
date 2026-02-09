@@ -2557,7 +2557,9 @@
       const ymd = date.toLocaleDateString('sv-SE').slice(2);
       const time = date.toLocaleTimeString('sv-SE');
       const timestamp = document.createElement('div');
-      timestamp.innerText = `${ymd}\n${time}`;
+      const attackmode = isMorningTime() ? "umeR" : "stdP";
+      timestamp.innerText = `${ymd}\n${time}\n${attackmode}`;
+//      timestamp.innerText = `${ymd}\n${time}`;
       timestamp.style.fontSize = '90%';
       timestamp.style.color = '#666';
       timestamp.style.borderRight = 'solid 0.5px #888';
@@ -2986,41 +2988,41 @@
           if (location.href.includes('/teambattle?m=rb')) {
             if (currentProgress < 16) {
                nextProgress = 18;
-              } else if (currentProgress < 33) {
+            } else if (currentProgress < 33) {
                nextProgress = 35;
-              } else if (currentProgress < 50) {
-               nextProgress = 52;
-              } else if (currentProgress < 66) {
+            } else if (currentProgress < 50) {
+              nextProgress = 52;
+            } else if (currentProgress < 66) {
                nextProgress = 68;
-              } else if (currentProgress < 83) {
+            } else if (currentProgress < 83) {
                nextProgress = 85;
-              } else {
+            } else {
                nextProgress = 2;
+            }
+          } else {
+            if (isMorning) {
+              if (currentProgress < 50) {
+                nextProgress = 52;
+              } else {
+                nextProgress = 2;
               }
             } else {
-              if (isMorning) {
-                if (currentProgress < 50) {
-                  nextProgress = 52;
-                } else {
-                  nextProgress = 2;
-                }
-              } else {
-                if (currentProgress < 25) {
+              if (currentProgress < 25) {
                   nextProgress = Math.floor(Math.random() * 5) + 30; // 30~34 -1~+1
-                } else if (currentProgress < 50) {
+              } else if (currentProgress < 50) {
                   nextProgress = Math.floor(Math.random() * 5) + 65; // 65~69 -1~+1
-                } else if (currentProgress < 75) {
+              } else if (currentProgress < 75) {
                   nextProgress = Math.floor(Math.random() * 5) + 80; // 80~84 -1~+1
-                } else {
+              } else {
                   nextProgress = Math.floor(Math.random() * 5) + 15; // 15~19 -1~+1
-                }
               }
             }
-            const next = `→ ${nextProgress}±1%`;
-            isAutoJoinRunning = false;
-            //loop += 1;
-            logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。(計' + loop + '発)', next);
-            return;
+          }
+          const next = `→ ${nextProgress}±1%`;
+          isAutoJoinRunning = false;
+          //loop += 1;
+          logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。(計' + loop + '発)', next);
+          return;
         }
       }
     }
@@ -3130,19 +3132,17 @@
           return arr;
         }
 
-        const filteredCells = (cells) => {
-          return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
-        };
-
         const isMorning = isMorningTime();
 
         if (isMorning) {
+          const filteredCells = (cells) => {
+            return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
+          };
           const regions = {
-            // 全てのセルから味方を除外
-            nonAdjacent: shuffle(filteredCells(cells)),
-            capitalAdjacent: [],
-            teamAdjacent: [],
-            mapEdge: []
+            nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
+            capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
+            teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
+            mapEdge: shuffle(filteredCells(mapEdgeCells))
           };
           return regions;
         } else {
