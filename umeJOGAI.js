@@ -2975,13 +2975,6 @@
       }
     }
 
-        const teamColorSet = new Set();
-        for(const [key, value] of Object.entries(cellColors)) {
-          if (teamColor === value.replace('#','')) {
-            teamColorSet.add(key);
-          }
-        }
-
         const teamAdjacentSet = new Set();
         for (const key of [...teamColorSet]) {
           const [tr, tc] = key.split('-');
