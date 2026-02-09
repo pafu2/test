@@ -2906,14 +2906,10 @@
                     nextProgress = 2;
                   }
                 } else {
-                  if (currentProgress < 25) {
-                    nextProgress = Math.floor(Math.random() * 5) + 30; // 30~34 -1~+1
-                  } else if (currentProgress < 50) {
-                    nextProgress = Math.floor(Math.random() * 5) + 65; // 65~69 -1~+1
-                  } else if (currentProgress < 75) {
-                    nextProgress = Math.floor(Math.random() * 5) + 80; // 80~84 -1~+1
+                  if (currentProgress < 50) {
+                    nextProgress = 52; // 65~69 -1~+1
                   } else {
-                    nextProgress = Math.floor(Math.random() * 5) + 15; // 15~19 -1~+1
+                    nextProgress = 2; // 15~19 -1~+1
                   }
                 }
               }
@@ -3005,15 +3001,11 @@
                 nextProgress = 2;
               }
             } else {
-              if (currentProgress < 25) {
-                  nextProgress = Math.floor(Math.random() * 5) + 30; // 30~34 -1~+1
-              } else if (currentProgress < 50) {
-                  nextProgress = Math.floor(Math.random() * 5) + 65; // 65~69 -1~+1
-              } else if (currentProgress < 75) {
-                  nextProgress = Math.floor(Math.random() * 5) + 80; // 80~84 -1~+1
-              } else {
-                  nextProgress = Math.floor(Math.random() * 5) + 15; // 15~19 -1~+1
-              }
+                  if (currentProgress < 50) {
+                    nextProgress = 52; // 65~69 -1~+1
+                  } else {
+                    nextProgress = 2; // 15~19 -1~+1
+                  }
             }
           }
           const next = `→ ${nextProgress}±1%`;
