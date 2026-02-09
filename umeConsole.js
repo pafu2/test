@@ -3134,28 +3134,18 @@ console.log('Before filter, regions[cellType]:', regions[cellType]);
           return arr;
         }
 
-        const isMorning = isMorningTime();
+        //チームメンバーを除外するフィルタリング関数
+        const filteredCells = (cells) => {
+          return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
+        };
 
-        if (isMorning) {
-          const filteredCells = (cells) => {
-            return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
-          };
-          const regions = {
-            nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
-            capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
-            teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
-            mapEdge: shuffle(filteredCells(mapEdgeCells))
-          };
-          return regions;
-        } else {
-          const regions = {
-            nonAdjacent: shuffle(nonAdjacentCells),
-            capitalAdjacent: shuffle(capitalAdjacentCells),
-            teamAdjacent: shuffle(teamAdjacentCells),
-            mapEdge: shuffle(mapEdgeCells)
-          };
-          return regions;
-        }
+        const regions = {
+          nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
+          capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
+          teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
+          mapEdge: shuffle(filteredCells(mapEdgeCells))
+        };
+        return regions;
       } catch (e) {
         console.error(e);
         return {
