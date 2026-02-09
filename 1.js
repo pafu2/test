@@ -2524,7 +2524,7 @@
       const now = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
       const hour = now.getHours();
       const minute = now.getMinutes();
-      // return (hour > 2 && hour < 5) || (hour === 2 && minute >= 20);
+      return (hour > 2 && hour < 5) || (hour === 2 && minute >= 50);
       // 以下指定例（変える時は上の return hour >= 4 && hour < 8; を書き換え、24:00をまたぐ指定のときは&&じゃなく||）
       // 3:00～7:59
       // return hour >= 3 && hour < 8;
@@ -2557,7 +2557,10 @@
       const ymd = date.toLocaleDateString('sv-SE').slice(2);
       const time = date.toLocaleTimeString('sv-SE');
       const timestamp = document.createElement('div');
-      timestamp.innerText = `${ymd}\n${time}`;
+
+      const attackmode = isMorningTime() ? "ume mode" : "std mode";
+      timestamp.innerText = `${ymd}\n${time}\n${attackmode}`;
+
       timestamp.style.fontSize = '90%';
       timestamp.style.color = '#666';
       timestamp.style.borderRight = 'solid 0.5px #888';
