@@ -2683,6 +2683,8 @@
               excludeSet.add(region.join(','));
               i++;
               continue;
+            } else {
+              excludeSet.add(region.join(','));
             }
 
             const [ text, lastLine ] = await challenge(region);
