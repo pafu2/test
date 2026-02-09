@@ -2694,12 +2694,12 @@
             if (messageType === 'capitalAttack') {
               if (loop < 7){
                 loop += 1;
-                message = '[ﾘﾄﾗｲ] '+ lastLine;
+                message = '[ﾘﾄﾗｲ] ' + lastLine;
                 processType = 'continue';
               } else {
                 loop += 1;
                 success = true;
-                message = '[成功] ' + lastLine + '(計' + loop + '発)';
+                message = '[成功] ' + lastLine;
                 processType = 'return';
                 i++;
               }
@@ -2711,14 +2711,14 @@
               } else {
                 loop += 1;
                 success = true;
-                message = '[成功] ' + lastLine + '(計' + loop + '発)';
+                message = '[成功] ' + lastLine;
                 processType = 'return';
               }
               i++;
             } else if (text.startsWith('アリーナチャレンジ開始')) {
               loop += 1;
               success = true;
-              message = '[成功] ' + lastLine + '(計' + loop + '発)';
+              message = '[成功] ' + lastLine;
               processType = 'return';
               i++;
             } else if (messageType === 'breaktime') {
