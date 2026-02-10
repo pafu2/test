@@ -2557,8 +2557,8 @@
       const ymd = date.toLocaleDateString('sv-SE').slice(2);
       const time = date.toLocaleTimeString('sv-SE');
       const timestamp = document.createElement('div');
-      const attackmode = isMorningTime() ? "umeR" : "stdP";
-      timestamp.innerText = `${ymd}\n${time}\n${attackmode}`;
+      const attackmode = isMorningTime() ? "umeR" : "stdPRO";
+      timestamp.innerText = `${ymd}\n${time}\n$<center>{attackmode}</center>`;
 //      timestamp.innerText = `${ymd}\n${time}`;
       timestamp.style.fontSize = '90%';
       timestamp.style.color = '#666';
@@ -2984,6 +2984,9 @@
             i++;
           }
         }
+//除外する
+        regions[cellType] = regions[cellType].filter(e => !excludeSet.has(e.join(',')));
+        
         if (!success && regions[cellType].length === 0) {
           if (location.href.includes('/teambattle?m=rb')) {
             if (currentProgress < 16) {
