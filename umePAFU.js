@@ -2558,7 +2558,7 @@
       const time = date.toLocaleTimeString('sv-SE');
       const timestamp = document.createElement('div');
       const attackmode = isMorningTime() ? "umeR" : "stdPRO";
-      timestamp.innerText = `${ymd}\n${time}\n$<center>{attackmode}</center>`;
+      timestamp.innerText = `${ymd}\n${time}\n${attackmode}`;
 //      timestamp.innerText = `${ymd}\n${time}`;
       timestamp.style.fontSize = '90%';
       timestamp.style.color = '#666';
