@@ -2698,6 +2698,7 @@
 
       while(dialog.open) {
         let success = false;
+        await new Promise(resolve => setTimeout(resolve, 0));
         isAutoJoinRunning = true;
 
         regions[cellType] = regions[cellType]
