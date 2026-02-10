@@ -2698,6 +2698,8 @@
 
       while(dialog.open) {
         let success = false;
+console.log('Current cellType:', cellType);
+console.log('Current regions[cellType] length:', regions[cellType]?.length);
         isAutoJoinRunning = true;
 
         regions[cellType] = regions[cellType]
