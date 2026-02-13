@@ -3028,9 +3028,13 @@
         teamColorSet.add(excludedteamColor4);
         teamColorSet.add(excludedteamColor5);
 
-        const filteredCells = (cells) => {
-          return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
-        };
+const filteredCells = (targetCells) => {
+  return targetCells.filter(([r, c]) => {
+    const key = `${r}-${c}`;
+    const colorAtCell = cellColors[key] ? cellColors[key].replace('#', '') : null;
+    return !excludedColorSet.has(colorAtCell);
+  });
+};
 
         const regions = {
           nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
