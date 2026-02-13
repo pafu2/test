@@ -3012,27 +3012,13 @@
           return arr;
         }
 
-//チームメンバーを除外するフィルタリング関数
-        // 除外するチームカラーを設定
-        const excludedteamColor1 = '696969';//尻子玉
-        const excludedteamColor2 = 'FFFFE0';//プリングルズ
-        const excludedteamColor3 = '00FF00';//まほろば
-        const excludedteamColor4 = 'FFFF00';//ライーヨー!!
-        const excludedteamColor5 = 'FF0101';//赤い彗星
+        //チームメンバーを除外するフィルタリング関数
+const filteredCells = (cells) => {
+  const excludedColors = ['696969', 'FFFFE0', '00FF00', 'FFFF00', 'FF0101'];
 
-        // チームカラーをセットに追加
-        const teamColorSet = new Set();
-        teamColorSet.add(excludedteamColor1);
-        teamColorSet.add(excludedteamColor2);
-        teamColorSet.add(excludedteamColor3);
-        teamColorSet.add(excludedteamColor4);
-        teamColorSet.add(excludedteamColor5);
-
-const filteredCells = (targetCells) => {
-  return targetCells.filter(([r, c]) => {
-    const key = `${r}-${c}`;
-    const colorAtCell = cellColors[key] ? cellColors[key].replace('#', '') : null;
-    return !teamColorSet.has(colorAtCell);
+  return cells.filter(([r, c]) => {
+    const color = cellColors[`${r}-${c}`]?.replace('#', '');
+    return !teamColorSet.has(`${r}-${c}`) && !excludedColors.includes(color);
   });
 };
 
