@@ -3013,14 +3013,13 @@
         }
 
         //チームメンバーを除外するフィルタリング関数
-const filteredCells = (cells) => {
-  const excludedColors = ['696969', 'FFFFE0', '00FF00', 'FFFF00', 'FF0101'];
-
-  return cells.filter(([r, c]) => {
-    const color = cellColors[`${r}-${c}`]?.replace('#', '');
-    return !teamColorSet.has(`${r}-${c}`) && !excludedColors.includes(color);
-  });
-};
+        const filteredCells = (cells) => {
+          const excludedColors = ['696969', 'FFFFE0', '00008B', 'FFFF00', 'FF0101'];
+          return cells.filter(([r, c]) => {
+          const color = cellColors[`${r}-${c}`]?.replace('#', '');
+          return !teamColorSet.has(`${r}-${c}`) && !excludedColors.includes(color);
+        });
+      };
 
         const regions = {
           nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
