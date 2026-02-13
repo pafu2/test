@@ -3012,7 +3012,7 @@
           return arr;
         }
 
-        //チームメンバーを除外するフィルタリング関数
+//チームメンバーを除外するフィルタリング関数
         // 除外するチームカラーを設定
         const excludedteamColor1 = '696969';//尻子玉
         const excludedteamColor2 = 'FFFFE0';//プリングルズ
@@ -3032,7 +3032,7 @@ const filteredCells = (targetCells) => {
   return targetCells.filter(([r, c]) => {
     const key = `${r}-${c}`;
     const colorAtCell = cellColors[key] ? cellColors[key].replace('#', '') : null;
-    return !excludedColorSet.has(colorAtCell);
+    return !teamColorSet.has(colorAtCell);
   });
 };
 
