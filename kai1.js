@@ -2951,13 +2951,13 @@
 
         const capitalSet = new Set(capitalMap.map(([r, c]) => `${r}-${c}`));
 
-//nonAdjacentCells
+        //nonAdjacentCells
         const nonAdjacentBase = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
           return !capitalSet.has(key) && !adjacentSet.has(key);
         });
 
-const excludedColors = [
+        const excludedColors = [
           '696969',
           'FFFFE0',
           '00008B',
@@ -2983,9 +2983,8 @@ const excludedColors = [
           if (capitalSet.has(key)) return false;
           if (!adjacentSet.has(key)) return false;
           
-          if (!cellColors[key]) return true; // 無所属の首都周辺は含む
+          if (!cellColors[key]) return true;
           const color = cellColors[key].replace('#', '');
-          // 自分の色ではなく、かつ除外リストにも含まれていない場合のみ攻撃対象
           return color !== teamColor && !excludedColors.includes(color);
         }));
 
@@ -2995,13 +2994,11 @@ const excludedColors = [
           if (!capitalSet.has(key)) return false;
           if (!cellColors[key]) return false;
           const color = cellColors[key].replace('#', '');
-          // 自分の色ではなく、かつ除外リストにも含まれていない場合のみ攻撃対象
           return color !== teamColor && !excludedColors.includes(color);
         }));
 
-        // 最後に1~4を順番に結合する
+        // 1~4を結合
         const nonAdjacentCells = [...group1, ...group2, ...group3, ...group4];
-        // --- ここまで ---
 
         const capitalAdjacentCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
