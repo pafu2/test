@@ -2798,15 +2798,28 @@
                   nextProgress = 10;
                 }
               } else {
-                if (currentProgress < 25) {
-                  nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
+                if (currentProgress < 20) {
+                  nextProgress = Math.floor(Math.random() * 5) + 28; // 28~32 -2~+1
+                } else if (currentProgress < 35) {
+                  nextProgress = Math.floor(Math.random() * 5) + 43; // 43~47 -2~+1
                 } else if (currentProgress < 50) {
-                  nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
-                } else if (currentProgress < 75) {
-                  nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
+                  nextProgress = Math.floor(Math.random() * 5) + 63; // 63~67 -2~+1
+                } else if (currentProgress < 70) {
+                  nextProgress = Math.floor(Math.random() * 5) + 78; // 78~82 -2~+1
+                } else if (currentProgress < 85) {
+                  nextProgress = Math.floor(Math.random() * 5) + 93; // 93~97 -2~+1
                 } else {
-                  nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
+                  nextProgress = Math.floor(Math.random() * 5) + 13; // 13~17 -2~+1
                 }
+//                if (currentProgress < 25) {
+//                  nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
+//                } else if (currentProgress < 50) {
+//                  nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
+//                } else if (currentProgress < 75) {
+//                  nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
+//                } else {
+//                  nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
+//                }
               }
               next = `→ ${nextProgress}±2%`;
               isAutoJoinRunning = false;
@@ -2885,15 +2898,28 @@
                  nextProgress = 10;
               }
             } else {
-              if (currentProgress < 25) {
-                nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
+              if (currentProgress < 20) {
+                nextProgress = Math.floor(Math.random() * 5) + 28; // 28~32 -2~+1
+              } else if (currentProgress < 35) {
+                nextProgress = Math.floor(Math.random() * 5) + 43; // 43~47 -2~+1
               } else if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
-              } else if (currentProgress < 75) {
-                nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
+                nextProgress = Math.floor(Math.random() * 5) + 63; // 63~67 -2~+1
+              } else if (currentProgress < 70) {
+                nextProgress = Math.floor(Math.random() * 5) + 78; // 78~82 -2~+1
+              } else if (currentProgress < 85) {
+                nextProgress = Math.floor(Math.random() * 5) + 93; // 93~97 -2~+1
               } else {
-                nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
+                nextProgress = Math.floor(Math.random() * 5) + 13; // 13~17 -2~+1
               }
+//              if (currentProgress < 25) {
+//                nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
+//              } else if (currentProgress < 50) {
+//                nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
+//              } else if (currentProgress < 75) {
+//                nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
+//              } else {
+//                nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
+//              }
             }
             const next = `→ ${nextProgress}±2%`;
             isAutoJoinRunning = false;
