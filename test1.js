@@ -2958,28 +2958,40 @@
         });
 
         const excludedColors = [
-          '696969',
-          'FFFFE0',
-          '00008B',
-          'FFFF00',
-          'FF0101'
+          '696969',//尻子玉
+          'FFFFE0',//プリングルズ
+          '00008B',//まほろば
+          'FFFF00',//ライーヨー
+          'FF0101' //赤い彗星
         ];
 
-        // 1. どこのチームにも属してないセル
+        // マスの情報取得
+        const gridCells = document.querySelectorAll('.grid .cell');
+        const rankMap = new Map();
+        gridCells.forEach(c => {
+          if (c.dataset.rank) {
+            rankMap.set(`${c.dataset.row}-${c.dataset.col}`, c.dataset.rank);
+          }
+        });
+
+        // 1. どこのチームにも属してないマス
         const group1 = shuffle(nonAdjacentBase.filter(([r, c]) => {
           const key = `${r}-${c}`;
+          if (rankMap.get(key)?.includes('警')) return false;
           return !cellColors[key];
         }));
 
-        // 2. 敵チームの領土（首都および首都の上下左右ではないセル）
+        // 2. 敵チームの首都および首都の上下左右ではないマス
         const group2 = shuffle(nonAdjacentBase.filter(([r, c]) => {
           const key = `${r}-${c}`;
+          if (rankMap.get(key)?.includes('警')) return false;
           return cellColors[key] && cellColors[key].replace('#','') !== teamColor;
         }));
 
-        // 3. 敵チームの首都の上下左右のセル
+        // 3. 敵チームの首都の上下左右のマス
         const group3 = shuffle(cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
+          if (rankMap.get(key)?.includes('警')) return false;
           if (capitalSet.has(key)) return false;
           if (!adjacentSet.has(key)) return false;
           
@@ -2991,6 +3003,7 @@
         // 4. 敵チームの首都
         const group4 = shuffle(cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
+          if (rankMap.get(key)?.includes('警')) return false;
           if (!capitalSet.has(key)) return false;
           if (!cellColors[key]) return false;
           const color = cellColors[key].replace('#', '');
