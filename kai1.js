@@ -2947,6 +2947,14 @@
           return !capitalSet.has(key) && !adjacentSet.has(key);
         });
 
+const excludedColors = [
+          '696969',
+          'FFFFE0',
+          '00008B',
+          'FFFF00',
+          'FF0101'
+        ];
+
         // 1. どこのチームにも属してないセル
         const group1 = shuffle(nonAdjacentBase.filter(([r, c]) => {
           const key = `${r}-${c}`;
@@ -2962,18 +2970,23 @@
         // 3. 敵チームの首都の上下左右のセル
         const group3 = shuffle(cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          // 首都そのものではなく、かつ首都に隣接している
           if (capitalSet.has(key)) return false;
           if (!adjacentSet.has(key)) return false;
-          // 自分の色ではない（敵の首都周辺、または無所属の首都周辺）
-          return !cellColors[key] || cellColors[key].replace('#','') !== teamColor;
+          
+          if (!cellColors[key]) return true; // 無所属の首都周辺は含む
+          const color = cellColors[key].replace('#', '');
+          // 自分の色ではなく、かつ除外リストにも含まれていない場合のみ攻撃対象
+          return color !== teamColor && !excludedColors.includes(color);
         }));
 
         // 4. 敵チームの首都
         const group4 = shuffle(cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          // 首都である、かつ自分の色ではない
-          return capitalSet.has(key) && cellColors[key] && cellColors[key].replace('#','') !== teamColor;
+          if (!capitalSet.has(key)) return false;
+          if (!cellColors[key]) return false;
+          const color = cellColors[key].replace('#', '');
+          // 自分の色ではなく、かつ除外リストにも含まれていない場合のみ攻撃対象
+          return color !== teamColor && !excludedColors.includes(color);
         }));
 
         // 最後に1~4を順番に結合する
@@ -3033,7 +3046,8 @@
         }
 
         const regions = {
-          nonAdjacent: shuffle(nonAdjacentCells),
+//        nonAdjacent: shuffle(nonAdjacentCells),
+          nonAdjacent: nonAdjacentCells,
           capitalAdjacent: shuffle(capitalAdjacentCells),
           teamAdjacent: shuffle(teamAdjacentCells),
           mapEdge: shuffle(mapEdgeCells)
