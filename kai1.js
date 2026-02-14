@@ -2655,6 +2655,7 @@
       let regions = await getRegions();
       const excludeSet = new Set();
       let loop = 0;
+      let guard = 0;
 
       let cellType;
       if (regions.nonAdjacent.length > 0) {
@@ -2733,9 +2734,17 @@
               sleepTime = 20;
               processType = 'continue';
             } else if (messageType === 'guardError') {
-              message = lastLine;
-              processType = 'continue';
-              i++;
+              if (guard < 5){
+                guard += 1;
+                message = lastLine + '(' + guard + ')' + ;
+                processType = 'continue';
+                i++;
+              } else {
+                message = lastLine;
+                cellType = 'teamAdjacent';
+                processType = 'break';
+                i++;
+              }
             } else if (messageType === 'equipError') {
               message += ` (${cellRank}, ${currentEquipName})`;
               processType = 'continue';
