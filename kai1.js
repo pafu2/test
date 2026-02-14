@@ -2736,11 +2736,12 @@
             } else if (messageType === 'guardError') {
               if (guard < 5){
                 guard += 1;
-                message = lastLine + '(' + guard + ')' + ;
+                message = lastLine + '(' + guard + ')';
                 processType = 'continue';
                 i++;
               } else {
-                message = lastLine;
+                guard += 1;
+                message = lastLine + '(' + guard + ')';
                 cellType = 'teamAdjacent';
                 processType = 'break';
                 i++;
