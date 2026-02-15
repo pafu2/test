@@ -2667,7 +2667,6 @@
       } else {
         cellType = 'mapEdge';
       }
-console.log(`[Decision] Selected Type: ${cellType}, Candidates count: ${regions[cellType].length}`);
 
       while(dialog.open) {
         let success = false;
@@ -2992,33 +2991,39 @@ console.log(`[Decision] Selected Type: ${cellType}, Candidates count: ${regions[
           'FF0101' //赤い彗星
         ];
 
-        // マスの情報取得
-        const gridCells = doc.querySelectorAll('.grid .cell');
+// 1. 今ブラウザに表示されている実際の画面から、判明済みのランク情報を取得
+        const currentGridCells = document.querySelectorAll('.grid .cell');
         const rankMap = new Map();
-        gridCells.forEach(c => {
+        currentGridCells.forEach(c => {
           if (c.dataset.rank) {
+            // すでに「警」などが書き込まれているマスを記憶
             rankMap.set(`${c.dataset.row}-${c.dataset.col}`, c.dataset.rank);
           }
         });
 
-        // 1. どこのチームにも属してないマス
-        const group1 = shuffle(nonAdjacentBase.filter(([r, c]) => {
+        // 2. 判定用のヘルパー関数
+        const isGuard = (r, c) => {
           const key = `${r}-${c}`;
-          if (rankMap.get(key)?.includes('警')) return false;
+          const rank = rankMap.get(key) || '';
+          return rank.includes('警');
+        };
+
+        // 3. 各グループのフィルタリング（docから取得した座標を、rankMapでチェック）
+        const group1 = shuffle(nonAdjacentBase.filter(([r, c]) => {
+          if (isGuard(r, c)) return false; // 警備員なら除外
+          const key = `${r}-${c}`;
           return !cellColors[key];
         }));
 
-        // 2. 敵チームの首都および首都の上下左右ではないマス
         const group2 = shuffle(nonAdjacentBase.filter(([r, c]) => {
+          if (isGuard(r, c)) return false;
           const key = `${r}-${c}`;
-          if (rankMap.get(key)?.includes('警')) return false;
           return cellColors[key] && cellColors[key].replace('#','') !== teamColor;
         }));
 
-        // 3. 敵チームの首都の上下左右のマス
         const group3 = shuffle(cells.filter(([r, c]) => {
+          if (isGuard(r, c)) return false;
           const key = `${r}-${c}`;
-          if (rankMap.get(key)?.includes('警')) return false;
           if (capitalSet.has(key)) return false;
           if (!adjacentSet.has(key)) return false;
           
@@ -3027,10 +3032,9 @@ console.log(`[Decision] Selected Type: ${cellType}, Candidates count: ${regions[
           return color !== teamColor && !excludedColors.includes(color);
         }));
 
-        // 4. 敵チームの首都
         const group4 = shuffle(cells.filter(([r, c]) => {
+          if (isGuard(r, c)) return false;
           const key = `${r}-${c}`;
-          if (rankMap.get(key)?.includes('警')) return false;
           if (!capitalSet.has(key)) return false;
           if (!cellColors[key]) return false;
           const color = cellColors[key].replace('#', '');
@@ -3092,20 +3096,14 @@ console.log(`[Decision] Selected Type: ${cellType}, Candidates count: ${regions[
           return arr;
         }
 
-        const finalFilter = ([r, c]) => {
-          const key = `${r}-${c}`;
-          const rank = rankMap.get(key);
-          return !(rank && rank.includes('警'));
+        const regions = {
+//        nonAdjacent: shuffle(nonAdjacentCells),
+          nonAdjacent: nonAdjacentCells,
+          capitalAdjacent: shuffle(capitalAdjacentCells),
+          teamAdjacent: shuffle(teamAdjacentCells),
+          mapEdge: shuffle(mapEdgeCells)
         };
-const regions = {
-          nonAdjacent: nonAdjacentCells.filter(finalFilter),
-          capitalAdjacent: shuffle(capitalAdjacentCells.filter(finalFilter)),
-          teamAdjacent: shuffle(teamAdjacentCells.filter(finalFilter)),
-          mapEdge: shuffle(mapEdgeCells.filter(finalFilter))
-        };
-        // --------------------------------------------------
         return regions;
-
       } catch (e) {
         console.error(e);
         return;
