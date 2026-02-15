@@ -2992,34 +2992,21 @@ console.log(`[Decision] Selected Type: ${cellType}, Candidates count: ${regions[
           'FF0101' //赤い彗星
         ];
 
-        // マスの情報取得
-        const gridCells = document.querySelectorAll('.grid .cell');
-        const rankMap = new Map();
-        gridCells.forEach(c => {
-          if (c.dataset.rank) {
-            rankMap.set(`${c.dataset.row}-${c.dataset.col}`, c.dataset.rank);
-          }
-        });
-console.log('rankMap size:', rankMap.size);
-console.log('rankMap sample:', [...rankMap.entries()].slice(0,5));
         // 1. どこのチームにも属してないマス
         const group1 = shuffle(nonAdjacentBase.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          if ((rankMap.get(key) || '').includes('警')) return false;
           return !cellColors[key];
         }));
 
         // 2. 敵チームの首都および首都の上下左右ではないマス
         const group2 = shuffle(nonAdjacentBase.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          if ((rankMap.get(key) || '').includes('警')) return false;
           return cellColors[key] && cellColors[key].replace('#','') !== teamColor;
         }));
 
         // 3. 敵チームの首都の上下左右のマス
         const group3 = shuffle(cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          if ((rankMap.get(key) || '').includes('警')) return false;
           if (capitalSet.has(key)) return false;
           if (!adjacentSet.has(key)) return false;
           
@@ -3031,7 +3018,6 @@ console.log('rankMap sample:', [...rankMap.entries()].slice(0,5));
         // 4. 敵チームの首都
         const group4 = shuffle(cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          if ((rankMap.get(key) || '').includes('警')) return false;
           if (!capitalSet.has(key)) return false;
           if (!cellColors[key]) return false;
           const color = cellColors[key].replace('#', '');
@@ -3039,7 +3025,8 @@ console.log('rankMap sample:', [...rankMap.entries()].slice(0,5));
         }));
 
         // 1~4を結合
-        const nonAdjacentCells = [...group1, ...group2, ...group3, ...group4];
+        const nonAdjacentRaw = [...group1, ...group2, ...group3, ...group4];
+        const nonAdjacentCells = await filterGuardCells(nonAdjacentRaw);
 
         const capitalAdjacentCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
@@ -3106,6 +3093,28 @@ console.log('rankMap sample:', [...rankMap.entries()].slice(0,5));
         return;
       }
     }
+
+async function filterGuardCells(candidates) {
+  const checks = candidates.map(async ([r, c]) => {
+    const url = `https://donguri.5ch.net/teambattle?r=${r}&c=${c}&` + MODE;
+
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return null;
+
+      const text = await res.text();
+      const doc = new DOMParser().parseFromString(text, 'text/html');
+      const rank = doc.querySelector('small')?.textContent || '';
+
+      return rank.includes('警備員') ? null : [r, c];
+    } catch {
+      return null;
+    }
+  });
+
+  const results = await Promise.all(checks);
+  return results.filter(Boolean);
+}
 
     async function challenge (region) {
       const [ row, col ] = region;
