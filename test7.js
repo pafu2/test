@@ -3092,7 +3092,6 @@ console.log(`[Decision] Selected Type: ${cellType}, Candidates count: ${regions[
           return arr;
         }
 
- --- 修正箇所：すべてのリストから「警」を確実に排除する ---
         const finalFilter = ([r, c]) => {
           const key = `${r}-${c}`;
           const rank = rankMap.get(key);
@@ -3104,15 +3103,6 @@ const regions = {
           teamAdjacent: shuffle(teamAdjacentCells.filter(finalFilter)),
           mapEdge: shuffle(mapEdgeCells.filter(finalFilter))
         };
-
-
-//        const regions = {
-////        nonAdjacent: shuffle(nonAdjacentCells),
-//          nonAdjacent: nonAdjacentCells,
-//          capitalAdjacent: shuffle(capitalAdjacentCells),
-//          teamAdjacent: shuffle(teamAdjacentCells),
-//          mapEdge: shuffle(mapEdgeCells)
-//        };
         // --------------------------------------------------
         return regions;
 
