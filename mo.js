@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 ume
+// @version      1.2.2d改 ume予約版
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -1117,7 +1117,7 @@
     (()=>{
       const link = document.createElement('a');
       link.style.color = '#333';
-      link.textContent = '1.2.2d改 ume';
+      link.textContent = '1.2.2d改 ume予約版';
       footer.append(link);
     })();
 
@@ -2565,9 +2565,11 @@
       capitalAttack: [
         '再建が必要です。'
       ],
+      onceagain: [
+        'もう一度バトルに参加する前に、待たなければなりません。'
+      ],
       breaktime: [
         'チームに参加または離脱してから間もないため、次のバトルが始まるまでお待ちください。',
-        'もう一度バトルに参加する前に、待たなければなりません。',
         'ng: ちょっとゆっくり'
       ],
       toofast: [
@@ -2627,7 +2629,7 @@
     let nextProgress;
     async function attackRegion () {
       await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 2) {
         return;
       }
 
@@ -2655,7 +2657,6 @@
       let regions = await getRegions();
       const excludeSet = new Set();
       let loop = 0;
-      let onceagain = 0;
 
       let cellType;
       if (regions.nonAdjacent.length > 0) {
@@ -2684,9 +2685,9 @@
               excludeSet.add(region.join(','));
               i++;
               continue;
-           } else {
+            } else {
               excludeSet.add(region.join(','));
-           }
+            }
 
             const [ text, lastLine ] = await challenge(region);
             const messageType = getMessageType(lastLine);
@@ -2720,10 +2721,16 @@
                 processType = 'return';
               }
               i++;
+            } else if (messageType === 'onceagain') {
+              sleepTime = 2;
+              message = lastLine;
+              processType = 'break';
+              excludeSet.clear();
+              i++;
             } else if (messageType === 'breaktime') {
-              onceagain += 1;
-              message = lastLine + '(' + onceagain + ')';
-              processType = 'reload';
+              success = true;
+              message = lastLine;
+              processType = 'return';
               i++;
             } else if (messageType === 'toofast') {
               sleepTime = 3;
@@ -2790,11 +2797,30 @@
               i++;
             }
             if (success) {
-              clearInterval(autoJoinIntervalId);
-              autoJoinIntervalId = null;
-              next = `→ 予約なし`;
+              if (location.href.includes('/teambattle?m=rb')) {
+                if (currentProgress < 16) {
+                  nextProgress = 18;
+                } else if (currentProgress < 33) {
+                  nextProgress = 35;
+                } else if (currentProgress < 50) {
+                  nextProgress = 52;
+                } else if (currentProgress < 66) {
+                  nextProgress = 68;
+                } else if (currentProgress < 83) {
+                  nextProgress = 85;
+                } else {
+                  nextProgress = 2;
+                }
+              } else {
+                if (currentProgress < 50) {
+                  nextProgress = 52;
+                } else {
+                  nextProgress = 2;
+                }
+              }
+              next = `→ ${nextProgress}±1%`;
               isAutoJoinRunning = false;
-//              logMessage(null, '[打止] 終了です。', next);
+//            logMessage(null, '[打止] 終了です。', next);
             } else if (processType === 'return') {
               next = '';
               isAutoJoinRunning = false;
@@ -2859,10 +2885,30 @@
         }
 
         if (!success && regions[cellType].length === 0) {
-            clearInterval(autoJoinIntervalId);
-            autoJoinIntervalId = null;
-            const next = `→ 予約なし`;
+          if (location.href.includes('/teambattle?m=rb')) {
+            if (currentProgress < 16) {
+               nextProgress = 18;
+              } else if (currentProgress < 33) {
+               nextProgress = 35;
+              } else if (currentProgress < 50) {
+               nextProgress = 52;
+              } else if (currentProgress < 66) {
+               nextProgress = 68;
+              } else if (currentProgress < 83) {
+               nextProgress = 85;
+              } else {
+               nextProgress = 2;
+              }
+            } else {
+              if (currentProgress < 50) {
+                nextProgress = 52;
+              } else {
+                nextProgress = 2;
+              }
+            }
+            const next = `→ ${nextProgress}±1%`;
             isAutoJoinRunning = false;
+            //loop += 1;
             logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。(計' + loop + '発)', next);
             return;
         }
