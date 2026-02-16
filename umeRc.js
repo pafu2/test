@@ -2739,7 +2739,7 @@
               }
               i++;
             } else if (messageType === 'onemoretime') {
-              sleepTime = 20;
+              sleepTime = 100;
               forceOnceMore = true;
               cellType = 'onceMore';
               processType = 'reload';
