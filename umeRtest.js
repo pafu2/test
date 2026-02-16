@@ -2722,6 +2722,7 @@
               }
               i++;
             } else if (messageType === 'onemoretime') {
+              sleepTime = 20;
               cellType = 'onemore';
               message = lastLine;
               processType = 'reload';
