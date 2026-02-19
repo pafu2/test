@@ -2669,7 +2669,7 @@
       } else {
         cellType = 'mapEdge';
       }
-
+console.log(`[Decision] Selected Type: ${cellType}, Candidates count: ${regions[cellType].length}`);
       while(dialog.open) {
         let success = false;
         isAutoJoinRunning = true;
