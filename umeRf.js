@@ -2711,7 +2711,7 @@ if (forceOnceMore && regions.onceMore.length > 0) {
                 i++;
               }
             } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
-              if (forceOnceMore) {
+              if (forceOnceMore && text.startsWith('リーダーになった')) {
                 forceOnceMore = false;
               }
               if (loop < 255){
