@@ -2710,7 +2710,7 @@
                 i++;
               }
             } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
-              if (forceOnceMore) {
+              if (forceOnceMore && text.startsWith('リーダーになった')) {
                 forceOnceMore = false;
                 regions = await getRegions();
                   if (regions.nonAdjacent.length > 0) {
@@ -2744,7 +2744,6 @@
               cellType = 'onceMore';
 regions = await getRegions();
               processType = 'reload';
-              i++;
             } else if (messageType === 'breaktime') {
               success = true;
               message = lastLine;
