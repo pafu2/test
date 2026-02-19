@@ -2524,7 +2524,7 @@
       const now = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
       const hour = now.getHours();
       const minute = now.getMinutes();
-      return (hour > 21 || hour < 8) || (hour === 21 && minute >= 30) || (hour === 8 && minute === 0);
+      return (hour > 21 || hour < 8) || (hour === 21 && minute >= 15) || (hour === 8 && minute === 0);
       // 以下指定例その1（変える時は上の return hour >= 4 && hour <= 8; を書き換え、24:00をまたぐ指定はその2で）
       // 4:00～8:00
       // return hour >= 4 && hour <= 8;
@@ -3173,6 +3173,24 @@
         const isMorning = isMorningTime();
 
         if (isMorning) {
+          const nonAdjacentCells = cells.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            return !capitalSet.has(key) && !adjacentSet.has(key);
+          });
+
+          //チームメンバーを除外するフィルタリング関数
+          const filteredCells = (cells) => {
+            return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
+          };
+
+          const regions = {
+            nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
+            capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
+            teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
+            mapEdge: shuffle(filteredCells(mapEdgeCells))
+          };
+        return regions;
+        } else {
           const nonAdjacentBase = cells.filter(([r, c]) => {
             const key = `${r}-${c}`;
             return !capitalSet.has(key) && !adjacentSet.has(key);
@@ -3219,24 +3237,6 @@
             capitalAdjacent: shuffle(capitalAdjacentCells),
             teamAdjacent: shuffle(teamAdjacentCells),
             mapEdge: shuffle(mapEdgeCells)
-          };
-        return regions;
-        } else {
-          const nonAdjacentCells = cells.filter(([r, c]) => {
-            const key = `${r}-${c}`;
-            return !capitalSet.has(key) && !adjacentSet.has(key);
-          });
-
-          //チームメンバーを除外するフィルタリング関数
-          const filteredCells = (cells) => {
-            return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
-          };
-
-          const regions = {
-            nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
-            capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
-            teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
-            mapEdge: shuffle(filteredCells(mapEdgeCells))
           };
         return regions;
         }
