@@ -2670,7 +2670,7 @@
       } else {
         cellType = 'mapEdge';
       }
-
+console.log('選ばれたcellType:', cellType);
       while(dialog.open) {
         let success = false;
         isAutoJoinRunning = true;
