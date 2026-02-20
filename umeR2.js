@@ -2731,6 +2731,8 @@
               sleepTime = 90;
               forceOnceMore = true;
               cellType = 'onceMore';
+              excludeSet.delete(region.join(','));
+              //excludeSet.clear();
               processType = 'reload';
             } else if (messageType === 'breaktime') {
               success = true;
