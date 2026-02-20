@@ -2728,7 +2728,7 @@ console.log('選ばれたcellType:', cellType);
               }
               i++;
             } else if (messageType === 'onemoretime') {
-              sleepTime = 100;
+              sleepTime = 60;
               forceOnceMore = true;
               cellType = 'onceMore';
               processType = 'reload';
