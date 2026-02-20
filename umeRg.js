@@ -2524,7 +2524,7 @@
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
     let teamColor = settings.teamColor;
     let teamName = settings.teamName;
-
+    let forceOnceMore = false;
 
     function logMessage(region, message, next) {
       const date = new Date();
@@ -2654,27 +2654,34 @@
         } catch (e) { console.error(e); }
       }
 
-      let isWaitMode = false;
       let regions = await getRegions();
       const excludeSet = new Set();
       let loop = 0;
 
       while(dialog.open) {
+      let cellType;
+      if (forceOnceMore && regions.onceMore.length > 0) {
+        cellType = 'onceMore';
+      } else if (regions.nonAdjacent.length > 0) {
+        cellType = 'nonAdjacent';
+      } else if (regions.teamAdjacent.length > 0) {
+        cellType = 'teamAdjacent';
+      } else if (regions.capitalAdjacent.length > 0) {
+        cellType = 'capitalAdjacent';
+      } else {
+        cellType = 'mapEdge';
+      }
+console.log('[autoJoin status]', {
+  forceOnceMore,
+  cellType,
+  onceMoreCount: regions.onceMore.length,
+  nonAdjacentCount: regions.nonAdjacent.length,
+  teamAdjacentCount: regions.teamAdjacent.length,
+  capitalAdjacentCount: regions.capitalAdjacent.length
+});
+
         let success = false;
         isAutoJoinRunning = true;
-
-        let cellType;
-        if (isWaitMode && regions.onceMore.length > 0) {
-          cellType = 'onceMore';
-        } else if (regions.nonAdjacent.length > 0) {
-          cellType = 'nonAdjacent';
-        } else if (regions.teamAdjacent.length > 0) {
-          cellType = 'teamAdjacent';
-        } else if (regions.capitalAdjacent.length > 0) {
-          cellType = 'capitalAdjacent';
-        } else {
-          cellType = 'mapEdge';
-        }
 
         regions[cellType] = regions[cellType]
           .filter(e => !excludeSet.has(e.join(',')));
@@ -2712,7 +2719,9 @@
                 i++;
               }
             } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
-              isWaitMode = false;
+              if (forceOnceMore && text.startsWith('リーダーになった')) {
+                forceOnceMore = false;
+              }
               if (loop < 255){
                 loop += 1;
                 sleepTime = 1;
@@ -2726,11 +2735,9 @@
               }
               i++;
             } else if (messageType === 'onemoretime') {
-              isWaitMode = true;
-              sleepTime = 20;
-              message = lastLine;
+              sleepTime = 100;
+              forceOnceMore = true;
               processType = 'reload';
-              i++;
             } else if (messageType === 'breaktime') {
               success = true;
               message = lastLine;
