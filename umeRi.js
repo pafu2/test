@@ -2670,10 +2670,10 @@
       } else {
         cellType = 'mapEdge';
       }
-console.log('選ばれたcellType:', cellType);
       while(dialog.open) {
         let success = false;
         isAutoJoinRunning = true;
+console.log('選ばれたcellType:', cellType);
 
         regions[cellType] = regions[cellType]
           .filter(e => !excludeSet.has(e.join(',')));
