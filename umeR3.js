@@ -2701,12 +2701,12 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
               if (loop < 255){
                 loop += 1;
                 sleepTime = 1;
-                message = '(' + loop + '発目) ['+ cellType+'] '+lastLine;
+                message = '(' + loop + '発目) '+'('+cellType+') '+lastline;
                 processType = 'continue';
               } else {
                 loop += 1;
                 success = true;
-                message = '[打止] (' + loop + '発目) ['+ cellType+'] '+lastLine;
+                message = '[打止] (' + loop + '発目) '+'('+cellType+') '+lastline;
                 processType = 'return';
                 i++;
               }
@@ -2718,12 +2718,12 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
               if (loop < 255){
                 loop += 1;
                 sleepTime = 1;
-                message = '(' + loop + '発目) ['+ cellType+'] '+lastLine;
+                message = '(' + loop + '発目) '+'('+cellType+') '+lastline;
                 processType = 'reload';
               } else {
                 loop += 1;
                 success = true;
-                message = '[打止] (' + loop + '発目) ['+ cellType+'] '+lastLine;
+                message = '[打止] (' + loop + '発目) '+'('+cellType+') '+lastline;
                 processType = 'return';
               }
               i++;
@@ -2731,11 +2731,12 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
               sleepTime = 90;
               forceOnceMore = true;
               cellType = 'onceMore';
-              message = '['+ cellType+'] '+lastLine;
+              //excludeSet.clear();
+              message = '('+cellType+') '+lastline;
               processType = 'reload';
             } else if (messageType === 'breaktime') {
               success = true;
-              message = '['+ cellType+'] '+lastLine;
+              message = lastLine;
               processType = 'return';
               i++;
             } else if (messageType === 'toofast') {
@@ -2745,19 +2746,19 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
               sleepTime = 20;
               processType = 'continue';
             } else if (messageType === 'guardError') {
-              message = '['+ cellType+'] '+lastLine;
+              message = lastLine;
               processType = 'reload';
               i++;
             } else if (messageType === 'equipError') {
               if (loop < 255){
                 loop += 1;
                 sleepTime = 1;
-                message = '(' + loop + '発目) ['+ cellType+'] '+lastLine + ` (${cellRank}, ${currentEquipName})`;
+                message = '(' + loop + '発目) '+'('+cellType+') '+lastline + ` (${cellRank}, ${currentEquipName})`;
                 processType = 'reload';
               } else {
                 loop += 1;
                 success = true;
-                message = '[打止] (' + loop + '発目) ['+ cellType+'] '+lastLine + ` (${cellRank}, ${currentEquipName})`;
+                message = '[打止] (' + loop + '発目) '+'('+cellType+') '+lastline + ` (${cellRank}, ${currentEquipName})`;
                 processType = 'return';
               }
               i++;
@@ -2766,7 +2767,7 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
               processType = 'continue';
               i++;
             } else if (messageType === 'quit') {
-              message = '[停止] ' + lastLine;
+              message = '[停止] ' +'('+cellType+') '+lastline;
               processType = 'return';
               clearInterval(autoJoinIntervalId);
               i++;
@@ -2777,27 +2778,27 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
               excludeSet.add(region.join(','));
               if (messageType === cellType) {
                 loop += 1;
-                message = '(' + loop + '発目) ['+ cellType+'] '+lastLine;
+                message = '(' + loop + '発目) '+'('+cellType+') '+lastline;
                 processType = 'continue';
               } else if (messageType === 'nonAdjacent') {
                 cellType = 'nonAdjacent';
                 loop += 1;
-                message = '(' + loop + '発目) ['+ cellType+'] '+ lastLine;
+                message = '(' + loop + '発目) '+'('+cellType+') '+lastline;
                 processType = 'break';
               } else if (messageType === 'teamAdjacent') {
                 cellType = 'teamAdjacent';
                 loop += 1;
-                message = '(' + loop + '発目) ['+ cellType+'] '+ lastLine;
+                message = '(' + loop + '発目) '+'('+cellType+') '+lastline;
                 processType = 'break';
               } else if (messageType === 'capitalAdjacent') {
                 cellType = 'capitalAdjacent';
                 loop += 1;
-                message = '(' + loop + '発目) ['+ cellType+'] '+ lastLine;
+                message = '(' + loop + '発目) '+'('+cellType+') '+lastline;
                 processType = 'break';
               } else if (messageType === 'mapEdge') {
                 cellType = 'mapEdge';
                 loop += 1;
-                message = '(' + loop + '発目) ['+ cellType+'] '+ lastLine;
+                message = '(' + loop + '発目) '+'('+cellType+') '+lastline;
                 processType = 'break';
               }
               i++;
@@ -2805,15 +2806,15 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
             if (success) {
               if (location.href.includes('/teambattle?m=rb')) {
                 if (currentProgress < 16) {
-                  nextProgress = 18;
+                  nextProgress = 19;
                 } else if (currentProgress < 33) {
-                  nextProgress = 35;
+                  nextProgress = 36;
                 } else if (currentProgress < 50) {
                   nextProgress = 52;
                 } else if (currentProgress < 66) {
-                  nextProgress = 68;
+                  nextProgress = 69;
                 } else if (currentProgress < 83) {
-                  nextProgress = 85;
+                  nextProgress = 86;
                 } else {
                   nextProgress = 2;
                 }
@@ -2893,15 +2894,15 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
         if (!success && regions[cellType].length === 0) {
           if (location.href.includes('/teambattle?m=rb')) {
             if (currentProgress < 16) {
-               nextProgress = 18;
+               nextProgress = 19;
               } else if (currentProgress < 33) {
-               nextProgress = 35;
+               nextProgress = 36;
               } else if (currentProgress < 50) {
                nextProgress = 52;
               } else if (currentProgress < 66) {
-               nextProgress = 68;
+               nextProgress = 69;
               } else if (currentProgress < 83) {
-               nextProgress = 85;
+               nextProgress = 86;
               } else {
                nextProgress = 2;
               }
@@ -2915,7 +2916,7 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
             const next = `→ ${nextProgress}±1%`;
             isAutoJoinRunning = false;
             //loop += 1;
-            logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。(計' + loop + '発) ['+cellType+']', next);
+            logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。(計' + loop + '発)', next);
             return;
         }
       }
