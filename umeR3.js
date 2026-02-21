@@ -2711,6 +2711,7 @@
                 i++;
               }
             } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
+              const beforeCellType = cellType;
               if (forceOnceMore && text.startsWith('リーダーになった')) {
                 forceOnceMore = false;
                 cellType = 'teamAdjacent';
@@ -2718,22 +2719,20 @@
               if (loop < 255){
                 loop += 1;
                 sleepTime = 1;
-                message = cellType+'(' + loop + '発目) '+ lastLine;
+                message = beforeCellType+'(' + loop + '発目) '+ lastLine;
                 processType = 'reload';
               } else {
                 loop += 1;
                 success = true;
-                message = cellType+'[打止] (' + loop + '発目) '+ lastLine;
+                message = beforeCellType+'[打止] (' + loop + '発目) '+ lastLine;
                 processType = 'return';
               }
               i++;
             } else if (messageType === 'onemoretime') {
               sleepTime = 90;
               forceOnceMore = true;
-              cellType = 'onceMore';
-              //excludeSet.delete(region.join(','));
-              //excludeSet.clear();
               message = cellType+lastLine;
+              cellType = 'onceMore';
               processType = 'reload';
             } else if (messageType === 'breaktime') {
               success = true;
@@ -2782,24 +2781,24 @@
                 message = cellType+'(' + loop + '発目) '+ lastLine;
                 processType = 'continue';
               } else if (messageType === 'nonAdjacent') {
-                cellType = 'nonAdjacent';
                 loop += 1;
                 message = cellType+'(' + loop + '発目) '+ lastLine;
+                cellType = 'nonAdjacent';
                 processType = 'break';
               } else if (messageType === 'teamAdjacent') {
-                cellType = 'teamAdjacent';
                 loop += 1;
                 message = cellType+'(' + loop + '発目) '+ lastLine;
+                cellType = 'teamAdjacent';
                 processType = 'break';
               } else if (messageType === 'capitalAdjacent') {
-                cellType = 'capitalAdjacent';
                 loop += 1;
                 message = cellType+'(' + loop + '発目) '+ lastLine;
+                cellType = 'capitalAdjacent';
                 processType = 'break';
               } else if (messageType === 'mapEdge') {
-                cellType = 'mapEdge';
                 loop += 1;
                 message = cellType+'(' + loop + '発目) '+ lastLine;
+                cellType = 'mapEdge';
                 processType = 'break';
               }
               i++;
@@ -2917,7 +2916,7 @@
             const next = `→ ${nextProgress}±1%`;
             isAutoJoinRunning = false;
             //loop += 1;
-            logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。(計' + loop + '発)', next);
+            logMessage(null, cellType+'[打止] 攻撃可能なタイルが見つかりませんでした。(計' + loop + '発)', next);
             return;
         }
       }
