@@ -2674,7 +2674,7 @@
       while(dialog.open) {
         let success = false;
         isAutoJoinRunning = true;
-
+console.log('loop:', ++debugCounter, 'cellType:', cellType);
         regions[cellType] = regions[cellType]
           .filter(e => !excludeSet.has(e.join(',')));
         for (let i = 0; i < regions[cellType].length;) {
