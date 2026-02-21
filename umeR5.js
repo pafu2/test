@@ -2524,7 +2524,6 @@
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
     let teamColor = settings.teamColor;
     let teamName = settings.teamName;
-    let forceOnceMore = false;
 
     function logMessage(region, message, next) {
       const date = new Date();
@@ -2657,11 +2656,10 @@
       let regions = await getRegions();
       const excludeSet = new Set();
       let loop = 0;
+      let forceOnceMore = false;
 
       let cellType;
-      if (forceOnceMore && regions.onceMore.length > 0) {
-        cellType = 'onceMore';
-      } else if (regions.nonAdjacent.length > 0) {
+      if (regions.nonAdjacent.length > 0) {
         cellType = 'nonAdjacent';
       } else if (regions.teamAdjacent.length > 0) {
         cellType = 'teamAdjacent';
