@@ -2701,12 +2701,12 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
               if (loop < 255){
                 loop += 1;
                 sleepTime = 1;
-                message = '(' + loop + '発目) '+ lastLine;
+                message = '(' + loop + '発目) ['+ cellType+'] '+lastLine;
                 processType = 'continue';
               } else {
                 loop += 1;
                 success = true;
-                message = '[打止] (' + loop + '発目) '+ lastLine;
+                message = '[打止] (' + loop + '発目) ['+ cellType+'] '+lastLine;
                 processType = 'return';
                 i++;
               }
@@ -2718,12 +2718,12 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
               if (loop < 255){
                 loop += 1;
                 sleepTime = 1;
-                message = '(' + loop + '発目) '+ lastLine;
+                message = '(' + loop + '発目) ['+ cellType+'] '+lastLine;
                 processType = 'reload';
               } else {
                 loop += 1;
                 success = true;
-                message = '[打止] (' + loop + '発目) '+ lastLine;
+                message = '[打止] (' + loop + '発目) ['+ cellType+'] '+lastLine;
                 processType = 'return';
               }
               i++;
@@ -2731,10 +2731,11 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
               sleepTime = 90;
               forceOnceMore = true;
               cellType = 'onceMore';
+              message = '['+ cellType+'] '+lastLine;
               processType = 'reload';
             } else if (messageType === 'breaktime') {
               success = true;
-              message = lastLine;
+              message = '['+ cellType+'] '+lastLine;
               processType = 'return';
               i++;
             } else if (messageType === 'toofast') {
@@ -2744,19 +2745,19 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
               sleepTime = 20;
               processType = 'continue';
             } else if (messageType === 'guardError') {
-              message = lastLine;
+              message = '['+ cellType+'] '+lastLine;
               processType = 'reload';
               i++;
             } else if (messageType === 'equipError') {
               if (loop < 255){
                 loop += 1;
                 sleepTime = 1;
-                message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
+                message = '(' + loop + '発目) ['+ cellType+'] '+lastLine + ` (${cellRank}, ${currentEquipName})`;
                 processType = 'reload';
               } else {
                 loop += 1;
                 success = true;
-                message = '[打止] (' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
+                message = '[打止] (' + loop + '発目) ['+ cellType+'] '+lastLine + ` (${cellRank}, ${currentEquipName})`;
                 processType = 'return';
               }
               i++;
@@ -2776,27 +2777,27 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
               excludeSet.add(region.join(','));
               if (messageType === cellType) {
                 loop += 1;
-                message = '(' + loop + '発目) '+ lastLine;
+                message = '(' + loop + '発目) ['+ cellType+'] '+lastLine;
                 processType = 'continue';
               } else if (messageType === 'nonAdjacent') {
                 cellType = 'nonAdjacent';
                 loop += 1;
-                message = '(' + loop + '発目) '+ lastLine;
+                message = '(' + loop + '発目) ['+ cellType+'] '+ lastLine;
                 processType = 'break';
               } else if (messageType === 'teamAdjacent') {
                 cellType = 'teamAdjacent';
                 loop += 1;
-                message = '(' + loop + '発目) '+ lastLine;
+                message = '(' + loop + '発目) ['+ cellType+'] '+ lastLine;
                 processType = 'break';
               } else if (messageType === 'capitalAdjacent') {
                 cellType = 'capitalAdjacent';
                 loop += 1;
-                message = '(' + loop + '発目) '+ lastLine;
+                message = '(' + loop + '発目) ['+ cellType+'] '+ lastLine;
                 processType = 'break';
               } else if (messageType === 'mapEdge') {
                 cellType = 'mapEdge';
                 loop += 1;
-                message = '(' + loop + '発目) '+ lastLine;
+                message = '(' + loop + '発目) ['+ cellType+'] '+ lastLine;
                 processType = 'break';
               }
               i++;
@@ -2914,7 +2915,7 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
             const next = `→ ${nextProgress}±1%`;
             isAutoJoinRunning = false;
             //loop += 1;
-            logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。(計' + loop + '発)', next);
+            logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。(計' + loop + '発) ['+cellType+']', next);
             return;
         }
       }
