@@ -2670,10 +2670,10 @@
       } else {
         cellType = 'mapEdge';
       }
+
       while(dialog.open) {
         let success = false;
         isAutoJoinRunning = true;
-console.log('loop:', ++debugCounter, 'cellType:', cellType);
 
         regions[cellType] = regions[cellType]
           .filter(e => !excludeSet.has(e.join(',')));
@@ -2701,12 +2701,12 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
               if (loop < 255){
                 loop += 1;
                 sleepTime = 1;
-                message = '(' + loop + '発目) '+'('+cellType+') '+lastline;
+                message = cellType+'(' + loop + '発目) '+ lastLine;
                 processType = 'continue';
               } else {
                 loop += 1;
                 success = true;
-                message = '[打止] (' + loop + '発目) '+'('+cellType+') '+lastline;
+                message = cellType+'[打止] (' + loop + '発目) '+ lastLine;
                 processType = 'return';
                 i++;
               }
@@ -2718,12 +2718,12 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
               if (loop < 255){
                 loop += 1;
                 sleepTime = 1;
-                message = '(' + loop + '発目) '+'('+cellType+') '+lastline;
+                message = cellType+'(' + loop + '発目) '+ lastLine;
                 processType = 'reload';
               } else {
                 loop += 1;
                 success = true;
-                message = '[打止] (' + loop + '発目) '+'('+cellType+') '+lastline;
+                message = cellType+'[打止] (' + loop + '発目) '+ lastLine;
                 processType = 'return';
               }
               i++;
@@ -2731,12 +2731,13 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
               sleepTime = 90;
               forceOnceMore = true;
               cellType = 'onceMore';
+              //excludeSet.delete(region.join(','));
               //excludeSet.clear();
-              message = '('+cellType+') '+lastline;
+              message = cellType+lastLine;
               processType = 'reload';
             } else if (messageType === 'breaktime') {
               success = true;
-              message = lastLine;
+              message = cellType+lastLine;
               processType = 'return';
               i++;
             } else if (messageType === 'toofast') {
@@ -2746,19 +2747,19 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
               sleepTime = 20;
               processType = 'continue';
             } else if (messageType === 'guardError') {
-              message = lastLine;
+              message = cellType+lastLine;
               processType = 'reload';
               i++;
             } else if (messageType === 'equipError') {
               if (loop < 255){
                 loop += 1;
                 sleepTime = 1;
-                message = '(' + loop + '発目) '+'('+cellType+') '+lastline + ` (${cellRank}, ${currentEquipName})`;
+                message = cellType+'(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
                 processType = 'reload';
               } else {
                 loop += 1;
                 success = true;
-                message = '[打止] (' + loop + '発目) '+'('+cellType+') '+lastline + ` (${cellRank}, ${currentEquipName})`;
+                message = cellType+'[打止] (' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
                 processType = 'return';
               }
               i++;
@@ -2767,7 +2768,7 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
               processType = 'continue';
               i++;
             } else if (messageType === 'quit') {
-              message = '[停止] ' +'('+cellType+') '+lastline;
+              message = '[停止] ' + lastLine;
               processType = 'return';
               clearInterval(autoJoinIntervalId);
               i++;
@@ -2778,27 +2779,27 @@ console.log('loop:', ++debugCounter, 'cellType:', cellType);
               excludeSet.add(region.join(','));
               if (messageType === cellType) {
                 loop += 1;
-                message = '(' + loop + '発目) '+'('+cellType+') '+lastline;
+                message = cellType+'(' + loop + '発目) '+ lastLine;
                 processType = 'continue';
               } else if (messageType === 'nonAdjacent') {
                 cellType = 'nonAdjacent';
                 loop += 1;
-                message = '(' + loop + '発目) '+'('+cellType+') '+lastline;
+                message = cellType+'(' + loop + '発目) '+ lastLine;
                 processType = 'break';
               } else if (messageType === 'teamAdjacent') {
                 cellType = 'teamAdjacent';
                 loop += 1;
-                message = '(' + loop + '発目) '+'('+cellType+') '+lastline;
+                message = cellType+'(' + loop + '発目) '+ lastLine;
                 processType = 'break';
               } else if (messageType === 'capitalAdjacent') {
                 cellType = 'capitalAdjacent';
                 loop += 1;
-                message = '(' + loop + '発目) '+'('+cellType+') '+lastline;
+                message = cellType+'(' + loop + '発目) '+ lastLine;
                 processType = 'break';
               } else if (messageType === 'mapEdge') {
                 cellType = 'mapEdge';
                 loop += 1;
-                message = '(' + loop + '発目) '+'('+cellType+') '+lastline;
+                message = cellType+'(' + loop + '発目) '+ lastLine;
                 processType = 'break';
               }
               i++;
