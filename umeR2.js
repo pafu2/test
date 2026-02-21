@@ -2731,7 +2731,7 @@
               sleepTime = 90;
               forceOnceMore = true;
               cellType = 'onceMore';
-              excludeSet.delete(region.join(','));
+              //excludeSet.delete(region.join(','));
               //excludeSet.clear();
               message = lastLine;
               processType = 'reload';
