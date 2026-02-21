@@ -2701,12 +2701,12 @@
               if (loop < 255){
                 loop += 1;
                 sleepTime = 1;
-                message = cellType+'(' + loop + '発目) '+ lastLine;
+                message = '[' + cellType + '] (' + loop + '発目) '+ lastLine;
                 processType = 'continue';
               } else {
                 loop += 1;
                 success = true;
-                message = cellType+'[打止] (' + loop + '発目) '+ lastLine;
+                message = '[' + cellType + '] [打止] (' + loop + '発目) '+ lastLine;
                 processType = 'return';
                 i++;
               }
@@ -2714,30 +2714,31 @@
               const beforeCellType = cellType;
               if (forceOnceMore && text.startsWith('リーダーになった')) {
                 forceOnceMore = false;
-                cellType = 'nonAdjacent';
+                cellType = 'teamAdjacent';
               }
               if (loop < 255){
                 loop += 1;
                 sleepTime = 1;
-                message = beforeCellType+'(' + loop + '発目) '+ lastLine;
+                message = '[' + beforeCellType + '] (' + loop + '発目) '+ lastLine;
                 processType = 'reload';
               } else {
                 loop += 1;
                 success = true;
-                message = beforeCellType+'[打止] (' + loop + '発目) '+ lastLine;
+                message = '[' + beforeCellType + '] [打止] (' + loop + '発目) '+ lastLine;
                 processType = 'return';
               }
               i++;
             } else if (messageType === 'onemoretime') {
               sleepTime = 90;
               forceOnceMore = true;
-              message = cellType+lastLine;
+              //excludeSet.delete(region.join(','));
+              //excludeSet.clear();
+              message = '[' + cellType + '] '+lastLine;
               cellType = 'onceMore';
-              excludeSet.delete(region.join(','));
               processType = 'reload';
             } else if (messageType === 'breaktime') {
               success = true;
-              message = cellType+lastLine;
+              message = '[' + cellType + '] '+lastLine;
               processType = 'return';
               i++;
             } else if (messageType === 'toofast') {
@@ -2747,19 +2748,19 @@
               sleepTime = 20;
               processType = 'continue';
             } else if (messageType === 'guardError') {
-              message = cellType+lastLine;
+              message = '[' + cellType + '] '+lastLine;
               processType = 'reload';
               i++;
             } else if (messageType === 'equipError') {
               if (loop < 255){
                 loop += 1;
                 sleepTime = 1;
-                message = cellType+'(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
+                message = '[' + cellType + '] (' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
                 processType = 'reload';
               } else {
                 loop += 1;
                 success = true;
-                message = cellType+'[打止] (' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
+                message = '[' + cellType + '] [打止] (' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
                 processType = 'return';
               }
               i++;
@@ -2779,26 +2780,26 @@
               excludeSet.add(region.join(','));
               if (messageType === cellType) {
                 loop += 1;
-                message = cellType+'(' + loop + '発目) '+ lastLine;
+                message = '[' + cellType + '] (' + loop + '発目) '+ lastLine;
                 processType = 'continue';
               } else if (messageType === 'nonAdjacent') {
                 loop += 1;
-                message = cellType+'(' + loop + '発目) '+ lastLine;
+                message = '[' + cellType + '] (' + loop + '発目) '+ lastLine;
                 cellType = 'nonAdjacent';
                 processType = 'break';
               } else if (messageType === 'teamAdjacent') {
                 loop += 1;
-                message = cellType+'(' + loop + '発目) '+ lastLine;
+                message = '[' + cellType + '] (' + loop + '発目) '+ lastLine;
                 cellType = 'teamAdjacent';
                 processType = 'break';
               } else if (messageType === 'capitalAdjacent') {
                 loop += 1;
-                message = cellType+'(' + loop + '発目) '+ lastLine;
+                message = '[' + cellType + '] (' + loop + '発目) '+ lastLine;
                 cellType = 'capitalAdjacent';
                 processType = 'break';
               } else if (messageType === 'mapEdge') {
                 loop += 1;
-                message = cellType+'(' + loop + '発目) '+ lastLine;
+                message = '[' + cellType + '] (' + loop + '発目) '+ lastLine;
                 cellType = 'mapEdge';
                 processType = 'break';
               }
@@ -2917,7 +2918,7 @@
             const next = `→ ${nextProgress}±1%`;
             isAutoJoinRunning = false;
             //loop += 1;
-            logMessage(null, cellType+'[打止] 攻撃可能なタイルが見つかりませんでした。(計' + loop + '発)', next);
+            logMessage(null, '[' + cellType + '] [打止] 攻撃可能なタイルが見つかりませんでした。(計' + loop + '発)', next);
             return;
         }
       }
