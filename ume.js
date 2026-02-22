@@ -2525,7 +2525,6 @@
     let teamColor = settings.teamColor;
     let teamName = settings.teamName;
 
-
     function logMessage(region, message, next) {
       const date = new Date();
       const ymd = date.toLocaleDateString('sv-SE').slice(2);
@@ -2565,9 +2564,11 @@
       capitalAttack: [
         '再建が必要です。'
       ],
+      onemoretime: [
+        'もう一度バトルに参加する前に、待たなければなりません。'
+      ],
       breaktime: [
         'チームに参加または離脱してから間もないため、次のバトルが始まるまでお待ちください。',
-        'もう一度バトルに参加する前に、待たなければなりません。',
         'ng: ちょっとゆっくり'
       ],
       toofast: [
@@ -2627,7 +2628,7 @@
     let nextProgress;
     async function attackRegion () {
       await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 2) {
         return;
       }
 
@@ -2683,9 +2684,9 @@
               excludeSet.add(region.join(','));
               i++;
               continue;
-           } else {
+            } else {
               excludeSet.add(region.join(','));
-           }
+            }
 
             const [ text, lastLine ] = await challenge(region);
             const messageType = getMessageType(lastLine);
@@ -2707,6 +2708,9 @@
                 i++;
               }
             } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
+              if (cellType === 'onceMore' && text.includes('新しいアリーナリーダー')) {
+                cellType = 'teamAdjacent';
+              }
               if (loop < 255){
                 loop += 1;
                 sleepTime = 1;
@@ -2719,6 +2723,12 @@
                 processType = 'return';
               }
               i++;
+            } else if (messageType === 'onemoretime') {
+              sleepTime = 90;
+              excludeSet.delete(region.join(','));
+              message = lastLine;
+              cellType = 'onceMore';
+              processType = 'reload';
             } else if (messageType === 'breaktime') {
               success = true;
               message = lastLine;
@@ -2766,24 +2776,24 @@
                 message = '(' + loop + '発目) '+ lastLine;
                 processType = 'continue';
               } else if (messageType === 'nonAdjacent') {
-                cellType = 'nonAdjacent';
                 loop += 1;
                 message = '(' + loop + '発目) '+ lastLine;
+                cellType = 'nonAdjacent';
                 processType = 'break';
               } else if (messageType === 'teamAdjacent') {
-                cellType = 'teamAdjacent';
                 loop += 1;
                 message = '(' + loop + '発目) '+ lastLine;
+                cellType = 'teamAdjacent';
                 processType = 'break';
               } else if (messageType === 'capitalAdjacent') {
-                cellType = 'capitalAdjacent';
                 loop += 1;
                 message = '(' + loop + '発目) '+ lastLine;
+                cellType = 'capitalAdjacent';
                 processType = 'break';
               } else if (messageType === 'mapEdge') {
-                cellType = 'mapEdge';
                 loop += 1;
                 message = '(' + loop + '発目) '+ lastLine;
+                cellType = 'mapEdge';
                 processType = 'break';
               }
               i++;
@@ -2965,6 +2975,11 @@
           return mapEdgeSet.has(key) && !capitalSet.has(key);
         })
 
+        const onceMoreCells = nonAdjacentCells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return key in cellColors && !teamColorSet.has(key);
+        });
+
         function shuffle(arr) {
           for (let i = arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -2982,7 +2997,8 @@
           nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
           capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
           teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
-          mapEdge: shuffle(filteredCells(mapEdgeCells))
+          mapEdge: shuffle(filteredCells(mapEdgeCells)),
+          onceMore: shuffle(filteredCells(onceMoreCells))
         };
         return regions;
       } catch (e) {
@@ -2991,7 +3007,8 @@
           nonAdjacent: [],
           capitalAdjacent: [],
           teamAdjacent: [],
-          mapEdge: []
+          mapEdge: [],
+          onceMore: []
         };
       }
     }
