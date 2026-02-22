@@ -2525,7 +2525,6 @@
     let teamColor = settings.teamColor;
     let teamName = settings.teamName;
 
-
     function logMessage(region, message, next) {
       const date = new Date();
       const ymd = date.toLocaleDateString('sv-SE').slice(2);
@@ -2565,9 +2564,11 @@
       capitalAttack: [
         '再建が必要です。'
       ],
+      onemoretime: [
+        'もう一度バトルに参加する前に、待たなければなりません。'
+      ],
       breaktime: [
         'チームに参加または離脱してから間もないため、次のバトルが始まるまでお待ちください。',
-        'もう一度バトルに参加する前に、待たなければなりません。',
         'ng: ちょっとゆっくり'
       ],
       toofast: [
@@ -2707,6 +2708,9 @@
                 i++;
               }
             } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
+              if (cellType === 'onceMore' && text.includes('新しいアリーナリーダー')) {
+                cellType = 'teamAdjacent';
+              }
               if (loop < 255){
                 loop += 1;
                 sleepTime = 1;
@@ -2719,6 +2723,12 @@
                 processType = 'return';
               }
               i++;
+            } else if (messageType === 'onemoretime') {
+              sleepTime = 90;
+              excludeSet.delete(region.join(','));
+              message = lastLine;
+              cellType = 'onceMore';
+              processType = 'reload';
             } else if (messageType === 'breaktime') {
               success = true;
               message = lastLine;
@@ -2766,24 +2776,24 @@
                 message = '(' + loop + '発目) '+ lastLine;
                 processType = 'continue';
               } else if (messageType === 'nonAdjacent') {
-                cellType = 'nonAdjacent';
                 loop += 1;
                 message = '(' + loop + '発目) '+ lastLine;
+                cellType = 'nonAdjacent';
                 processType = 'break';
               } else if (messageType === 'teamAdjacent') {
-                cellType = 'teamAdjacent';
                 loop += 1;
                 message = '(' + loop + '発目) '+ lastLine;
+                cellType = 'teamAdjacent';
                 processType = 'break';
               } else if (messageType === 'capitalAdjacent') {
-                cellType = 'capitalAdjacent';
                 loop += 1;
                 message = '(' + loop + '発目) '+ lastLine;
+                cellType = 'capitalAdjacent';
                 processType = 'break';
               } else if (messageType === 'mapEdge') {
-                cellType = 'mapEdge';
                 loop += 1;
                 message = '(' + loop + '発目) '+ lastLine;
+                cellType = 'mapEdge';
                 processType = 'break';
               }
               i++;
@@ -2791,15 +2801,15 @@
             if (success) {
               if (location.href.includes('/teambattle?m=rb')) {
                 if (currentProgress < 16) {
-                  nextProgress = 18;
+                  nextProgress = 19;
                 } else if (currentProgress < 33) {
-                  nextProgress = 35;
+                  nextProgress = 36;
                 } else if (currentProgress < 50) {
                   nextProgress = 52;
                 } else if (currentProgress < 66) {
-                  nextProgress = 68;
+                  nextProgress = 69;
                 } else if (currentProgress < 83) {
-                  nextProgress = 85;
+                  nextProgress = 86;
                 } else {
                   nextProgress = 2;
                 }
@@ -2879,15 +2889,15 @@
         if (!success && regions[cellType].length === 0) {
           if (location.href.includes('/teambattle?m=rb')) {
             if (currentProgress < 16) {
-               nextProgress = 18;
+               nextProgress = 19;
               } else if (currentProgress < 33) {
-               nextProgress = 35;
+               nextProgress = 36;
               } else if (currentProgress < 50) {
                nextProgress = 52;
               } else if (currentProgress < 66) {
-               nextProgress = 68;
+               nextProgress = 69;
               } else if (currentProgress < 83) {
-               nextProgress = 85;
+               nextProgress = 86;
               } else {
                nextProgress = 2;
               }
@@ -3004,6 +3014,11 @@
           return mapEdgeSet.has(key) && !capitalSet.has(key);
         })
 
+        const onceMoreCells = nonAdjacentCells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return key in cellColors && !teamColorSet.has(key);
+        });
+
         function shuffle(arr) {
           for (let i = arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -3021,7 +3036,8 @@
           nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
           capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
           teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
-          mapEdge: shuffle(filteredCells(mapEdgeCells))
+          mapEdge: shuffle(filteredCells(mapEdgeCells)),
+          onceMore: shuffle(filteredCells(onceMoreCells))
         };
         return regions;
       } catch (e) {
@@ -3030,7 +3046,8 @@
           nonAdjacent: [],
           capitalAdjacent: [],
           teamAdjacent: [],
-          mapEdge: []
+          mapEdge: [],
+          onceMore: []
         };
       }
     }
