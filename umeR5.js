@@ -2710,7 +2710,7 @@
               }
             } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
               const beforeCellType = cellType;
-              if (forceOnceMore && text.startsWith('リーダーになった')) {
+              if (forceOnceMore && text.includes('新しいアリーナリーダー')) {
                 forceOnceMore = false;
                 cellType = 'teamAdjacent';
               }
