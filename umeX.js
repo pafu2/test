@@ -3008,7 +3008,7 @@
             i++;
           }
         }
-        
+
         if (!success && regions[cellType].length === 0) {
           if (location.href.includes('/teambattle?m=rb')) {
             if (currentProgress < 16) {
@@ -3205,7 +3205,7 @@
           const excludedColors = [
             '00008B',//まほろば
             'FFFF00',//ライーヨー
-            'FF0101' //赤い彗星
+            'FF0101',//赤い彗星
             'FFFFE0',//プリングルズ
             '696969'//尻子玉
           ];
@@ -3251,7 +3251,7 @@
             nonAdjacent: nonAdjacentCells,
             capitalAdjacent: shuffle(capitalAdjacentCells),
             teamAdjacent: shuffle(teamAdjacentCells),
-            mapEdge: shuffle(mapEdgeCells)
+            mapEdge: shuffle(mapEdgeCells),
             onceMore: shuffle(filteredCells(onceMoreCells))
           };
         }
