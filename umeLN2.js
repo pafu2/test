@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 ume明け方予約版
+// @version      1.2.2d改 ume明け方予約版2発
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -81,7 +81,8 @@
       toolbar.style.right = distance;
     }
   })();
-  header.querySelector('h4').style.display = 'none';
+  const h4 = header.querySelector('h4');
+  if (h4) h4.style.display = 'none';
   header.append(toolbar);
   const progressBarContainer = document.createElement('div');
   const progressBar = document.createElement('div');
@@ -1117,7 +1118,7 @@
     (()=>{
       const link = document.createElement('a');
       link.style.color = '#333';
-      link.textContent = '1.2.2d改 ume明け方予約版';
+      link.textContent = '1.2.2d改 ume明け方予約版2発';
       footer.append(link);
     })();
 
@@ -1872,8 +1873,8 @@
 
       const text = await res.text();
       const doc = new DOMParser().parseFromString(text, 'text/html');
-      const h1 = doc?.querySelector('h1')?.textContent;
-      if (h1 !== 'どんぐりチーム戦い') throw new Error('title.ng info');
+      const headerText = doc?.querySelector('header')?.textContent || '';
+      if (!headerText.includes('どんぐりチーム戦い')) throw new Error('title.ng info');
 
       const currentCells = grid.querySelectorAll('.cell');
       const scriptContent = doc.querySelector('.grid > script').textContent;
@@ -2000,8 +2001,8 @@
       if(!res.ok) throw new Error(res.status + ' res.ng');
       const text = await res.text();
       const doc = new DOMParser().parseFromString(text, 'text/html');
-      const h1 = doc?.querySelector('h1')?.textContent;
-      if(h1 !== 'どんぐりチーム戦い') throw new Error(`title.ng [${row}][${col}][${h1}]`);
+      const headerText = doc?.querySelector('header')?.textContent || '';
+      if(!headerText.includes('どんぐりチーム戦い')) throw new Error(`title.ng [${row}][${col}]`);
       const rank = doc.querySelector('small')?.textContent || '';
       if(!rank) return Promise.reject(`rank.ng [${row}][${col}][${h1}]`);
       const leader = doc.querySelector('strong')?.textContent || '';
@@ -2192,8 +2193,8 @@
       if(!res.ok) throw new Error('res.ng');
       const text = await res.text();
       const doc = new DOMParser().parseFromString(text,'text/html');
-      const h1 = doc?.querySelector('h1')?.textContent;
-      if(h1 !== 'どんぐりチーム戦い') return Promise.reject(`title.ng`);
+      const headerText = doc?.querySelector('header')?.textContent || '';
+      if(!headerText.includes('どんぐりチーム戦い')) return Promise.reject(`title.ng`);
       const table = doc.querySelector('table');
       if(!table) throw new Error('table.ng');
       showArenaTable(table);
@@ -2927,8 +2928,8 @@
         if (!res.ok) throw new Error(`[${res.status}] /teambattle`);
         const text = await res.text();
         const doc = new DOMParser().parseFromString(text, 'text/html');
-        const h1 = doc?.querySelector('h1')?.textContent;
-        if (h1 !== 'どんぐりチーム戦い') throw new Error('title.ng info');
+        const headerText = doc?.querySelector('header')?.textContent || '';
+        if (!headerText.includes('どんぐりチーム戦い')) throw new Error('title.ng info');
 
         const scriptContent = doc.querySelector('.grid > script').textContent;
         const cellColorsString = scriptContent.match(/const cellColors = ({.+?})/s)[1];
@@ -3081,8 +3082,8 @@
         if(!res.ok) throw new Error(`[${res.status}] /teambattle?r=${row}&c=${col}`);
         const text = await res.text();
         const doc = new DOMParser().parseFromString(text,'text/html');
-        const h1 = doc?.querySelector('h1')?.textContent;
-        if(h1 !== 'どんぐりチーム戦い') return Promise.reject(`title.ng`);
+        const headerText = doc?.querySelector('header')?.textContent || '';
+        if(!headerText.includes('どんぐりチーム戦い')) return Promise.reject(`title.ng`);
         const table = doc.querySelector('table');
         if(!table) throw new Error('table.ng');
         const equipCond = table.querySelector('td small').textContent;
