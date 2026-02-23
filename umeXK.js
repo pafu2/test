@@ -2524,7 +2524,7 @@
       const now = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
       const hour = now.getHours();
       const minute = now.getMinutes();
-      return hour >= 8 && hour <= 9;
+      return hour >= 4 && hour <= 8;
       // 以下指定例その1（変える時は上の return hour >= 4 && hour <= 8; を書き換え、24:00をまたぐ指定はその2で）
       // 4:00～8:00
       // return hour >= 4 && hour <= 8;
@@ -2723,8 +2723,8 @@
             let message = lastLine;
             let processType;
             let sleepTime = 1;
-            // 255がumeのときの上限（実際には+1の256）、7がstdPROのときの[ﾘﾄﾗｲ]上限（実際には+1の8）
-            const maxloop = isMorning ? 255 : 7;
+            // 255がumeのときの上限（実際には+1の256）、9がstdPROのときの[ﾘﾄﾗｲ]上限（実際には+1の10）
+            const maxloop = isMorning ? 255 : 9;
 
             if (messageType === 'capitalAttack') {
               if (isMorning) {
