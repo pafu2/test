@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 umeR/stdPRO Switch H
+// @version      1.2.2d改 umeR/stdP Switch A
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -1118,7 +1118,7 @@
     (()=>{
       const link = document.createElement('a');
       link.style.color = '#333';
-      link.textContent = '1.2.2d改 umeR/stdPRO Switch H';
+      link.textContent = '1.2.2d改 umeR/stdP Switch A';
       footer.append(link);
     })();
 
