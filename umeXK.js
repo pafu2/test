@@ -3170,6 +3170,7 @@
           return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
         };
 
+        const isMorning = isMorningTime();
         let nonAdjacentCells;
         let regions;
 
