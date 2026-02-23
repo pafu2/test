@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 umeR/stdPRO Switch 兄貴専用
+// @version      1.2.2d改 umeR/stdP Switch A
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -81,7 +81,8 @@
       toolbar.style.right = distance;
     }
   })();
-  header.querySelector('h4').style.display = 'none';
+  const h4 = header.querySelector('h4');
+  if (h4) h4.style.display = 'none';
   header.append(toolbar);
   const progressBarContainer = document.createElement('div');
   const progressBar = document.createElement('div');
@@ -1117,7 +1118,7 @@
     (()=>{
       const link = document.createElement('a');
       link.style.color = '#333';
-      link.textContent = '1.2.2d改 umeR/stdPRO Switch 兄貴専用';
+      link.textContent = '1.2.2d改 umeR/stdP Switch A';
       footer.append(link);
     })();
 
@@ -1872,8 +1873,8 @@
 
       const text = await res.text();
       const doc = new DOMParser().parseFromString(text, 'text/html');
-      const h1 = doc?.querySelector('h1')?.textContent;
-      if (h1 !== 'どんぐりチーム戦い') throw new Error('title.ng info');
+      const headerText = doc?.querySelector('header')?.textContent || '';
+      if (!headerText.includes('どんぐりチーム戦い')) throw new Error('title.ng info');
 
       const currentCells = grid.querySelectorAll('.cell');
       const scriptContent = doc.querySelector('.grid > script').textContent;
@@ -2000,10 +2001,10 @@
       if(!res.ok) throw new Error(res.status + ' res.ng');
       const text = await res.text();
       const doc = new DOMParser().parseFromString(text, 'text/html');
-      const h1 = doc?.querySelector('h1')?.textContent;
-      if(h1 !== 'どんぐりチーム戦い') throw new Error(`title.ng [${row}][${col}][${h1}]`);
+      const headerText = doc?.querySelector('header')?.textContent || '';
+      if(!headerText.includes('どんぐりチーム戦い')) throw new Error(`title.ng [${row}][${col}]`);
       const rank = doc.querySelector('small')?.textContent || '';
-      if(!rank) return Promise.reject(`rank.ng [${row}][${col}][${h1}]`);
+      if(!rank) return Promise.reject(`rank.ng [${row}][${col}]`);
       const leader = doc.querySelector('strong')?.textContent || '';
       const shortenRank = rank.replace('[エリート]','e').replace('[警備員]だけ','警').replace('から','-').replace(/(まで|\[|\]|\||\s)/g,'');
       const teamname = doc.querySelector('table').rows[1]?.cells[2].textContent;
@@ -2192,8 +2193,8 @@
       if(!res.ok) throw new Error('res.ng');
       const text = await res.text();
       const doc = new DOMParser().parseFromString(text,'text/html');
-      const h1 = doc?.querySelector('h1')?.textContent;
-      if(h1 !== 'どんぐりチーム戦い') return Promise.reject(`title.ng`);
+      const headerText = doc?.querySelector('header')?.textContent || '';
+      if(!headerText.includes('どんぐりチーム戦い')) return Promise.reject(`title.ng`);
       const table = doc.querySelector('table');
       if(!table) throw new Error('table.ng');
       showArenaTable(table);
@@ -2551,19 +2552,28 @@
     let teamColor = settings.teamColor;
     let teamName = settings.teamName;
 
-
     function logMessage(region, message, next) {
       const date = new Date();
       const ymd = date.toLocaleDateString('sv-SE').slice(2);
       const time = date.toLocaleTimeString('sv-SE');
+      const attackmode = isMorningTime() ? "umeR" : "stdP";
+
       const timestamp = document.createElement('div');
-      const attackmode = isMorningTime() ? "umeR" : "stdPRO";
-      timestamp.innerText = `${ymd}\n${time}\n${attackmode}`;
-//      timestamp.innerText = `${ymd}\n${time}`;
       timestamp.style.fontSize = '90%';
       timestamp.style.color = '#666';
       timestamp.style.borderRight = 'solid 0.5px #888';
+      timestamp.style.display = 'flex';
+      timestamp.style.flexDirection = 'column';
       timestamp.style.whiteSpace = 'nowrap';
+
+      const ymdEl = document.createElement('div');
+      ymdEl.textContent = ymd;
+      const timeEl = document.createElement('div');
+      timeEl.textContent = time;
+      const modeEl = document.createElement('div');
+      modeEl.textContent = attackmode;
+      modeEl.style.textAlign = 'center';
+      timestamp.append(ymdEl, timeEl, modeEl);
 
       const regionDiv = document.createElement('div');
       const progress = `${currentPeriod}期 ${currentProgress}%`;
@@ -2686,7 +2696,6 @@
       const excludeSet = new Set();
       const isMorning = isMorningTime();
       let loop = 0;
-      let forceOnceMore = false;
 
       let cellType;
       if (regions.nonAdjacent.length > 0) {
@@ -2756,23 +2765,10 @@
                 }
               }
             } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
+              if (cellType === 'onceMore' && text.includes('新しいアリーナリーダー')) {
+                  cellType = 'teamAdjacent';
+              }
               if (isMorning) {
-                if (forceOnceMore) {
-                  forceOnceMore = false;
-                  regions = await getRegions();
-                    if (regions.nonAdjacent.length > 0) {
-                      cellType = 'nonAdjacent';
-                    } else if (regions.teamAdjacent.length > 0) {
-                      cellType = 'teamAdjacent';
-                    } else if (regions.capitalAdjacent.length > 0) {
-                      cellType = 'capitalAdjacent';
-                    } else {
-                      cellType = 'mapEdge';
-                    }
-                  processType = 'reload';
-                  i++;
-                  continue;
-                }
                 if (loop < maxloop){
                   loop += 1;
                   sleepTime = 1;
@@ -2806,18 +2802,11 @@
                 }
               }
             } else if (messageType === 'onemoretime') {
-              if (isMorning) {
-                sleepTime = 100;
-                forceOnceMore = true;
-                cellType = 'onceMore';
-                processType = 'reload';
-                i++;
-              } else {
-                success = true;
-                message = lastLine;
-                processType = 'return';
-                i++;
-              }
+              sleepTime = 90;
+              excludeSet.delete(region.join(','));
+              message = lastLine;
+              cellType = 'onceMore';
+              processType = 'reload';
             } else if (messageType === 'breaktime') {
               success = true;
               message = lastLine;
@@ -2921,15 +2910,15 @@
             if (success) {
               if (location.href.includes('/teambattle?m=rb')) {
                 if (currentProgress < 16) {
-                  nextProgress = 18;
+                  nextProgress = 19;
                 } else if (currentProgress < 33) {
-                  nextProgress = 35;
+                  nextProgress = 36;
                 } else if (currentProgress < 50) {
                   nextProgress = 52;
                 } else if (currentProgress < 66) {
-                  nextProgress = 68;
+                  nextProgress = 69;
                 } else if (currentProgress < 83) {
-                  nextProgress = 85;
+                  nextProgress = 86;
                 } else {
                   nextProgress = 2;
                 }
@@ -2942,13 +2931,13 @@
                   }
                 } else {
                   if (currentProgress < 25) {
-                    nextProgress = Math.floor(Math.random() * 5) + 30; // 30~34 -1~+1
+                    nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
                   } else if (currentProgress < 50) {
-                    nextProgress = Math.floor(Math.random() * 5) + 65; // 65~69 -1~+1
+                    nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
                   } else if (currentProgress < 75) {
-                    nextProgress = Math.floor(Math.random() * 5) + 80; // 80~84 -1~+1
+                    nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
                   } else {
-                    nextProgress = Math.floor(Math.random() * 5) + 15; // 15~19 -1~+1
+                    nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
                   }
                 }
               }
@@ -3017,19 +3006,19 @@
             i++;
           }
         }
-        
+
         if (!success && regions[cellType].length === 0) {
           if (location.href.includes('/teambattle?m=rb')) {
             if (currentProgress < 16) {
-               nextProgress = 18;
+               nextProgress = 19;
             } else if (currentProgress < 33) {
-               nextProgress = 35;
+               nextProgress = 36;
             } else if (currentProgress < 50) {
               nextProgress = 52;
             } else if (currentProgress < 66) {
-               nextProgress = 68;
+               nextProgress = 69;
             } else if (currentProgress < 83) {
-               nextProgress = 85;
+               nextProgress = 86;
             } else {
                nextProgress = 2;
             }
@@ -3042,13 +3031,13 @@
               }
             } else {
               if (currentProgress < 25) {
-                  nextProgress = Math.floor(Math.random() * 5) + 30; // 30~34 -1~+1
+                nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
               } else if (currentProgress < 50) {
-                  nextProgress = Math.floor(Math.random() * 5) + 65; // 65~69 -1~+1
+                nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
               } else if (currentProgress < 75) {
-                  nextProgress = Math.floor(Math.random() * 5) + 80; // 80~84 -1~+1
+                nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
               } else {
-                  nextProgress = Math.floor(Math.random() * 5) + 15; // 15~19 -1~+1
+                nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
               }
             }
           }
@@ -3067,8 +3056,8 @@
         if (!res.ok) throw new Error(`[${res.status}] /teambattle`);
         const text = await res.text();
         const doc = new DOMParser().parseFromString(text, 'text/html');
-        const h1 = doc?.querySelector('h1')?.textContent;
-        if (h1 !== 'どんぐりチーム戦い') throw new Error('title.ng info');
+        const headerText = doc?.querySelector('header')?.textContent || '';
+        if (!headerText.includes('どんぐりチーム戦い')) throw new Error('title.ng info');
 
         const scriptContent = doc.querySelector('.grid > script').textContent;
         const cellColorsString = scriptContent.match(/const cellColors = ({.+?})/s)[1];
@@ -3108,11 +3097,6 @@
         }
 
         const capitalSet = new Set(capitalMap.map(([r, c]) => `${r}-${c}`));
-
-        const nonAdjacentCells = cells.filter(([r, c]) => {
-          const key = `${r}-${c}`;
-          return !capitalSet.has(key) && !adjacentSet.has(key);
-        });
 
         const capitalAdjacentCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
@@ -3158,11 +3142,6 @@
           return mapEdgeSet.has(key) && !capitalSet.has(key);
         })
 
-        const onceMoreCells = nonAdjacentCells.filter(([r, c]) => {
-          const key = `${r}-${c}`;
-          return key in cellColors && !teamColorSet.has(key);
-        });
-
         function shuffle(arr) {
           for (let i = arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -3171,39 +3150,130 @@
           return arr;
         }
 
+        //チームメンバーを除外するフィルタリング関数
+        const filteredCells = (cells) => {
+          return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
+        };
+
         const isMorning = isMorningTime();
+        let nonAdjacentCells;
+        let regions;
 
         if (isMorning) {
-          const filteredCells = (cells) => {
-            return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
-          };
-          const regions = {
+          const nonAdjacentCells = cells.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            return !capitalSet.has(key) && !adjacentSet.has(key);
+          });
+
+          const onceMoreCells = nonAdjacentCells.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            return key in cellColors && !teamColorSet.has(key);
+          });
+
+          regions = {
             nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
             capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
             teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
             mapEdge: shuffle(filteredCells(mapEdgeCells)),
             onceMore: shuffle(filteredCells(onceMoreCells))
           };
-          return regions;
         } else {
-          const regions = {
-            nonAdjacent: shuffle(nonAdjacentCells),
+          const nonAdjacentBase = cells.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            return !capitalSet.has(key) && !adjacentSet.has(key);
+          });
+
+          const onceMoreCells = nonAdjacentBase.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            return key in cellColors && !teamColorSet.has(key);
+          });
+
+          const excludedColors = [
+            '00008B',//まほろば
+            'FFFF00',//ライーヨー
+            'FF0101',//赤い彗星
+            'FFFFE0',//プリングルズ
+            '696969'//尻子玉
+          ];
+
+          // 1. どこのチームにも属してないマス
+          const group1 = shuffle(nonAdjacentBase.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            return !cellColors[key];
+          }));
+
+          // 2. 敵チームの首都および首都の上下左右ではないマス
+          const group2 = shuffle(nonAdjacentBase.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            return cellColors[key] && cellColors[key].replace('#','') !== teamColor;
+          }));
+
+          // 3. 敵チームの首都の上下左右のマス
+          const group3 = shuffle(cells.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            if (capitalSet.has(key)) return false;
+            if (!adjacentSet.has(key)) return false;
+
+            if (!cellColors[key]) return true;
+            const color = cellColors[key].replace('#', '');
+            return color !== teamColor && !excludedColors.includes(color);
+          }));
+
+          // 4. 敵チームの首都
+          const group4 = shuffle(cells.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+           if (!capitalSet.has(key)) return false;
+           if (!cellColors[key]) return false;
+            const color = cellColors[key].replace('#', '');
+            return color !== teamColor && !excludedColors.includes(color);
+          }));
+
+          // 1~4を結合
+          const nonAdjacentRaw = [...group1, ...group2, ...group3, ...group4];
+          nonAdjacentCells = await filterGuardCells(nonAdjacentRaw);
+
+          regions = {
+//          nonAdjacent: shuffle(nonAdjacentCells),
+            nonAdjacent: nonAdjacentCells,
             capitalAdjacent: shuffle(capitalAdjacentCells),
             teamAdjacent: shuffle(teamAdjacentCells),
             mapEdge: shuffle(mapEdgeCells),
-            onceMore: shuffle(onceMoreCells)
+            onceMore: shuffle(filteredCells(onceMoreCells))
           };
-          return regions;
         }
+        return regions;
       } catch (e) {
         console.error(e);
         return {
           nonAdjacent: [],
           capitalAdjacent: [],
+          teamAdjacent: [],
           mapEdge: [],
           onceMore: []
         };
       }
+    }
+
+    async function filterGuardCells(candidates) {
+     const checks = candidates.map(async ([r, c]) => {
+        const url = `https://donguri.5ch.net/teambattle?r=${r}&c=${c}&` + MODE;
+
+        try {
+          const res = await fetch(url);
+          if (!res.ok) return null;
+
+          const text = await res.text();
+          const doc = new DOMParser().parseFromString(text, 'text/html');
+          const rank = doc.querySelector('small')?.textContent || '';
+
+          return rank.includes('警備員') ? null : [r, c];
+        } catch {
+          return null;
+        }
+      });
+
+      const results = await Promise.all(checks);
+      return results.filter(Boolean);
     }
 
     async function challenge (region) {
@@ -3234,8 +3304,8 @@
         if(!res.ok) throw new Error(`[${res.status}] /teambattle?r=${row}&c=${col}`);
         const text = await res.text();
         const doc = new DOMParser().parseFromString(text,'text/html');
-        const h1 = doc?.querySelector('h1')?.textContent;
-        if(h1 !== 'どんぐりチーム戦い') return Promise.reject(`title.ng`);
+        const headerText = doc?.querySelector('header')?.textContent || '';
+        if(!headerText.includes('どんぐりチーム戦い')) return Promise.reject(`title.ng`);
         const table = doc.querySelector('table');
         if(!table) throw new Error('table.ng');
         const equipCond = table.querySelector('td small').textContent;
