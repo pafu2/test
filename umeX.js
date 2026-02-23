@@ -2555,14 +2555,24 @@
       const date = new Date();
       const ymd = date.toLocaleDateString('sv-SE').slice(2);
       const time = date.toLocaleTimeString('sv-SE');
-      const timestamp = document.createElement('div');
       const attackmode = isMorningTime() ? "umeR" : "stdPRO";
-      timestamp.innerText = `${ymd}\n${time}\n${attackmode}`;
-//      timestamp.innerText = `${ymd}\n${time}`;
+
+      const timestamp = document.createElement('div');
       timestamp.style.fontSize = '90%';
       timestamp.style.color = '#666';
       timestamp.style.borderRight = 'solid 0.5px #888';
+      timestamp.style.display = 'flex';
+      timestamp.style.flexDirection = 'column';   // ← 縦並びにする
       timestamp.style.whiteSpace = 'nowrap';
+
+      const ymdEl = document.createElement('div');
+      ymdEl.textContent = ymd;
+      const timeEl = document.createElement('div');
+      timeEl.textContent = time;
+      const modeEl = document.createElement('div');
+      modeEl.textContent = attackmode;
+      modeEl.style.textAlign = 'center';
+      timestamp.append(ymdEl, timeEl, modeEl);
 
       const regionDiv = document.createElement('div');
       const progress = `${currentPeriod}期 ${currentProgress}%`;
