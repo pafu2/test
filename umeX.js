@@ -2555,14 +2555,14 @@
       const date = new Date();
       const ymd = date.toLocaleDateString('sv-SE').slice(2);
       const time = date.toLocaleTimeString('sv-SE');
-      const attackmode = isMorningTime() ? "umeR" : "stdPRO";
+      const attackmode = isMorningTime() ? "umeR" : "stdP";
 
       const timestamp = document.createElement('div');
       timestamp.style.fontSize = '90%';
       timestamp.style.color = '#666';
       timestamp.style.borderRight = 'solid 0.5px #888';
       timestamp.style.display = 'flex';
-      timestamp.style.flexDirection = 'column';   // ← 縦並びにする
+      timestamp.style.flexDirection = 'column';
       timestamp.style.whiteSpace = 'nowrap';
 
       const ymdEl = document.createElement('div');
