@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 Standard PRO
+// @version      1.2.2d改 Standard PROtest9
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -81,7 +81,8 @@
       toolbar.style.right = distance;
     }
   })();
-  header.querySelector('h4').style.display = 'none';
+  const h4 = header.querySelector('h4');
+  if (h4) h4.style.display = 'none';
   header.append(toolbar);
   const progressBarContainer = document.createElement('div');
   const progressBar = document.createElement('div');
@@ -1117,7 +1118,7 @@
     (()=>{
       const link = document.createElement('a');
       link.style.color = '#333';
-      link.textContent = '1.2.2d改 Standard PRO';
+      link.textContent = '1.2.2d改 Standard PROtest9';
       footer.append(link);
     })();
 
@@ -1872,8 +1873,8 @@
 
       const text = await res.text();
       const doc = new DOMParser().parseFromString(text, 'text/html');
-      const h1 = doc?.querySelector('h1')?.textContent;
-      if (h1 !== 'どんぐりチーム戦い') throw new Error('title.ng info');
+      const headerText = doc?.querySelector('header')?.textContent || '';
+      if (!headerText.includes('どんぐりチーム戦い')) throw new Error('title.ng info');
 
       const currentCells = grid.querySelectorAll('.cell');
       const scriptContent = doc.querySelector('.grid > script').textContent;
@@ -2000,10 +2001,10 @@
       if(!res.ok) throw new Error(res.status + ' res.ng');
       const text = await res.text();
       const doc = new DOMParser().parseFromString(text, 'text/html');
-      const h1 = doc?.querySelector('h1')?.textContent;
-      if(h1 !== 'どんぐりチーム戦い') throw new Error(`title.ng [${row}][${col}][${h1}]`);
+      const headerText = doc?.querySelector('header')?.textContent || '';
+      if(!headerText.includes('どんぐりチーム戦い')) throw new Error(`title.ng [${row}][${col}]`);
       const rank = doc.querySelector('small')?.textContent || '';
-      if(!rank) return Promise.reject(`rank.ng [${row}][${col}][${h1}]`);
+      if(!rank) return Promise.reject(`rank.ng [${row}][${col}]`);
       const leader = doc.querySelector('strong')?.textContent || '';
       const shortenRank = rank.replace('[エリート]','e').replace('[警備員]だけ','警').replace('から','-').replace(/(まで|\[|\]|\||\s)/g,'');
       const teamname = doc.querySelector('table').rows[1]?.cells[2].textContent;
@@ -2192,8 +2193,8 @@
       if(!res.ok) throw new Error('res.ng');
       const text = await res.text();
       const doc = new DOMParser().parseFromString(text,'text/html');
-      const h1 = doc?.querySelector('h1')?.textContent;
-      if(h1 !== 'どんぐりチーム戦い') return Promise.reject(`title.ng`);
+      const headerText = doc?.querySelector('header')?.textContent || '';
+      if(!headerText.includes('どんぐりチーム戦い')) return Promise.reject(`title.ng`);
       const table = doc.querySelector('table');
       if(!table) throw new Error('table.ng');
       showArenaTable(table);
@@ -2655,7 +2656,6 @@
       let regions = await getRegions();
       const excludeSet = new Set();
       let loop = 0;
-      let guard = 0;
 
       let cellType;
       if (regions.nonAdjacent.length > 0) {
@@ -2667,7 +2667,6 @@
       } else {
         cellType = 'mapEdge';
       }
-console.log(`[Decision] Selected Type: ${cellType}, Candidates count: ${regions[cellType].length}`);
 
       while(dialog.open) {
         let success = false;
@@ -2735,18 +2734,9 @@ console.log(`[Decision] Selected Type: ${cellType}, Candidates count: ${regions[
               sleepTime = 20;
               processType = 'continue';
             } else if (messageType === 'guardError') {
-              if (guard < 5){
-                guard += 1;
-                message = lastLine + '(' + guard + ')';
-                processType = 'continue';
-                i++;
-              } else {
-                guard += 1;
-                message = lastLine + '(' + guard + ')';
-                cellType = 'teamAdjacent';
-                processType = 'break';
-                i++;
-              }
+              message = lastLine;
+              processType = 'continue';
+              i++;
             } else if (messageType === 'equipError') {
               message += ` (${cellRank}, ${currentEquipName})`;
               processType = 'continue';
@@ -2936,8 +2926,8 @@ console.log(`[Decision] Selected Type: ${cellType}, Candidates count: ${regions[
         if (!res.ok) throw new Error(`[${res.status}] /teambattle`);
         const text = await res.text();
         const doc = new DOMParser().parseFromString(text, 'text/html');
-        const h1 = doc?.querySelector('h1')?.textContent;
-        if (h1 !== 'どんぐりチーム戦い') throw new Error('title.ng info');
+        const headerText = doc?.querySelector('header')?.textContent || '';
+        if (!headerText.includes('どんぐりチーム戦い')) throw new Error('title.ng info');
 
         const scriptContent = doc.querySelector('.grid > script').textContent;
         const cellColorsString = scriptContent.match(/const cellColors = ({.+?})/s)[1];
@@ -3144,8 +3134,8 @@ console.log(`[Decision] Selected Type: ${cellType}, Candidates count: ${regions[
         if(!res.ok) throw new Error(`[${res.status}] /teambattle?r=${row}&c=${col}`);
         const text = await res.text();
         const doc = new DOMParser().parseFromString(text,'text/html');
-        const h1 = doc?.querySelector('h1')?.textContent;
-        if(h1 !== 'どんぐりチーム戦い') return Promise.reject(`title.ng`);
+        const headerText = doc?.querySelector('header')?.textContent || '';
+        if(!headerText.includes('どんぐりチーム戦い')) return Promise.reject(`title.ng`);
         const table = doc.querySelector('table');
         if(!table) throw new Error('table.ng');
         const equipCond = table.querySelector('td small').textContent;
