@@ -2524,7 +2524,7 @@
       const now = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
       const hour = now.getHours();
       const minute = now.getMinutes();
-      return hour >= 8 && hour <= 9;
+      return (hour > 21 || hour < 8) || (hour === 21 && minute >= 30) || (hour === 8 && minute <= 30);
       // 以下指定例その1（変える時は上の return hour >= 4 && hour <= 8; を書き換え、24:00をまたぐ指定はその2で）
       // 4:00～8:00
       // return hour >= 4 && hour <= 8;
@@ -2754,10 +2754,10 @@
                 }
               }
             } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
-              if (isMorning) {
-                if (cellType === 'onceMore' && text.includes('新しいアリーナリーダー')) {
+              if (cellType === 'onceMore' && text.includes('新しいアリーナリーダー')) {
                   cellType = 'teamAdjacent';
-                }
+              }
+              if (isMorning) {
                 if (loop < maxloop){
                   loop += 1;
                   sleepTime = 1;
@@ -2791,18 +2791,11 @@
                 }
               }
             } else if (messageType === 'onemoretime') {
-              if (isMorning) {
-                sleepTime = 90;
-                excludeSet.delete(region.join(','));
-                message = lastLine;
-                cellType = 'onceMore';
-                processType = 'reload';
-              } else {
-                success = true;
-                message = lastLine;
-                processType = 'return';
-                i++;
-              }
+              sleepTime = 90;
+              excludeSet.delete(region.join(','));
+              message = lastLine;
+              cellType = 'onceMore';
+              processType = 'reload';
             } else if (messageType === 'breaktime') {
               success = true;
               message = lastLine;
@@ -3120,71 +3113,6 @@
 
         const capitalSet = new Set(capitalMap.map(([r, c]) => `${r}-${c}`));
 
-        const isMorning = isMorningTime();
-
-        let nonAdjacentCells;
-
-        if (isMorning) {
-          const nonAdjacentBase = cells.filter(([r, c]) => {
-            const key = `${r}-${c}`;
-            return !capitalSet.has(key) && !adjacentSet.has(key);
-          });
-
-          const onceMoreCells = nonAdjacentBase.filter(([r, c]) => {
-            const key = `${r}-${c}`;
-            return key in cellColors && cellColors[key].replace('#','') !== teamColor;
-          });
-
-          nonAdjacentCells = shuffle(nonAdjacentBase);
-
-        } else {
-
-          const nonAdjacentBase = cells.filter(([r, c]) => {
-            const key = `${r}-${c}`;
-            return !capitalSet.has(key) && !adjacentSet.has(key);
-          });
-
-          const excludedColors = [
-            '00008B',//まほろば
-            'FFFF00',//赤い彗星
-            'FF0101',//ライーヨー
-            '696969',//尻子玉
-            'FFFFE0' //プリングルズ
-          ];
-
-          const group1 = shuffle(nonAdjacentBase.filter(([r, c]) => {
-            const key = `${r}-${c}`;
-            return !cellColors[key];
-          }));
-
-          const group2 = shuffle(nonAdjacentBase.filter(([r, c]) => {
-            const key = `${r}-${c}`;
-            return cellColors[key] && cellColors[key].replace('#','') !== teamColor;
-          }));
-
-          const group3 = shuffle(cells.filter(([r, c]) => {
-            const key = `${r}-${c}`;
-            if (capitalSet.has(key)) return false;
-            if (!adjacentSet.has(key)) return false;
-
-            if (!cellColors[key]) return true;
-            const color = cellColors[key].replace('#', '');
-            return color !== teamColor && !excludedColors.includes(color);
-          }));
-
-          const group4 = shuffle(cells.filter(([r, c]) => {
-            const key = `${r}-${c}`;
-            if (!capitalSet.has(key)) return false;
-            if (!cellColors[key]) return false;
-
-            const color = cellColors[key].replace('#', '');
-            return color !== teamColor && !excludedColors.includes(color);
-          }));
-
-          const nonAdjacentRaw = [...group1, ...group2, ...group3, ...group4];
-          nonAdjacentCells = await filterGuardCells(nonAdjacentRaw);
-        }
-
         const capitalAdjacentCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
           return adjacentSet.has(key);
@@ -3237,19 +3165,103 @@
           return arr;
         }
 
-        const regions = {
-          nonAdjacent: nonAdjacentCells,
-          capitalAdjacent: shuffle(capitalAdjacentCells),
-          teamAdjacent: shuffle(teamAdjacentCells),
-          mapEdge: shuffle(mapEdgeCells),
-          onceMore: isMorning ? shuffle(filteredCells(onceMoreCells)) : []
+        //チームメンバーを除外するフィルタリング関数
+        const filteredCells = (cells) => {
+          return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
         };
+
+        let nonAdjacentCells;
+        let regions;
+
+        if (isMorning) {
+          const nonAdjacentCells = cells.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            return !capitalSet.has(key) && !adjacentSet.has(key);
+          });
+
+          const onceMoreCells = nonAdjacentCells.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            return key in cellColors && !teamColorSet.has(key);
+          });
+
+          regions = {
+            nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
+            capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
+            teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
+            mapEdge: shuffle(filteredCells(mapEdgeCells)),
+            onceMore: shuffle(filteredCells(onceMoreCells))
+          };
+        } else {
+          const nonAdjacentBase = cells.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            return !capitalSet.has(key) && !adjacentSet.has(key);
+          });
+
+          const onceMoreCells = nonAdjacentBase.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            return key in cellColors && !teamColorSet.has(key);
+          });
+
+          const excludedColors = [
+            '00008B',//まほろば
+            'FFFF00',//ライーヨー
+            'FF0101' //赤い彗星
+            'FFFFE0',//プリングルズ
+            '696969'//尻子玉
+          ];
+
+          // 1. どこのチームにも属してないマス
+          const group1 = shuffle(nonAdjacentBase.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            return !cellColors[key];
+          }));
+
+          // 2. 敵チームの首都および首都の上下左右ではないマス
+          const group2 = shuffle(nonAdjacentBase.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            return cellColors[key] && cellColors[key].replace('#','') !== teamColor;
+          }));
+
+          // 3. 敵チームの首都の上下左右のマス
+          const group3 = shuffle(cells.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            if (capitalSet.has(key)) return false;
+            if (!adjacentSet.has(key)) return false;
+
+            if (!cellColors[key]) return true;
+            const color = cellColors[key].replace('#', '');
+            return color !== teamColor && !excludedColors.includes(color);
+          }));
+
+          // 4. 敵チームの首都
+          const group4 = shuffle(cells.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+           if (!capitalSet.has(key)) return false;
+           if (!cellColors[key]) return false;
+            const color = cellColors[key].replace('#', '');
+            return color !== teamColor && !excludedColors.includes(color);
+          }));
+
+          // 1~4を結合
+          const nonAdjacentRaw = [...group1, ...group2, ...group3, ...group4];
+          nonAdjacentCells = await filterGuardCells(nonAdjacentRaw);
+
+          regions = {
+//          nonAdjacent: shuffle(nonAdjacentCells),
+            nonAdjacent: nonAdjacentCells,
+            capitalAdjacent: shuffle(capitalAdjacentCells),
+            teamAdjacent: shuffle(teamAdjacentCells),
+            mapEdge: shuffle(mapEdgeCells)
+            onceMore: shuffle(filteredCells(onceMoreCells))
+          };
+        }
         return regions;
       } catch (e) {
         console.error(e);
         return {
           nonAdjacent: [],
           capitalAdjacent: [],
+          teamAdjacent: [],
           mapEdge: [],
           onceMore: []
         };
