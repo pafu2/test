@@ -2004,7 +2004,7 @@
       const headerText = doc?.querySelector('header')?.textContent || '';
       if(!headerText.includes('どんぐりチーム戦い')) throw new Error(`title.ng [${row}][${col}]`);
       const rank = doc.querySelector('small')?.textContent || '';
-      if(!rank) return Promise.reject(`rank.ng [${row}][${col}][${h1}]`);
+      if(!rank) return Promise.reject(`rank.ng [${row}][${col}]`);
       const leader = doc.querySelector('strong')?.textContent || '';
       const shortenRank = rank.replace('[エリート]','e').replace('[警備員]だけ','警').replace('から','-').replace(/(まで|\[|\]|\||\s)/g,'');
       const teamname = doc.querySelector('table').rows[1]?.cells[2].textContent;
