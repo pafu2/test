@@ -1865,7 +1865,9 @@ const targetTable = document.querySelector('table');
     contents.style.height = `${scaledHeight}px`;
   }
 
-  scaleContentsToFit(grid.parentNode, grid);
+  if (grid && grid.parentNode) {
+    scaleContentsToFit(grid.parentNode, grid);
+  }
 
 async function refreshArenaInfo() {
     const refreshedCells = [];
@@ -2203,7 +2205,9 @@ console.log('fetchSingleArenaInfoが実行されました');
     scaleContentsToFit(grid.parentNode, grid);
   });
 
-  observer.observe(grid, { attributes: true, childList: true, subtree: true });
+if (grid) {
+    observer.observe(grid, { attributes: true, childList: true, subtree: true });
+}
 
   (()=>{
     [...document.querySelectorAll('.cell')].forEach(elm => {
