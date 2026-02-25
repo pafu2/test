@@ -1980,7 +1980,6 @@ console.log('グリッドサイズ取得:', rows, 'x', cols);
   }
 
 async function fetchAreaInfo(refreshAll){
-    alert('エリア情報取得を開始します');
     const refreshedCells = await refreshArenaInfo();
 
     const grid = document.getElementById('aat_tool_layer');
