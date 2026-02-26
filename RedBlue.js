@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 Red vs Blue
+// @version      1.2.2d改 Red vs Blue 新マップ仕様
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.net/teambattle?m=hc
@@ -81,7 +81,8 @@
       toolbar.style.right = distance;
     }
   })();
-  header.querySelector('h4').style.display = 'none';
+  const h4 = header.querySelector('h4');
+  if (h4) h4.style.display = 'none';
   header.append(toolbar);
   const progressBarContainer = document.createElement('div');
   const progressBar = document.createElement('div');
@@ -742,9 +743,10 @@
   document.body.append(arenaResult, arenaField, helpDialog);
 
   const grid = document.querySelector('.grid');
-  grid.parentNode.style.height = null;
-  grid.style.maxWidth = '100%';
-
+  if (grid && grid.parentNode) {
+    grid.parentNode.style.height = null;
+    grid.style.maxWidth = '100%';
+  }
   const table = document.querySelector('table');
   table.parentNode.style.maxWidth = '100%';
   table.parentNode.style.overflow = 'auto';
@@ -1117,7 +1119,7 @@
     (()=>{
       const link = document.createElement('a');
       link.style.color = '#333';
-      link.textContent = '1.2.2d改 Red vs Blue';
+      link.textContent = '1.2.2d改 Red vs Blue 新マップ仕様';
       footer.append(link);
     })();
 
@@ -1858,202 +1860,232 @@
     contents.style.height = `${scaledHeight}px`;
   }
 
-  scaleContentsToFit(grid.parentNode, grid);
+  if (grid && grid.parentNode) {
+    scaleContentsToFit(grid.parentNode, grid);
+  }
+
+  function includesCoord(arr, row, col) {
+    return arr.some(([r, c]) => r === Number(row) && c === Number(col));
+  }
 
   async function refreshArenaInfo() {
     const refreshedCells = [];
-    function includesCoord(arr, row, col) {
-      return arr.some(([r, c]) => r === Number(row) && c === Number(col));
-    }
-
     try {
       const res = await fetch('');
       if (!res.ok) throw new Error('res.ng');
 
       const text = await res.text();
       const doc = new DOMParser().parseFromString(text, 'text/html');
-      const h1 = doc?.querySelector('h1')?.textContent;
-      if (h1 !== 'どんぐりチーム戦い') throw new Error('title.ng info');
+      const headerText = doc?.querySelector('header')?.textContent || '';
+      if (!headerText.includes('どんぐりチーム戦い')) throw new Error('title.ng info');
 
-      const currentCells = grid.querySelectorAll('.cell');
-      const scriptContent = doc.querySelector('.grid > script').textContent;
+      const gridWrap = document.getElementById('gridWrap');
+      if (!gridWrap) throw new Error('gridWrap not found');
 
-      const cellColorsString = scriptContent.match(/const cellColors = ({.+?})/s)[1];
+      let toolLayer = document.getElementById('aat_tool_layer');
+      if (!toolLayer) {
+        toolLayer = document.createElement('div');
+        toolLayer.id = 'aat_tool_layer';
+        toolLayer.style.position = 'absolute';
+        toolLayer.style.top = '1.8vh'
+        toolLayer.style.left = '0'; // 左端に配置
+        toolLayer.style.display = 'grid';
+        toolLayer.style.zIndex = '100';
+        toolLayer.style.pointerEvents = 'none';// 他の要素がクリックできるように
+        gridWrap.appendChild(toolLayer);
+      }
+      const grid = toolLayer;
+
+      const scriptContent = doc.querySelector('script:not([src])')?.textContent || "";
+      const cellColorsMatch = scriptContent.match(/const cellColors = ({.+?});/s);
+      const cellColorsString = cellColorsMatch ? cellColorsMatch[1] : '{}';
       const validJsonStr = cellColorsString.replace(/'/g, '"').replace(/,\s*}/, '}');
       const cellColors = JSON.parse(validJsonStr);
-      const capitalMapString = scriptContent.match(/const capitalMap = (\[.*?\]);/s)[1];
+
+      const capitalMapMatch = scriptContent.match(/const capitalList = (\[.*?\]);/s);
+      const capitalMapString = capitalMapMatch ? capitalMapMatch[1] : '[]';
       const capitalMap = JSON.parse(capitalMapString);
 
-      const newGrid = doc.querySelector('.grid');
-      const rows = Number(newGrid.style.gridTemplateRows.match(/repeat\((\d+), 35px\)/)[1]);
-      const cols = Number(newGrid.style.gridTemplateColumns.match(/repeat\((\d+), 35px\)/)[1]);
+      const gridSizeMatch = scriptContent.match(/const GRID_SIZE = (\d+);/);
+      const rows = gridSizeMatch ? Number(gridSizeMatch[1]) : 6;
+      const cols = rows;
 
+      const gridBase = document.getElementById('gridBase');
+      const currentCellSize = gridBase ? (parseInt(gridBase.style.width) / rows) + 'px' : '32px';
+      const currentCells = grid.querySelectorAll('.cell');
+  
       if (currentCells.length !== rows * cols) {
-        grid.style.gridTemplateRows = newGrid.style.gridTemplateRows;
-        grid.style.gridTemplateColumns = newGrid.style.gridTemplateColumns;
-        grid.innerHTML = '';
+      grid.style.gridTemplateRows = `repeat(${rows}, ${currentCellSize})`;
+      grid.style.gridTemplateColumns = `repeat(${cols}, ${currentCellSize})`;
+      grid.innerHTML = '';
 
-        for (let i = 0; i < rows; i++) {
-          for (let j = 0; j < cols; j++) {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-            cell.dataset.row = i;
-            cell.dataset.col = j;
-            cell.style.width = '30px';
-            cell.style.height = '30px';
-            cell.style.border = '1px solid #ccc';
-            cell.style.cursor = 'pointer';
-            cell.style.transition = 'background-color 0.3s';
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.dataset.row = i;
+          cell.dataset.col = j;
+          cell.style.width = currentCellSize;
+          cell.style.height = currentCellSize;
+          cell.style.border = '1px solid rgba(204, 204, 204, 0.5)';
+          cell.style.cursor = 'pointer';
+          cell.style.pointerEvents = 'auto';
+          cell.style.boxSizing = 'border-box';
+          cell.style.display = 'flex';
+          cell.style.alignItems = 'center';
+          cell.style.justifyContent = 'center';
+          cell.style.fontSize = '12px';
+          cell.style.fontWeight = 'bold';
 
-            if (includesCoord(capitalMap, i, j)) {
-              cell.style.outline = 'black solid 2px';
-              cell.style.borderColor = 'gold';
-            } else {
-              cell.style.outline = '';
-            }
+          if (includesCoord(capitalMap, i, j)) {
+            cell.style.outline = '2px solid gold';
+            cell.style.outlineOffset = '-2px';
+          }
+
             const cellKey = `${i}-${j}`;
-            /*
-            const rgb = cellColors[cellKey].match(/[0-9a-fA-F]{2}/g);
-            cell.style.outline = includesCoord(capitalMap, i, j) ? `${getOutlineColor(rgb)} solid 2px` : '';
-            */
             if (cellColors[cellKey]) {
-              cell.style.backgroundColor = cellColors[cellKey];
-            } else {
-              cell.style.backgroundColor = '#ffffff00';
+              const hex = cellColors[cellKey];
+              cell.style.backgroundColor = hex + '44';
             }
+
+            cell.addEventListener('click', (e) => {
+              e.stopPropagation();
+              handleCellClick(cell);
+            });
 
             grid.appendChild(cell);
             refreshedCells.push(cell);
           }
         }
-      } else {
-        currentCells.forEach(cell => {
-          const { row, col } = cell.dataset;
-          const cellKey = `${row}-${col}`;
-
-          const cellColorCode = '#' + cell.style.backgroundColor.match(/\d+/g)
-            .map(v => Number(v).toString(16).toLowerCase().padStart(2, '0'))
-            .join('');
-
-          if (cellColors[cellKey]) {
-            if (cellColorCode !== cellColors[cellKey].toLowerCase()) {
-              cell.style.backgroundColor = cellColors[cellKey];
-              refreshedCells.push(cell);
-            }
-          } else if (cellColorCode !== '#ffffff00') {
-            cell.style.backgroundColor = '#ffffff00';
-            refreshedCells.push(cell);
-          }
-
-          const rgb = cell.style.backgroundColor.match(/\d+/g).map(Number);
-          const brightness = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
-          cell.style.color = brightness > 128 ? '#000' : '#fff';
-
-          if (includesCoord(capitalMap, row, col)) {
-            cell.style.outline = 'black solid 2px';
-            cell.style.borderColor = 'gold';
-          } else {
-            cell.style.outline = '';
-            cell.style.borderColor = '#ccc';
-          }
-
-          // cell.style.outline = includesCoord(capitalMap, row, col) ? `${getOutlineColor(rgb)} solid 2px` : '';
-        });
       }
 
-      const tables = document.querySelectorAll('table');
-      const newTables = doc.querySelectorAll('table');
-      newTables.forEach((table, i) => {
-        tables[i].replaceWith(table);
-      });
-      addCustomColor();
       return refreshedCells;
     } catch (e) {
-      console.error(e);
+      console.error('Error in refreshArenaInfo:', e);
     }
   }
 
-  async function fetchAreaInfo(refreshAll){
-    const refreshedCells = await refreshArenaInfo();
-    if (currentViewMode === 'detail') {
-      grid.style.gridTemplateRows = grid.style.gridTemplateRows.replace('35px','65px');
-      grid.style.gridTemplateColumns = grid.style.gridTemplateColumns.replace('35px','105px');
-    }
-    grid.parentNode.style.height = null;
-    grid.parentNode.style.padding = '20px 0';
+  async function fetchAreaInfo(refreshAll) {
+    try {
+      const refreshedCells = await refreshArenaInfo();
 
-
-    const cells = grid.querySelectorAll('.cell');
-    cells.forEach(async(elm) => {
-      const hasInfo = elm.dataset.rank !== undefined;
-      const isRefreshed = refreshedCells.includes(elm);
-      if(refreshAll || !hasInfo || isRefreshed) {
-        fetchSingleArenaInfo(elm)
+      const grid = document.getElementById('aat_tool_layer');
+      if (!grid) {
+        console.log('aat_tool_layerが見つからないため、処理を中断します');
+        return;
       }
-    })
+
+      if (currentViewMode === 'detail') {
+        grid.style.gridTemplateRows = grid.style.gridTemplateRows.replace('35px', '65px');
+        grid.style.gridTemplateColumns = grid.style.gridTemplateColumns.replace('35px', '105px');
+      }
+
+      if (grid.parentNode) {
+        grid.parentNode.style.height = null;
+        grid.parentNode.style.padding = '20px 0';
+      }
+
+      const cells = grid.querySelectorAll('.cell');
+      cells.forEach(async (elm) => {
+        const hasInfo = elm.dataset.rank !== undefined;
+        const isRefreshed = (refreshedCells || []).includes(elm);
+        if (refreshAll || !hasInfo || isRefreshed) {
+          fetchSingleArenaInfo(elm);
+        }
+      });
+    } catch (error) {
+      console.error('Error in fetchAreaInfo:', error);
+    }
   }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const button = document.querySelector('button'); // クリックボタン
+    if (button) {
+      button.addEventListener('click', () => {
+        fetchAreaInfo(false); // falseを引数にして呼び出し
+      });
+    }
+  });
+
   async function fetchSingleArenaInfo(elm) {
     try {
       const { row, col } = elm.dataset;
-      const url = `https://donguri.5ch.net/teambattle?r=${row}&c=${col}&`+MODE;
+      const url = `https://donguri.5ch.net/teambattle?r=${row}&c=${col}&` + MODE;
       const res = await fetch(url);
-      if(!res.ok) throw new Error(res.status + ' res.ng');
+      if (!res.ok) throw new Error(res.status + ' res.ng');
       const text = await res.text();
       const doc = new DOMParser().parseFromString(text, 'text/html');
-      const h1 = doc?.querySelector('h1')?.textContent;
-      if(h1 !== 'どんぐりチーム戦い') throw new Error(`title.ng [${row}][${col}][${h1}]`);
+
+      const headerText = doc?.querySelector('header')?.textContent || '';
+      if (!headerText.includes('どんぐりチーム戦い')) throw new Error(`title.ng [${row}][${col}]`);
+
       const rank = doc.querySelector('small')?.textContent || '';
-      if(!rank) return Promise.reject(`rank.ng [${row}][${col}][${h1}]`);
+      if (!rank) return Promise.reject(`rank.ng [${row}][${col}]`);
+
       const leader = doc.querySelector('strong')?.textContent || '';
-      const shortenRank = rank.replace('[エリート]','e').replace('[警備員]だけ','警').replace('から','-').replace(/(まで|\[|\]|\||\s)/g,'');
-      const teamname = doc.querySelector('table').rows[1]?.cells[2].textContent;
+
+      const shortenRank = rank.replace('[エリート]', 'e').replace('[警備員]だけ', '警').replace('から', '-').replace(/(まで|\[|\]|\||\s)/g, '');
+
+      const table = doc.querySelector('table');
+      if (!table) throw new Error(`table not found in [${row}][${col}]`);
+
+      const teamname = table.rows[1] && table.rows[1].cells[2] ? table.rows[1].cells[2].textContent : null;
+      if (!teamname) throw new Error(`teamname not found in [${row}][${col}]`);
 
       const cell = elm.cloneNode();
+      cell.style.width = elm.style.width;
+      cell.style.height = elm.style.height;
+
       if (currentViewMode === 'detail') {
         const p = [document.createElement('p'), document.createElement('p')];
         p[0].textContent = shortenRank;
         p[1].textContent = leader;
-        p[0].style.margin = '0';
-        p[1].style.margin = '0';
-        cell.style.width = '100px';
-        cell.style.height = '60px';
+        p[0].style.cssText = 'margin:0; line-height:1.1; color:#000; text-shadow:1px 1px 0 #fff; font-weight:bold; pointer-events:none;';
+        p[1].style.cssText = 'margin:0; line-height:1.1; color:#000; text-shadow:1px 1px 0 #fff; font-size:12px; pointer-events:none;';
         cell.style.borderWidth = '3px';
-        cell.append(p[0],p[1]);
+        cell.append(p[0], p[1]);
       } else {
         const p = document.createElement('p');
-        p.style.height = '28px';
-        p.style.width = '28px';
-        p.style.margin = '0';
-        p.style.display = 'flex';
-        p.style.alignItems = 'center';
-        p.style.lineHeight = '1';
-        p.style.justifyContent = 'center';
-        const str = shortenRank.replace(/\w+-|だけ/g,'');
+        p.style.cssText = 'margin:0; display:flex; align-items:center; justify-content:center; width:100%; height:100%; color:#000; text-shadow:1px 1px 0 #fff; font-weight:bold; pointer-events:none;';
+        const str = shortenRank.replace(/\w+-|だけ/g, '');
         p.textContent = str;
         if (str.length === 3) p.style.fontSize = '14px';
-        if (str.length === 4) p.style.fontSize = '13px';
+        else if (str.length >= 4) p.style.fontSize = '12px';
+        else p.style.fontSize = '16px';
         cell.append(p);
       }
-      cell.style.overflow = 'hidden';
-      cell.dataset.rank = shortenRank;
-      cell.dataset.leader = leader;
-      cell.dataset.team = teamname;
 
-      if ('customColors' in settings && teamname in settings.customColors) {
-        cell.style.backgroundColor = '#' + settings.customColors[teamname];
-      }
-      const rgb = cell.style.backgroundColor.match(/\d+/g);
-      const brightness = 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
-      cell.style.color = brightness > 128 ? '#000' : '#fff';
+    cell.dataset.rank = shortenRank;
+    cell.dataset.leader = leader;
+    cell.dataset.team = teamname;
 
-      cell.addEventListener('click', ()=>{
-        handleCellClick(cell);
-      });
-      elm.replaceWith(cell);
-    } catch(e) {
-      console.error(e);
+    // 強制可視化設定
+    cell.style.opacity = '1';
+    cell.style.visibility = 'visible';
+    cell.style.display = 'flex';
+    cell.style.flexDirection = 'column';
+    cell.style.alignItems = 'center';
+    cell.style.justifyContent = 'center';
+    cell.style.zIndex = '9999';
+    cell.style.pointerEvents = 'auto';
+    cell.style.overflow = 'visible';
+
+    if ('customColors' in settings && teamname in settings.customColors) {
+      cell.style.backgroundColor = '#' + settings.customColors[teamname];
+    } else {
+      cell.style.backgroundColor = cell.style.backgroundColor || 'rgba(255,255,255,0.5)';
     }
+
+    cell.addEventListener('click', (e) => {
+      e.stopPropagation();
+      handleCellClick(cell);
+    });
+
+    elm.replaceWith(cell);
+  } catch (e) {
+    console.error(e);
   }
+}
 
   function addCustomColor() {
     const teamTable = document.querySelector('table');
@@ -2173,7 +2205,9 @@
     scaleContentsToFit(grid.parentNode, grid);
   });
 
-  observer.observe(grid, { attributes: true, childList: true, subtree: true });
+  if (grid) {
+    observer.observe(grid, { attributes: true, childList: true, subtree: true });
+  }
 
   (()=>{
     [...document.querySelectorAll('.cell')].forEach(elm => {
@@ -2192,8 +2226,8 @@
       if(!res.ok) throw new Error('res.ng');
       const text = await res.text();
       const doc = new DOMParser().parseFromString(text,'text/html');
-      const h1 = doc?.querySelector('h1')?.textContent;
-      if(h1 !== 'どんぐりチーム戦い') return Promise.reject(`title.ng`);
+      const headerText = doc?.querySelector('header')?.textContent || '';
+      if(!headerText.includes('どんぐりチーム戦い')) return Promise.reject(`title.ng`);
       const table = doc.querySelector('table');
       if(!table) throw new Error('table.ng');
       showArenaTable(table);
@@ -2461,6 +2495,7 @@
   let currentViewMode = 'detail';
   function toggleCellViewMode () {
     const grid = document.querySelector('.grid');
+    if (!grid) return;
     const cells = grid.querySelectorAll('.cell');
 
     if(currentViewMode === 'detail') {
@@ -2835,20 +2870,37 @@
         if (!res.ok) throw new Error(`[${res.status}] /teambattle`);
         const text = await res.text();
         const doc = new DOMParser().parseFromString(text, 'text/html');
-        const h1 = doc?.querySelector('h1')?.textContent;
-        if (h1 !== 'どんぐりチーム戦い') throw new Error('title.ng info');
+        const headerText = doc?.querySelector('header')?.textContent || '';
+        if (!headerText.includes('どんぐりチーム戦い')) throw new Error('title.ng info');
 
-        const scriptContent = doc.querySelector('.grid > script').textContent;
-        const cellColorsString = scriptContent.match(/const cellColors = ({.+?})/s)[1];
-        const validJsonStr = cellColorsString.replace(/'/g, '"').replace(/,\s*}/, '}');
-        const cellColors = JSON.parse(validJsonStr);
-        const capitalMapString = scriptContent.match(/const capitalMap = (\[.*?\]);/s)[1];
-        const capitalMap = JSON.parse(capitalMapString);
+        const scriptContent = doc.querySelector('.grid > script, #gridWrap + script')?.textContent || '';
 
-        const grid = doc.querySelector('.grid');
-        //各末尾-1を消す
-        const rows = Number(grid.style.gridTemplateRows.match(/repeat\((\d+), 35px\)/)[1]);
-        const cols = Number(grid.style.gridTemplateColumns.match(/repeat\((\d+), 35px\)/)[1]);
+        let cellColors, capitalMap, rows, cols;
+
+        if (location.href.includes('m=rb')) {
+          //rb
+          const cellColorsMatch = scriptContent.match(/const cellColors = ({.+?});/s);
+          const validJsonStr = cellColorsMatch[1].replace(/'/g, '"').replace(/,\s*}/, '}');
+          cellColors = JSON.parse(validJsonStr);
+
+          const capitalListMatch = scriptContent.match(/const capitalList = (\[.*?\]);/s);
+          capitalMap = JSON.parse(capitalListMatch[1]);
+
+          const gridSizeMatch = scriptContent.match(/const GRID_SIZE = (\d+);/);
+          rows = cols = Number(gridSizeMatch[1]);
+        } else {
+          //hc/l
+          const cellColorsString = scriptContent.match(/const cellColors = ({.+?})/s)[1];
+          const validJsonStr = cellColorsString.replace(/'/g, '"').replace(/,\s*}/, '}');
+          cellColors = JSON.parse(validJsonStr);
+          const capitalMapString = scriptContent.match(/const capitalMap = (\[.*?\]);/s)[1];
+          capitalMap = JSON.parse(capitalMapString);
+
+          const grid = doc.querySelector('.grid');
+          if (!grid) return;
+          rows = Number(grid.style.gridTemplateRows.match(/repeat\((\d+), 35px\)/)[1]);
+          cols = Number(grid.style.gridTemplateColumns.match(/repeat\((\d+), 35px\)/)[1]);
+        }
 
         const cells = [];
         for (let r = 0; r < rows; r++) {
@@ -2975,8 +3027,8 @@
         if(!res.ok) throw new Error(`[${res.status}] /teambattle?r=${row}&c=${col}`);
         const text = await res.text();
         const doc = new DOMParser().parseFromString(text,'text/html');
-        const h1 = doc?.querySelector('h1')?.textContent;
-        if(h1 !== 'どんぐりチーム戦い') return Promise.reject(`title.ng`);
+        const headerText = doc?.querySelector('header')?.textContent || '';
+        if(!headerText.includes('どんぐりチーム戦い')) return Promise.reject(`title.ng`);
         const table = doc.querySelector('table');
         if(!table) throw new Error('table.ng');
         const equipCond = table.querySelector('td small').textContent;
