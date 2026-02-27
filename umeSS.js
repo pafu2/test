@@ -2525,7 +2525,7 @@
       const now = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
       const hour = now.getHours();
       const minute = now.getMinutes();
-      return (hour > 8 && hour < 17) || (hour === 8 && minute >= 30) || (hour === 17 && minute === 0);
+      return (hour >= 23 || hour <= 2);
       // 以下指定例その1（変える時は上の return hour >= 4 && hour <= 8; を書き換え、24:00をまたぐ指定はその2で）
       // 4:00～8:00
       // return hour >= 4 && hour <= 8;
@@ -2604,6 +2604,7 @@
         '再建が必要です。'
       ],
       onemoretime: [
+        'この場所には首都を建設できません（水で隣接が不足）',
         'もう一度バトルに参加する前に、待たなければなりません。'
       ],
       breaktime: [
@@ -2838,8 +2839,9 @@
                 i++;
               } else {
                 message += ` (${cellRank}, ${currentEquipName})`;
-                processType = 'continue';
-                i++;
+                sleepTime = 3;
+                cellType = 'teamAdjacent';
+                processType = 'reload';
               }
             } else if (lastLine.length > 100) {
               message = 'どんぐりシステム';
@@ -3204,18 +3206,63 @@
             onceMore: shuffle(filteredCells(onceMoreCells))
           };
         } else {
-          const nonAdjacentCells = cells.filter(([r, c]) => {
+          const nonAdjacentBase = cells.filter(([r, c]) => {
             const key = `${r}-${c}`;
             return !capitalSet.has(key) && !adjacentSet.has(key);
           });
 
-          const onceMoreCells = nonAdjacentCells.filter(([r, c]) => {
+          const onceMoreCells = nonAdjacentBase.filter(([r, c]) => {
             const key = `${r}-${c}`;
             return key in cellColors && !teamColorSet.has(key);
           });
 
+          const excludedColors = [
+            '00008B',//まほろば
+            'FFFF00',//ライーヨー
+            'FF0101',//赤い彗星
+            'FFFFE0',//プリングルズ
+            '696969'//尻子玉
+          ];
+
+          // 1. どこのチームにも属してないマス
+          const group1 = shuffle(nonAdjacentBase.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            return !cellColors[key];
+          }));
+
+          // 2. 敵チームの首都および首都の上下左右ではないマス
+          const group2 = shuffle(nonAdjacentBase.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            return cellColors[key] && cellColors[key].replace('#','') !== teamColor;
+          }));
+
+          // 3. 敵チームの首都の上下左右のマス
+          const group3 = shuffle(cells.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+            if (capitalSet.has(key)) return false;
+            if (!adjacentSet.has(key)) return false;
+
+            if (!cellColors[key]) return true;
+            const color = cellColors[key].replace('#', '');
+            return color !== teamColor && !excludedColors.includes(color);
+          }));
+
+          // 4. 敵チームの首都
+          const group4 = shuffle(cells.filter(([r, c]) => {
+            const key = `${r}-${c}`;
+           if (!capitalSet.has(key)) return false;
+           if (!cellColors[key]) return false;
+            const color = cellColors[key].replace('#', '');
+            return color !== teamColor && !excludedColors.includes(color);
+          }));
+
+          // 1~4を結合
+          const nonAdjacentRaw = [...group1, ...group2, ...group3, ...group4];
+          nonAdjacentCells = await filterGuardCells(nonAdjacentRaw);
+
           regions = {
-            nonAdjacent: shuffle(nonAdjacentCells),
+//          nonAdjacent: shuffle(nonAdjacentCells),
+            nonAdjacent: nonAdjacentCells,
             capitalAdjacent: shuffle(capitalAdjacentCells),
             teamAdjacent: shuffle(teamAdjacentCells),
             mapEdge: shuffle(mapEdgeCells),
