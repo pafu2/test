@@ -2838,6 +2838,7 @@
                 i++;
               } else {
                 message += ` (${cellRank}, ${currentEquipName})`;
+                sleepTime = 5;
                 cellType = 'teamAdjacent';
                 processType = 'reload';
               }
