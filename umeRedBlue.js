@@ -2684,6 +2684,7 @@
 
       let regions = await getRegions();
       const excludeSet = new Set();
+      let loop = 0;
 
       let cellType;
       if (regions.nonAdjacent.length > 0) {
