@@ -2968,7 +2968,7 @@
         //nonAdjacentCells
         const nonAdjacentBase = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          return !capitalSet.has(key) && !adjacentSet.has(key);
+          return !capitalSet.has(key) && !adjacentSet.has(key) && !waterSet.has(key);
         });
 
         // 1. どこのチームにも属してないマス
@@ -2980,7 +2980,7 @@
         // 2. 敵チームの首都および首都の上下左右ではないマス
         const group2 = shuffle(nonAdjacentBase.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          return cellColors[key] && cellColors[key].replace('#','') !== teamColor && !waterSet.has(key);
+          return cellColors[key] && cellColors[key].replace('#','') !== teamColor;
         }));
 
         // 3. 敵チームの首都の上下左右のマス
