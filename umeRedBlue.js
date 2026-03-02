@@ -1982,6 +1982,11 @@
       const tables = document.querySelectorAll('table');
       const newTables = doc.querySelectorAll('table');
       newTables.forEach((table, i) => { if (tables[i]) tables[i].replaceWith(table); });
+      //gridLegendを非表示化
+      const legend = document.getElementById('gridLegend');
+      if (legend) {
+        legend.style.display = 'none';
+      }
 
       addCustomColor();
       return refreshedCells;
