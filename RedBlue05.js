@@ -1917,6 +1917,7 @@
       const currentCells = grid.querySelectorAll('.cell');
 
       grid.style.display = 'grid';
+
       grid.style.gridTemplateRows = `repeat(${rows}, 35px)`;
       grid.style.gridTemplateColumns = `repeat(${cols}, 35px)`;
       grid.style.gap = '2px';
@@ -1982,6 +1983,11 @@
       const tables = document.querySelectorAll('table');
       const newTables = doc.querySelectorAll('table');
       newTables.forEach((table, i) => { if (tables[i]) tables[i].replaceWith(table); });
+      //gridLegendを非表示化
+      const legend = document.getElementById('gridLegend');
+      if (legend) {
+        legend.style.display = 'none';
+      }
 
       addCustomColor();
       return refreshedCells;
@@ -2003,7 +2009,7 @@
       grid.parentNode.style.height = null;
       grid.parentNode.style.padding = '20px 0';
       grid.parentNode.style.maxWidth = '100%';
-      grid.parentNode.style.overflowX = 'auto';
+      //grid.parentNode.style.overflowX = 'auto';
     }
 
     const cells = grid ? grid.querySelectorAll('.cell') : [];
@@ -2558,7 +2564,6 @@
     let teamColor = settings.teamColor;
     let teamName = settings.teamName;
 
-
     function logMessage(region, message, next) {
       const date = new Date();
       const ymd = date.toLocaleDateString('sv-SE').slice(2);
@@ -2573,7 +2578,7 @@
       const regionDiv = document.createElement('div');
       const progress = `${currentPeriod}期 ${currentProgress}%`;
       if (region) regionDiv.innerText = `${progress}\ntarget: ${region}\n${next}`;
-      else regionDiv.innerText = next;
+      else regionDiv.innerText = `${progress}\n${region ? `target: ${region}\n` : ''}${next}`;
       regionDiv.style.fontSize = '90%';
       regionDiv.style.color = '#444';
       regionDiv.style.borderRight = 'dotted 0.5px #888';
