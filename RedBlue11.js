@@ -2923,7 +2923,12 @@
           }
         }
 
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        const directions = [
+          [-1, 0],
+          [1, 0],
+          [0, -1],
+          [0, 1]
+        ];
 
         const adjacentSet = new Set();
         for (const [cr, cc] of capitalMap) {
