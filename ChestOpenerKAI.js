@@ -542,6 +542,7 @@
       try {
         const response = await fetch('https://donguri.5ch.net/openbattlechest', {
           method: 'POST',
+          body: 'chestsize=B70',
           headers:{
             'Content-Type': 'application/x-www-form-urlencoded'
           }
@@ -580,64 +581,69 @@
 
           if(h1.textContent.includes('アイテムバッグ')){
             const necklaceTable = doc.querySelector('#necklaceTable');
-            const lastItem = necklaceTable.rows.item(necklaceTable.rows.length - 1);
-            const itemName = lastItem.firstChild.textContent;
+            const rows = Array.from(necklaceTable.rows).slice(1).filter(row => row.querySelector('a[href*="/lock/"]'));
 
-            const itemRank = itemName.match(/\[(\w+)\d\]/)[1];
+            const lockPromises = [];
+            for (const row of rows) {
+                const itemName = row.firstChild.textContent;
+                const itemRankMatch = itemName.match(/\[([A-Za-z]+)\d*\]/);
+                if (!itemRankMatch) continue;
+                const itemRank = itemRankMatch[1];
 
-        if (itemRank === 'Pt' || itemRank === 'Au') {
-              try {
-                  const lockLink = lastItem.querySelectorAll('a')[1];
-                  if (lockLink && lockLink.href.includes('/lock/')) {
-                      await fetch(lockLink.href);
-                      await new Promise(resolve => setTimeout(resolve, 200));
-                  }
-              } catch (error) {
-                  count.textContent = chestCount + ', ロック失敗: ' + error.message;
-              }
-          }
-            if(itemRank === 'Pt' || itemRank === 'Au' || itemRank === 'Ag'){
-              const p = document.createElement('p');
-              p.textContent = itemName;
-              if(itemRank === 'Pt') p.style.background = '#f45d01';
-              if(itemRank === 'Au') p.style.background = '#a633d6';
-              if(itemRank === 'Ag') p.style.background = '#2175d9';
-              p.style.color = '#fff';
-              p.style.margin = '1px';
-              epic.prepend(p);
+                if(itemRank === 'Pt' || itemRank === 'Au' || itemRank === 'Ag'){
+                    const p = document.createElement('p');
+                    p.textContent = itemName;
+                    if(itemRank === 'Pt') p.style.background = '#f45d01';
+                    if(itemRank === 'Au') p.style.background = '#a633d6';
+                    if(itemRank === 'Ag') p.style.background = '#2175d9';
+                    p.style.color = '#fff';
+                    p.style.margin = '1px';
+                    epic.prepend(p);
+                }
+
+                if(!shouldNotRecycle.checked){
+                    const itemEffectsLi = row.cells[3].querySelectorAll('li');
+                    const itemEffects = [...itemEffectsLi].map(elm => {
+                        const v = elm.textContent;
+                        const match = v.match(/^(.+): (\d+)% (.+)$/);
+                        if (!match) return ["", "", "0"];
+                        const [, type, value, effect] = match;
+                        return [type, effect, value];
+                    });
+
+                    const buffCount = itemEffects.filter(effects => buffs.includes(effects[1])).length;
+                    const debuffCount = itemEffects.filter(effects => debuffs.includes(effects[1])).length;
+
+                    if (itemRank === 'Pt' || itemRank === 'Au' || (minBuffs[itemRank] !== undefined && buffCount >= minBuffs[itemRank] && debuffCount <= maxDebuffs[itemRank])) {
+                        const lockLink = row.querySelectorAll('a')[1];
+                        if (lockLink && lockLink.href.includes('/lock/')) {
+                            lockPromises.push(fetch(lockLink.href));
+                        }
+                    } else {
+                        const recycleLink = row.querySelectorAll('a')[3];
+                        if (recycleLink && recycleLink.href.includes('/recycle/')) {
+                            lockPromises.push(fetch(recycleLink.href));
+                        }
+                    }
+                }
             }
 
+            if (lockPromises.length > 0) {
+                await Promise.all(lockPromises);
+            }
 
             if(!shouldNotRecycle.checked){
-              const itemEffectsLi = lastItem.cells[3].querySelectorAll('li');
-              const itemEffects = [...itemEffectsLi].map(elm => {
-                const v = elm.textContent;
-                const match = v.match(/^(.+): (\d+)% (.+)$/);
-                const [, type, value, effect] = match;
-                return [type, effect, value];
-              });
-
-              const buffCount = itemEffects.filter(effects => buffs.includes(effects[1])).length;
-              const debuffCount = itemEffects.filter(effects => debuffs.includes(effects[1])).length;
-              // 分解
-              if (itemRank !== 'Pt' && itemRank !== 'Au' && (buffCount < minBuffs[itemRank] || debuffCount > maxDebuffs[itemRank])) {
-                console.log(itemEffects);
                 try {
-                  const recycleLink = lastItem.querySelectorAll('a')[3];
-                  const response = await fetch(recycleLink.href);
-                  if (!response.ok) {
-                    throw new Error('Fail to recycle an item');
-                  }
+                    await fetch('https://donguri.5ch.net/recycleunlocked', {method: 'POST'});
                 } catch (error) {
-                  forceStop(error);
-                  break;
+                    forceStop(error);
+                    break;
                 }
-              }
-              chestCount++;
-              count.textContent = chestCount;
-              if (loopCond === 'num') loopNum.value = maxCount - chestCount;
-              stat = 'success';
             }
+            chestCount++;
+            count.textContent = chestCount;
+            if (loopCond === 'num') loopNum.value = Math.max(0, maxCount - chestCount);
+            stat = 'success';
           }
 
           if(stat !== 'success') {
