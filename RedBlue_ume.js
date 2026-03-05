@@ -2988,16 +2988,6 @@
 
         const capitalSet = new Set(capitalMap.map(([r, c]) => `${r}-${c}`));
 
-        const nonAdjacentCells = cells.filter(([r, c]) => {
-          const key = `${r}-${c}`;
-          return !capitalSet.has(key) && !adjacentSet.has(key) && !waterSet.has(key);
-        });
-
-        const capitalAdjacentCells = cells.filter(([r, c]) => {
-          const key = `${r}-${c}`;
-          return adjacentSet.has(key) && !waterSet.has(key);
-        });
-
         const teamColorSet = new Set();
         for(const [key, value] of Object.entries(cellColors)) {
           if (teamColor === value.replace('#','')) {
@@ -3017,11 +3007,6 @@
           }
         }
 
-        const teamAdjacentCells = cells.filter(([r, c]) => {
-          const key = `${r}-${c}`;
-          return (teamColorSet.has(key) || teamAdjacentSet.has(key)) && !waterSet.has(key);
-        })
-
         const mapEdgeSet = new Set();
         for (let i=0; i<rows; i++) {
           mapEdgeSet.add(`${i}-0`);
@@ -3032,10 +3017,36 @@
           mapEdgeSet.add(`${rows-1}-${i}`);
         }
 
-        const mapEdgeCells = cells.filter(([r, c]) => {
+        //霧セル除外
+        const filterFog = (list) => list.filter(([r, c]) => exploredSet.has(`${r}-${c}`));
+
+        const nonAdjacentbaseCells = cells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return !capitalSet.has(key) && !adjacentSet.has(key) && !waterSet.has(key);
+        });
+
+        const nonAdjacentCells = teamColorSet.size > 0 ? filterFog(nonAdjacentbaseCells) : nonAdjacentbaseCells;
+
+        const capitalAdjacentbaseCells = cells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return adjacentSet.has(key) && !waterSet.has(key);
+        });
+
+        const capitalAdjacentCells = filterFog(capitalAdjacentbaseCells);
+
+        const teamAdjacentbaseCells = cells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return (teamColorSet.has(key) || teamAdjacentSet.has(key)) && !waterSet.has(key);
+        })
+
+        const teamAdjacentCells = filterFog(teamAdjacentbaseCells);
+
+        const mapEdgebaseCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
           return mapEdgeSet.has(key) && !capitalSet.has(key) && !waterSet.has(key);
         })
+
+        const mapEdgeCells = filterFog(mapEdgebaseCells);
 
         function shuffle(arr) {
           for (let i = arr.length - 1; i > 0; i--) {
@@ -3045,21 +3056,16 @@
           return arr;
         }
 
-        //霧セル除外
-        const filterFog = (list) => {
-          return list.filter(([r, c]) => exploredSet.has(`${r}-${c}`));
-        };
-
-        //チームメンバーを除外するフィルタリング関数
+        //チームメンバーを除外
         const filteredCells = (cells) => {
           return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
         };
 
         const regions = {
-          nonAdjacent: shuffle(filteredCells(filterFog(nonAdjacentCells))),
-          capitalAdjacent: shuffle(filteredCells(filterFog(capitalAdjacentCells))),
-          teamAdjacent: shuffle(filteredCells(filterFog(teamAdjacentCells))),
-          mapEdge: shuffle(filteredCells(filterFog(mapEdgeCells)))
+          nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
+          capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
+          teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
+          mapEdge: shuffle(filteredCells(mapEdgeCells))
         };
 
         return regions;
