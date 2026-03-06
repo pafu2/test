@@ -3106,7 +3106,7 @@
 
     async function filterGuardCells(candidates) {
      const checks = candidates.map(async ([r, c]) => {
-        const url = `https://donguri.5ch.net/teambattle?r=${r}&c=${c}&` + MODE;
+        const url = `https://donguri.5ch.io/teambattle?r=${r}&c=${c}&` + MODE;
 
         try {
           const res = await fetch(url);
