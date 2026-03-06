@@ -3,9 +3,9 @@
 // @version      1.2c改
 // @description  Automated box opening and recycling
 // @author       7234e634
-// @match        https://donguri.5ch.net/bag
-// @match        https://donguri.5ch.net/chest
-// @match        https://donguri.5ch.net/battlechest
+// @match        https://donguri.5ch.io/bag
+// @match        https://donguri.5ch.io/chest
+// @match        https://donguri.5ch.io/battlechest
 // ==/UserScript==
 
 (()=>{
@@ -21,7 +21,7 @@
   fieldset.style.border = 'none';
   fieldset.style.padding = '0';
 
-  const isBattleChestPage = location.href.startsWith('https://donguri.5ch.net/battlechest');
+  const isBattleChestPage = location.href.startsWith('https://donguri.5ch.io/battlechest');
 
   // switch chest
   const switchChestField = fieldset.cloneNode();
@@ -325,7 +325,7 @@
       const startTime = Date.now();
       let stat = 'initial';
       try {
-        const response = await fetch('https://donguri.5ch.net/open', {
+        const response = await fetch('https://donguri.5ch.io/open', {
           method: 'POST',
           body: 'chestsize=B70', /* 小: A65, 大: B70 */
           headers: {
@@ -365,7 +365,7 @@
           }
 
           if(h1.textContent.includes('アイテムバッグ')){
-            const itemLockLinks = doc.querySelectorAll('a[href^="https://donguri.5ch.net/lock/"]');
+            const itemLockLinks = doc.querySelectorAll('a[href^="https://donguri.5ch.io/lock/"]');
 
             for(const elm of itemLockLinks){
               const itemName = elm.closest('tr').firstChild.textContent;
@@ -392,7 +392,7 @@
 
               // 残りを分解
               try {
-                const response = await fetch('https://donguri.5ch.net/recycleunlocked', {method: 'POST'});
+                const response = await fetch('https://donguri.5ch.io/recycleunlocked', {method: 'POST'});
                 if (!response.ok) {
                   throw new Error('Failed to recycle unlocked item');
                 }
@@ -433,7 +433,7 @@
   })
 
   async function itemLocking(doc) {
-    const itemLockLinks = doc.querySelectorAll('a[href^="https://donguri.5ch.net/lock/"]');
+    const itemLockLinks = doc.querySelectorAll('a[href^="https://donguri.5ch.io/lock/"]');
     const checkedRanks = Array.from(document.querySelectorAll('.keep-item:checked')).map(elm => elm.value);
     const itemInputs = document.querySelectorAll('.wishlist');
     const results = [];
@@ -568,13 +568,14 @@
 
     const buffs = ['増幅された','強化された','加速した','高まった','力を増した','クリアになった','増幅された','固くなった','尖らせた'];
     const debuffs = ['静まった','薄まった','弱まった','減速した','減少した','砕けた','ぼやけた','制限された','緩んだ','鈍らせた','侵食された'];
-  
+
     while (loopCond === 'max' || chestCount < maxCount){
       const startTime = Date.now();
       let stat = 'initial';
       try {
-        const response = await fetch('https://donguri.5ch.net/openbattlechest', {
+        const response = await fetch('https://donguri.5ch.io/openbattlechest', {
           method: 'POST',
+          body: 'chestsize=B70',
           headers:{
             'Content-Type': 'application/x-www-form-urlencoded'
           }
@@ -604,74 +605,78 @@
           }
           const parser = new DOMParser();
           const doc = parser.parseFromString(res, 'text/html');
-  
+
           const h1 = doc.querySelector('h1');
-  
+
           if (!h1.textContent.includes('アイテムバッグ')) {
             throw new Error('不明なエラー1');
           }
-  
+
           if(h1.textContent.includes('アイテムバッグ')){
             const necklaceTable = doc.querySelector('#necklaceTable');
-            const lastItem = necklaceTable.rows.item(necklaceTable.rows.length - 1);
-            const itemName = lastItem.firstChild.textContent;
+            const rows = Array.from(necklaceTable.rows).slice(1).filter(row => row.querySelector('a[href*="/lock/"]'));
 
-            const itemRank = itemName.match(/\[(\w+)\d\]/)[1];
+            const lockPromises = [];
+            for (const row of rows) {
+                const itemName = row.firstChild.textContent;
+                const itemRankMatch = itemName.match(/\[([A-Za-z]+)\d*\]/);
+                if (!itemRankMatch) continue;
+                const itemRank = itemRankMatch[1];
 
-// PtまたはAuの場合、無条件でロック処理を実行
-        if (itemRank === 'Pt' || itemRank === 'Au') {
-              try {
-                  const lockLink = lastItem.querySelectorAll('a')[1];
-                  if (lockLink && lockLink.href.includes('/lock/')) {
-                      await fetch(lockLink.href);
-                      await new Promise(resolve => setTimeout(resolve, 200));
-                  }
-              } catch (error) {
-                  count.textContent = chestCount + ', ロック失敗: ' + error.message;
-              }
-          }
-            if(itemRank === 'Pt' || itemRank === 'Au' || itemRank === 'Ag'){
-              const p = document.createElement('p');
-              p.textContent = itemName;
-              if(itemRank === 'Pt') p.style.background = '#f45d01';
-              if(itemRank === 'Au') p.style.background = '#a633d6';
-              if(itemRank === 'Ag') p.style.background = '#2175d9';
-              p.style.color = '#fff';
-              p.style.margin = '1px';
-              epic.prepend(p);
+                if(itemRank === 'Pt' || itemRank === 'Au' || itemRank === 'Ag'){
+                    const p = document.createElement('p');
+                    p.textContent = itemName;
+                    if(itemRank === 'Pt') p.style.background = '#f45d01';
+                    if(itemRank === 'Au') p.style.background = '#a633d6';
+                    if(itemRank === 'Ag') p.style.background = '#2175d9';
+                    p.style.color = '#fff';
+                    p.style.margin = '1px';
+                    epic.prepend(p);
+                }
+
+                if(!shouldNotRecycle.checked){
+                    const itemEffectsLi = row.cells[3].querySelectorAll('li');
+                    const itemEffects = [...itemEffectsLi].map(elm => {
+                        const v = elm.textContent;
+                        const match = v.match(/^(.+): (\d+)% (.+)$/);
+                        if (!match) return ["", "", "0"];
+                        const [, type, value, effect] = match;
+                        return [type, effect, value];
+                    });
+
+                    const buffCount = itemEffects.filter(effects => buffs.includes(effects[1])).length;
+                    const debuffCount = itemEffects.filter(effects => debuffs.includes(effects[1])).length;
+
+                    if (itemRank === 'Pt' || itemRank === 'Au' || (minBuffs[itemRank] !== undefined && buffCount >= minBuffs[itemRank] && debuffCount <= maxDebuffs[itemRank])) {
+                        const lockLink = row.querySelectorAll('a')[1];
+                        if (lockLink && lockLink.href.includes('/lock/')) {
+                            lockPromises.push(fetch(lockLink.href));
+                        }
+                    } else {
+                        const recycleLink = row.querySelectorAll('a')[3];
+                        if (recycleLink && recycleLink.href.includes('/recycle/')) {
+                            lockPromises.push(fetch(recycleLink.href));
+                        }
+                    }
+                }
             }
 
+            if (lockPromises.length > 0) {
+                await Promise.all(lockPromises);
+            }
 
             if(!shouldNotRecycle.checked){
-              const itemEffectsLi = lastItem.cells[3].querySelectorAll('li');
-              const itemEffects = [...itemEffectsLi].map(elm => {
-                const v = elm.textContent;
-                const match = v.match(/^(.+): (\d+)% (.+)$/);
-                const [, type, value, effect] = match;
-                return [type, effect, value];
-              });
-              
-              const buffCount = itemEffects.filter(effects => buffs.includes(effects[1])).length;
-              const debuffCount = itemEffects.filter(effects => debuffs.includes(effects[1])).length;
-              // 分解
-              if (itemRank !== 'Pt' && itemRank !== 'Au' && (buffCount < minBuffs[itemRank] || debuffCount > maxDebuffs[itemRank])) {
-                console.log(itemEffects);
                 try {
-                  const recycleLink = lastItem.querySelectorAll('a')[3];
-                  const response = await fetch(recycleLink.href);
-                  if (!response.ok) {
-                    throw new Error('Fail to recycle an item');
-                  }
+                    await fetch('https://donguri.5ch.io/recycleunlocked', {method: 'POST'});
                 } catch (error) {
-                  forceStop(error);
-                  break;
+                    forceStop(error);
+                    break;
                 }
-              }
-              chestCount++;
-              count.textContent = chestCount;
-              if (loopCond === 'num') loopNum.value = maxCount - chestCount;
-              stat = 'success';
             }
+            chestCount++;
+            count.textContent = chestCount;
+            if (loopCond === 'num') loopNum.value = Math.max(0, maxCount - chestCount);
+            stat = 'success';
           }
 
           if(stat !== 'success') {
