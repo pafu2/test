@@ -2777,17 +2777,17 @@
 
             if (success) {
               if (currentProgress < 16) {
-                nextProgress = 25;
+                nextProgress = Math.floor(Math.random() * 2) + 26;
                } else if (currentProgress < 33) {
-                nextProgress = 42;
+                nextProgress = Math.floor(Math.random() * 2) + 43;
                } else if (currentProgress < 50) {
-                nextProgress = 59;
+                nextProgress = Math.floor(Math.random() * 2) + 60;
                } else if (currentProgress < 66) {
-                nextProgress = 75;
+                nextProgress = Math.floor(Math.random() * 2) + 76;
                } else if (currentProgress < 83) {
-                nextProgress = 92;
+                nextProgress = Math.floor(Math.random() * 2) + 93;
                } else {
-                nextProgress = 9;
+                nextProgress = Math.floor(Math.random() * 2) + 10;
                }
               next = `→ ${nextProgress}±2%`;
               isAutoJoinRunning = false;
@@ -2851,17 +2851,17 @@
         }
         if (!success && regions[cellType].length === 0) {
               if (currentProgress < 16) {
-                nextProgress = 25;
+                nextProgress = Math.floor(Math.random() * 2) + 26;
                } else if (currentProgress < 33) {
-                nextProgress = 42;
+                nextProgress = Math.floor(Math.random() * 2) + 43;
                } else if (currentProgress < 50) {
-                nextProgress = 59;
+                nextProgress = Math.floor(Math.random() * 2) + 60;
                } else if (currentProgress < 66) {
-                nextProgress = 75;
+                nextProgress = Math.floor(Math.random() * 2) + 76;
                } else if (currentProgress < 83) {
-                nextProgress = 92;
+                nextProgress = Math.floor(Math.random() * 2) + 93;
                } else {
-                nextProgress = 9;
+                nextProgress = Math.floor(Math.random() * 2) + 10;
                }
           const next = `→ ${nextProgress}±2%`;
           isAutoJoinRunning = false;
