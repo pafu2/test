@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 Red vs Blue
+// @version      1.2.2d改 Red vs Blue ume
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
@@ -1129,7 +1129,7 @@
     (()=>{
       const link = document.createElement('a');
       link.style.color = '#333';
-      link.textContent = '1.2.2d改 Red vs Blue';
+      link.textContent = '1.2.2d改 Red vs Blue ume';
       footer.append(link);
     })();
 
@@ -2603,6 +2603,9 @@
     }
 
     const messageTypes = {
+      capitalAttack: [
+        '再建が必要です。'
+      ],
       breaktime: [
         'チームに参加または離脱してから間もないため、次のバトルが始まるまでお待ちください。',
         'もう一度バトルに参加する前に、待たなければなりません。',
