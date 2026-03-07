@@ -4,7 +4,7 @@
 // @version      1.1
 // @description  探検→採掘→探検の切替
 // @author       ぱふぱふ
-// @match        https://donguri.5ch.net/
+// @match        https://donguri.io.net/
 // @grant        none
 // ==/UserScript==
 
@@ -76,4 +76,5 @@ const statusEl = document.createElement('div');
     }
 
     setInterval(autoSwitch, 1000);
+
 })();
