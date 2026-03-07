@@ -14,7 +14,7 @@
   if(location.href === 'https://donguri.5ch.io/bag') {
     function saveCurrentEquip(url, index) {
       let currentEquip = JSON.parse(localStorage.getItem('current_equip')) || [];
-      const regex = /https:\/\/donguri\.5ch\.net\/equip\/(\d+)/;
+      const regex = /https:\/\/donguri\.5ch\.io\/equip\/(\d+)/;
       const equipId = url.match(regex)[1];
       currentEquip[index] = equipId;
       localStorage.setItem('current_equip', JSON.stringify(currentEquip));
