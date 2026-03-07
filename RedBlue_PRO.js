@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 Red vs Blue
+// @version      1.2.2d改 Red vs Blue PRO
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
@@ -14,7 +14,7 @@
   if(location.href === 'https://donguri.5ch.io/bag') {
     function saveCurrentEquip(url, index) {
       let currentEquip = JSON.parse(localStorage.getItem('current_equip')) || [];
-      const regex = /https:\/\/donguri\.5ch\.net\/equip\/(\d+)/;
+      const regex = /https:\/\/donguri\.5ch\.io\/equip\/(\d+)/;
       const equipId = url.match(regex)[1];
       currentEquip[index] = equipId;
       localStorage.setItem('current_equip', JSON.stringify(currentEquip));
@@ -1129,7 +1129,7 @@
     (()=>{
       const link = document.createElement('a');
       link.style.color = '#333';
-      link.textContent = '1.2.2d改 Red vs Blue';
+      link.textContent = '1.2.2d改 Red vs Blue PRO';
       footer.append(link);
     })();
 
