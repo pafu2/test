@@ -619,11 +619,6 @@
                         if (lockLink && lockLink.href.includes('/lock/')) {
                             lockPromises.push(fetch(lockLink.href));
                         }
-                    } else {
-                        const recycleLink = row.querySelectorAll('a')[3];
-                        if (recycleLink && recycleLink.href.includes('/recycle/')) {
-                            lockPromises.push(fetch(recycleLink.href));
-                        }
                     }
                 }
             }
