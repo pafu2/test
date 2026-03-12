@@ -3373,20 +3373,14 @@ for (const type of orderedTypes) {
 //              break;
 //            }
 //          }
-if (targets.length === 0) {
-  autoJoinPhase = 'defend';
-  lastThreatSnapshot = new Set();
-  logMessage(null, '[移行] 空きマス埋め完了 → 残存敵マス掃除 / 自動応戦を開始', `→ ${nextProgressUmeR}%で停止`);
-  regions = await getRegions();
-  continue;
-}
-//          if (targets.length === 0) {
-//            autoJoinPhase = 'defend';
-//            lastThreatSnapshot = new Set();
-//            logMessage(null, '[移行] 空きマス埋め完了 → 残存敵マス掃除 / 自動応戦を開始', `→ ${nextProgressUmeR}%で停止`);
-//            regions = await getRegions();
-//            continue;
-//          }
+
+          if (targets.length === 0) {
+            autoJoinPhase = 'defend';
+            lastThreatSnapshot = new Set();
+            logMessage(null, '[移行] 空きマス埋め完了 → 残存敵マス掃除 / 自動応戦を開始', `→ ${nextProgressUmeR}%で停止`);
+            regions = await getRegions();
+            continue;
+          }
 
           phaseLabel = 'fill';
           } else {
