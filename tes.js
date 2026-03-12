@@ -3177,7 +3177,7 @@
     }
 
     function isBattleWindow(progress) {
-      return (progress >= 0 && progress < 49) || (progress >= 50 && progress < 99);
+      return (progress >= 0 && progress < 49) || (progress > 50 && progress < 99);
     }
 
     function resetAutoJoinStateByProgress(progress) {
@@ -3276,7 +3276,11 @@
 
     async function attackRegionUmeR () {
       await drawProgressBar();
-
+      //追加//
+      if (currentProgress === 50) {
+        return;
+      }
+      //追加//
       if (isAutoJoinRunning) return;
       if (!isBattleWindow(currentProgress)) return;
 
@@ -3359,10 +3363,14 @@ const orderedTypes = forceFillType
 
 for (const type of orderedTypes) {
   if (regions[type] && regions[type].length > 0) {
-    targets = regions[type].filter(([r,c]) => {
+    targets = regions[type].filter(([r, c]) => {
       const key = `${r}-${c}`;
-      const color = cellColors[key]?.replace('#','').toLowerCase();
-      return color !== teamColor;
+      const color = (cellColors[key] || '').replace('#','').toLowerCase();
+      if (color === teamColor) {
+        excludeSet.add(key);
+        return false;
+      }
+      return true;
     });
     if (targets.length > 0) break;
   }
@@ -3426,7 +3434,12 @@ for (const type of orderedTypes) {
             const region = targets[i];
             const key = regionKey(region);
             let loop = 0;
-
+            //追加//
+            if (await isRegionOwnedByTeam(region)) {
+              excludeSet.add(key);
+              continue;
+            }
+            //追加//
             while (dialog.open) {
               await drawProgressBar();
 
@@ -3553,11 +3566,11 @@ for (const type of orderedTypes) {
 
                 if (
                   autoJoinPhase === 'fill' &&
-                  territoryCountBeforeAttack === 0 &&
                   lastLine.includes('リーダーになった')
                 ) {
                   saveCurrentCapital(region[0], region[1]);
                   forceFillType = 'ownCapitalAdjacent';
+                  regions = await getRegions();
                   logMessage(region, `[勝利] ${lastLine}`, '首都周囲へ');
                   regions = await getRegions();
                   break;
