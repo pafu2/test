@@ -2669,7 +2669,7 @@
     let nextProgress;
     async function attackRegion () {
       await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 2) {
         return;
       }
 
@@ -3168,7 +3168,7 @@
     if (!isAutoJoinRunning) {
       attackRegion();
     }
-    autoJoinIntervalId = setInterval(attackRegion,60000);
+    autoJoinIntervalId = setInterval(attackRegion,30000);
   };
 
   async function drawProgressBar(){
