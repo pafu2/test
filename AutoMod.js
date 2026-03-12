@@ -20,24 +20,34 @@ const container = document.createElement('div');
 const style = document.createElement('style');
 style.innerHTML = `
 button.up {
-    background-color: #1a237e;
+    background-color: #1565c0;
     color: white;
-    border: 1px solid #1a237e;
+    border: 1px solid #1565c0;
     cursor: pointer;
 }
 button.up:hover {
-    background-color: #3949ab;
-    border: 1px solid #1a237e;
+    background-color: #4398ed;
+    border: 1px solid #1565c0;
 }
 button.down {
-    background-color: #b71c1c;
+    background-color: #c0152c;
     color: white;
-    border: 1px solid #b71c1c;
+    border: 1px solid #c0152c;
     cursor: pointer;
 }
 button.down:hover {
-    background-color: #f05545;
-    border: 1px solid #b71c1c;
+    background-color: #e73e53;
+    border: 1px solid #c0152c;
+}
+button.stop {
+    background-color:#ae0000;
+    color: white;
+    border:1px solid #ae0000;
+    cursor: pointer;
+}
+button.stop:hover {
+    background-color: #e04242;
+    border: 1px solid #ae0000;
 }
 `;
 document.head.appendChild(style);
@@ -82,13 +92,11 @@ container.innerHTML = `
 
 ${buttons}
 
-<button id="ui_stop"
-style="width:100%;background:#ca425b;border:1px solid #ca425b;margin-top:8px;display:none;">
+<button id="ui_stop" class="stop" style="width:100%;margin-top:8px;display:none;">
 停止
 </button>
 
-<div id="ui_status"
-style="color:blue;margin-top:8px;font-size:11px;font-weight:bold;">
+<div id="ui_status" style="color:blue;margin-top:8px;font-size:11px;font-weight:bold;">
 待機中
 </div>
 `;
