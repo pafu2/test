@@ -2960,13 +2960,13 @@
               } else if (messageType === 'teamAdjacent') {
                 if (isMorning) {
                   cellType = 'teamAdjacent';
-                  forceFillType = 'teamAdjacent';
+                  forceFillType = 'ownCapitalAdjacent';
                   loop += 1;
                   message = '(' + loop + '発目) '+ lastLine;
                   processType = 'break';
                 } else {
                   cellType = 'teamAdjacent';
-                  forceFillType = 'teamAdjacent';
+                  forceFillType = 'ownCapitalAdjacent';
                   processType = 'break';
                 }
               } else if (messageType === 'capitalAdjacent') {
