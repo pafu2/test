@@ -2883,6 +2883,7 @@
               excludeSet.delete(region.join(','));
               message = lastLine;
               cellType = 'onceMore';
+              forceFillType = 'onceMore';
               processType = 'reload';
             } else if (messageType === 'breaktime') {
               success = true;
