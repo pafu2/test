@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri Chest Opener
-// @version      1.2c改
+// @version      1.2c改 2026/03/15修正版
 // @description  Automated box opening and recycling
 // @author       7234e634
 // @match        https://donguri.5ch.io/bag
