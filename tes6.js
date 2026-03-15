@@ -3344,11 +3344,7 @@
         while (dialog.open) {
           await drawProgressBar();
           resetAutoJoinStateByProgress(currentProgress);
-//追加
-          if (!forceFillType && regions.ownCapitalAdjacent?.length > 0) {
-            forceFillType = 'ownCapitalAdjacent';
-          }
-//追加
+
           if (!isBattleWindow(currentProgress) || currentProgress >= nextProgressUmeR) {
             logMessage(null, '[停止] 監視停止', `→ ${nextProgressUmeR}%で停止`);
             return;
@@ -3365,13 +3361,16 @@
 
           let targets = [];
           let phaseLabel = '';
-//コンソールログ
-console.log('デバッグ: forceFillType =', forceFillType, ', ownCapitalAdjacentの長さ =', regions.ownCapitalAdjacent?.length);
-if (forceFillType === 'ownCapitalAdjacent' && (!regions.ownCapitalAdjacent || regions.ownCapitalAdjacent.length === 0)) {
-    console.warn('警告: forceFillTypeは指定されているのに、首都周囲のターゲットが見つかりません。データ同期が失敗している可能性があります。');
-}
-//コンソールログ
+
           if (autoJoinPhase === 'fill') {
+//追加修正、首都が反映されるまで1.5秒待機
+            if (forceFillType === 'ownCapitalAdjacent' && (!regions.ownCapitalAdjacent || regions.ownCapitalAdjacent.length === 0)) {
+              logMessage(null, '[待機] 首都領土の反映待機', '→ 1.5秒後にマップ再取得');
+              await sleep(1500);
+              regions = await getRegions();
+              continue;
+            }
+//追加修正
 //追加修正、同士討ちを避けるため
             const orderedTypes = forceFillType
               ? [forceFillType, ...['ownCapitalAdjacent','teamAdjacent','nonAdjacent','capitalAdjacent','mapEdge'].filter(t => t !== forceFillType)]
@@ -3599,7 +3598,6 @@ if (forceFillType === 'ownCapitalAdjacent' && (!regions.ownCapitalAdjacent || re
                   saveCurrentCapital(region[0], region[1]);
                   forceFillType = 'ownCapitalAdjacent';
 //追加、首都を作ったら即座にマス状況をチェックして速やかに首都回りを埋めに移行するため
-                  await sleep(1500);
                   regions = await getRegions();
 //追加
                   logMessage(region, `[勝利] ${lastLine}`, '首都周囲へ');
