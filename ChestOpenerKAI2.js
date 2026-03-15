@@ -460,6 +460,8 @@
         const row = link.closest('tr');
         const cells = row.querySelectorAll('td');
         const itemName = cells[0].textContent;
+        const rankMatch = itemName.match(/\[([A-Za-z0-9]+)\]/);
+        const rank = rankMatch ? rankMatch[0] : null;
         const itemElem = cells[6].textContent;
 
         if (!checkedRanks.includes(rank)) return;
