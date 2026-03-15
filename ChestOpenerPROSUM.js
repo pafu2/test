@@ -365,7 +365,7 @@
           }
 
           if(h1.textContent.includes('アイテムバッグ')){
-            const itemLockLinks = doc.querySelectorAll('a[href^="https://donguri.5ch.io/lock/"]');
+            const itemLockLinks = doc.querySelectorAll('a[href*="/lock/"]');
 
             for(const elm of itemLockLinks){
               const itemName = elm.closest('tr').firstChild.textContent;
@@ -433,7 +433,7 @@
   })
 
   async function itemLocking(doc) {
-    const itemLockLinks = doc.querySelectorAll('a[href^="https://donguri.5ch.io/lock/"]');
+    const itemLockLinks = doc.querySelectorAll('a[href*="/lock/"]');
     const checkedRanks = Array.from(document.querySelectorAll('.keep-item:checked')).map(elm => elm.value);
     const itemInputs = document.querySelectorAll('.wishlist');
     const results = [];
