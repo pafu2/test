@@ -2791,17 +2791,17 @@
 
             if (success) {
               if (currentProgress < 16) {
-                nextProgress = Math.floor(Math.random() * 7) + 23;//22～28
+                nextProgress = Math.floor(Math.random() * 7) + 23;//23～29±1
                } else if (currentProgress < 33) {
-                nextProgress = Math.floor(Math.random() * 7) + 40;//39～45
+                nextProgress = Math.floor(Math.random() * 7) + 40;//40～46±1
                } else if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 7) + 56;//55～61
+                nextProgress = Math.floor(Math.random() * 7) + 56;//56～62±1
                } else if (currentProgress < 66) {
-                nextProgress = Math.floor(Math.random() * 7) + 73;//72～78
+                nextProgress = Math.floor(Math.random() * 7) + 73;//73～79±1
                } else if (currentProgress < 83) {
-                nextProgress = Math.floor(Math.random() * 7) + 90;//89～95
+                nextProgress = Math.floor(Math.random() * 7) + 90;//90～96±1
                } else {
-                nextProgress = Math.floor(Math.random() * 7) + 6;//5～11
+                nextProgress = Math.floor(Math.random() * 7) + 6;//6～12±1
                }
               next = `→ ${nextProgress}±1%`;
               isAutoJoinRunning = false;
@@ -2865,17 +2865,17 @@
         }
         if (!success && regions[cellType].length === 0) {
               if (currentProgress < 16) {
-                nextProgress = Math.floor(Math.random() * 7) + 23;//22～28
+                nextProgress = Math.floor(Math.random() * 7) + 23;//23～29±1
                } else if (currentProgress < 33) {
-                nextProgress = Math.floor(Math.random() * 7) + 40;//39～45
+                nextProgress = Math.floor(Math.random() * 7) + 40;//40～46±1
                } else if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 7) + 56;//55～61
+                nextProgress = Math.floor(Math.random() * 7) + 56;//56～62±1
                } else if (currentProgress < 66) {
-                nextProgress = Math.floor(Math.random() * 7) + 73;//72～78
+                nextProgress = Math.floor(Math.random() * 7) + 73;//73～79±1
                } else if (currentProgress < 83) {
-                nextProgress = Math.floor(Math.random() * 7) + 90;//89～95
+                nextProgress = Math.floor(Math.random() * 7) + 90;//90～96±1
                } else {
-                nextProgress = Math.floor(Math.random() * 7) + 6;//5～11
+                nextProgress = Math.floor(Math.random() * 7) + 6;//6～12±1
                }
           const next = `→ ${nextProgress}±1%`;
           isAutoJoinRunning = false;
