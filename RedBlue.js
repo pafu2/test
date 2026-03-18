@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 Red vs Blue
+// @version      1.2.2d改 Red vs Blue 03/19版
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
@@ -959,6 +959,8 @@
       number.style.height = '2em';
       number.style.width = '4em';
 
+      const mapSettings = container.cloneNode();
+      addHeader('マップ', mapSettings);
       const toolbar = container.cloneNode();
       addHeader('toolbar', toolbar);
       const arenaResult = container.cloneNode();
@@ -973,6 +975,15 @@
       addHeader('装備パネル', equipPanel);
 
       const settingItems = {
+        mapPosition: {
+          text: 'マップ位置:',
+          type: 'select',
+          options: {
+            center: '中央寄せ',
+            left: '左寄せ'
+          },
+         parent: mapSettings
+       },
         toolbarPosition: {
           text: '位置:',
           type: 'select',
@@ -1118,7 +1129,7 @@
         }
       })
 
-      settingsMenu.append(toolbar, arenaResult, arenaField, settingsPanel, equipPanel);
+      settingsMenu.append(mapSettings, toolbar, arenaResult, arenaField, settingsPanel, equipPanel);
       refreshSettings();
     })();
 
@@ -1820,7 +1831,7 @@
     if (stat.textContent === '装備中...') return;
     const equipPresets = JSON.parse(localStorage.getItem('equipPresets')) || {};
     const fetchPromises = equipPresets[presetName].id
-      .filter(id => id !== undefined && id !== null && !currentEquip.includes(id)) // 未登録or既に装備中の部位は除外
+      .filter(id => id !== undefined && id !== null)
       .map(id => fetch('https://donguri.5ch.io/equip/' + id));
 
     stat.textContent = '装備中...';
@@ -1920,7 +1931,7 @@
       grid.style.gridTemplateRows = `repeat(${rows}, 35px)`;
       grid.style.gridTemplateColumns = `repeat(${cols}, 35px)`;
       grid.style.gap = '2px';
-      grid.style.justifyContent = 'center';
+      grid.style.justifyContent = settings.mapPosition === 'left' ? 'start' : 'center';
       grid.style.position = 'relative';
 
       grid.style.maxWidth = '100%';
@@ -2008,7 +2019,7 @@
       grid.parentNode.style.height = null;
       grid.parentNode.style.padding = '20px 0';
       grid.parentNode.style.maxWidth = '100%';
-      //grid.parentNode.style.overflowX = 'auto';
+      grid.parentNode.style.overflowX = settings.mapPosition === 'left' ? 'auto' : '';
     }
 
     const cells = grid ? grid.querySelectorAll('.cell') : [];
@@ -2634,6 +2645,7 @@
         '参加するには、装備中の武器と防具のアイテムID'
       ],
       nonAdjacent: [
+        'この場所には首都を建設できません（水で隣接が不足）',
         'このタイルは攻撃できません。水タイルは占領できません。',
         'このタイルは攻撃できません。あなたのチームが首都を持つまで、どの首都にも隣接するタイルを主張することはできません。',
         'あなたのチームは首都を持っていないため、他のチームの首都に攻撃できません。'
@@ -2666,7 +2678,7 @@
     let nextProgress;
     async function attackRegion () {
       await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 2) {
         return;
       }
 
@@ -2746,6 +2758,8 @@
               processType = 'continue';
             } else if (messageType === 'equipError') {
               message += ` (${cellRank}, ${currentEquipName})`;
+              sleepTime = 3;
+              await equipChange(region);
               processType = 'continue';
             } else if (lastLine.length > 100) {
               message = 'どんぐりシステム';
@@ -2777,17 +2791,17 @@
 
             if (success) {
               if (currentProgress < 16) {
-                nextProgress = Math.floor(Math.random() * 2) + 26;
+                nextProgress = Math.floor(Math.random() * 7) + 23;//22～28
                } else if (currentProgress < 33) {
-                nextProgress = Math.floor(Math.random() * 2) + 43;
+                nextProgress = Math.floor(Math.random() * 7) + 40;//39～45
                } else if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 2) + 60;
+                nextProgress = Math.floor(Math.random() * 7) + 56;//55～61
                } else if (currentProgress < 66) {
-                nextProgress = Math.floor(Math.random() * 2) + 76;
+                nextProgress = Math.floor(Math.random() * 7) + 73;//72～78
                } else if (currentProgress < 83) {
-                nextProgress = Math.floor(Math.random() * 2) + 93;
+                nextProgress = Math.floor(Math.random() * 7) + 90;//89～95
                } else {
-                nextProgress = Math.floor(Math.random() * 2) + 10;
+                nextProgress = Math.floor(Math.random() * 7) + 6;//5～11
                }
               next = `→ ${nextProgress}±2%`;
               isAutoJoinRunning = false;
@@ -2851,17 +2865,17 @@
         }
         if (!success && regions[cellType].length === 0) {
               if (currentProgress < 16) {
-                nextProgress = Math.floor(Math.random() * 2) + 26;
+                nextProgress = Math.floor(Math.random() * 7) + 23;//22～28
                } else if (currentProgress < 33) {
-                nextProgress = Math.floor(Math.random() * 2) + 43;
+                nextProgress = Math.floor(Math.random() * 7) + 40;//39～45
                } else if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 2) + 60;
+                nextProgress = Math.floor(Math.random() * 7) + 56;//55～61
                } else if (currentProgress < 66) {
-                nextProgress = Math.floor(Math.random() * 2) + 76;
+                nextProgress = Math.floor(Math.random() * 7) + 73;//72～78
                } else if (currentProgress < 83) {
-                nextProgress = Math.floor(Math.random() * 2) + 93;
+                nextProgress = Math.floor(Math.random() * 7) + 90;//89～95
                } else {
-                nextProgress = Math.floor(Math.random() * 2) + 10;
+                nextProgress = Math.floor(Math.random() * 7) + 6;//5～11
                }
           const next = `→ ${nextProgress}±2%`;
           isAutoJoinRunning = false;
@@ -3085,7 +3099,7 @@
     if (!isAutoJoinRunning) {
       attackRegion();
     }
-    autoJoinIntervalId = setInterval(attackRegion,60000);
+    autoJoinIntervalId = setInterval(attackRegion,30000);
   };
 
   async function drawProgressBar(){
