@@ -2803,7 +2803,7 @@
                } else {
                 nextProgress = Math.floor(Math.random() * 7) + 6;//5～11
                }
-              next = `→ ${nextProgress}±2%`;
+              next = `→ ${nextProgress}±1%`;
               isAutoJoinRunning = false;
             } else if (processType === 'return') {
               next = '';
@@ -2877,7 +2877,7 @@
                } else {
                 nextProgress = Math.floor(Math.random() * 7) + 6;//5～11
                }
-          const next = `→ ${nextProgress}±2%`;
+          const next = `→ ${nextProgress}±1%`;
           isAutoJoinRunning = false;
           logMessage(null, '攻撃可能なタイルが見つかりませんでした。', next);
           return;
