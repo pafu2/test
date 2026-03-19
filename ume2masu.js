@@ -2630,7 +2630,7 @@
     let nextProgress;
     async function attackRegion () {
       await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) > 0 || currentProgress === 50 || currentProgress === 100) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) > 1 || currentProgress === 50 || currentProgress === 100) {
         return;
       }
 
@@ -2749,17 +2749,10 @@
               processType = 'reload';
               i++;
             } else if (messageType === 'equipError') {
-              if (loop < 255){
-                loop += 1;
-                sleepTime = 1;
-                message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
-                processType = 'reload';
-              } else {
-                loop += 1;
-                success = true;
-                message = '[打止] (' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
-                processType = 'return';
-              }
+              loop += 1;
+              sleepTime = 1;
+              message = '【' + earn + 'マス】(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
+              processType = 'reload';
               i++;
             } else if (lastLine.length > 100) {
               message = 'どんぐりシステム';
@@ -2819,9 +2812,9 @@
                 }
               } else {
                 if (currentProgress < 50) {
-                  nextProgress = 98;
+                  nextProgress = 99;
                 } else {
-                  nextProgress = 48;
+                  nextProgress = 49;
                 }
               }
               next = `→ ${nextProgress}±1%`;
@@ -2907,9 +2900,9 @@
               }
             } else {
               if (currentProgress < 50) {
-                nextProgress = 98;
+                nextProgress = 99;
               } else {
-                nextProgress = 48;
+                nextProgress = 49;
               }
             }
             const next = `→ ${nextProgress}±1%`;
