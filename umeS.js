@@ -1,27 +1,27 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 umeR/stdPRO Switch
+// @version      1.2.2d改 umeR/stdP Switch
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
-// @match        https://donguri.5ch.net/teambattle?m=hc
-// @match        https://donguri.5ch.net/teambattle?m=l
-// @match        https://donguri.5ch.net/teambattle?m=rb
-// @match        https://donguri.5ch.net/bag
+// @match        https://donguri.5ch.io/teambattle?m=hc
+// @match        https://donguri.5ch.io/teambattle?m=l
+// @match        https://donguri.5ch.io/teambattle?m=rb
+// @match        https://donguri.5ch.io/bag
 // ==/UserScript==
 
 
 (()=>{
-  if(location.href === 'https://donguri.5ch.net/bag') {
+  if(location.href === 'https://donguri.5ch.io/bag') {
     function saveCurrentEquip(url, index) {
       let currentEquip = JSON.parse(localStorage.getItem('current_equip')) || [];
-      const regex = /https:\/\/donguri\.5ch\.net\/equip\/(\d+)/;
+      const regex = /https:\/\/donguri\.5ch\.io\/equip\/(\d+)/;
       const equipId = url.match(regex)[1];
       currentEquip[index] = equipId;
       localStorage.setItem('current_equip', JSON.stringify(currentEquip));
     }
     const tableIds = ['weaponTable', 'armorTable', 'necklaceTable'];
     tableIds.forEach((elm, index)=>{
-      const equipLinks = document.querySelectorAll(`#${elm} a[href^="https://donguri.5ch.net/equip/"]`);
+      const equipLinks = document.querySelectorAll(`#${elm} a[href^="https://donguri.5ch.io/equip/"]`);
       [...equipLinks].forEach(link => {
         link.addEventListener('click', ()=>{
           saveCurrentEquip(link.href, index);
@@ -1118,7 +1118,7 @@
     (()=>{
       const link = document.createElement('a');
       link.style.color = '#333';
-      link.textContent = '1.2.2d改 umeR/stdPRO Switch';
+      link.textContent = '1.2.2d改 umeR/stdP Switch';
       footer.append(link);
     })();
 
@@ -1631,7 +1631,7 @@
     async function showEquipList(){
       if(!weaponTable || !armorTable || !necklaceTable) {
         try {
-          const res = await fetch('https://donguri.5ch.net/bag');
+          const res = await fetch('https://donguri.5ch.io/bag');
           if(!res.ok) throw new Error('bag response error');
           const text = await res.text();
           const doc = new DOMParser().parseFromString(text, 'text/html');
@@ -1648,7 +1648,7 @@
             table.style.margin = '0';
             const rows = table.querySelectorAll('tr');
             rows.forEach(row => {
-              const id = row.cells[1].querySelector('a')?.href.replace('https://donguri.5ch.net/equip/','');
+              const id = row.cells[1].querySelector('a')?.href.replace('https://donguri.5ch.io/equip/','');
               row.cells[0].style.textDecorationLine = 'underline';
               row.cells[0].style.cursor = 'pointer';
               row.cells[0].dataset.id = id;
@@ -1810,7 +1810,7 @@
     const equipPresets = JSON.parse(localStorage.getItem('equipPresets')) || {};
     const fetchPromises = equipPresets[presetName].id
       .filter(id => id !== undefined && id !== null && !currentEquip.includes(id)) // 未登録or既に装備中の部位は除外
-      .map(id => fetch('https://donguri.5ch.net/equip/' + id));
+      .map(id => fetch('https://donguri.5ch.io/equip/' + id));
 
     stat.textContent = '装備中...';
     try {
@@ -1996,7 +1996,7 @@
   async function fetchSingleArenaInfo(elm) {
     try {
       const { row, col } = elm.dataset;
-      const url = `https://donguri.5ch.net/teambattle?r=${row}&c=${col}&`+MODE;
+      const url = `https://donguri.5ch.io/teambattle?r=${row}&c=${col}&`+MODE;
       const res = await fetch(url);
       if(!res.ok) throw new Error(res.status + ' res.ng');
       const text = await res.text();
@@ -2187,7 +2187,7 @@
   })();
 
   async function fetchArenaTable(row, col){
-    const url = `https://donguri.5ch.net/teambattle?r=${row}&c=${col}&`+MODE;
+    const url = `https://donguri.5ch.io/teambattle?r=${row}&c=${col}&`+MODE;
     try {
       const res = await fetch(url);
       if(!res.ok) throw new Error('res.ng');
@@ -2525,7 +2525,7 @@
       const now = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
       const hour = now.getHours();
       const minute = now.getMinutes();
-      return (hour > 8 && hour < 17) || (hour === 8 && minute >= 30) || (hour === 17 && minute === 0);
+      return (hour > 8 && hour < 21) || (hour === 8 && minute >= 30) || (hour === 21 && minute === 0);
       // 以下指定例その1（変える時は上の return hour >= 4 && hour <= 8; を書き換え、24:00をまたぐ指定はその2で）
       // 4:00～8:00
       // return hour >= 4 && hour <= 8;
@@ -2604,6 +2604,7 @@
         '再建が必要です。'
       ],
       onemoretime: [
+        'この場所には首都を建設できません（水で隣接が不足）',
         'もう一度バトルに参加する前に、待たなければなりません。'
       ],
       breaktime: [
@@ -2734,8 +2735,8 @@
             let message = lastLine;
             let processType;
             let sleepTime = 1;
-            // 255がumeのときの上限（実際には+1の256）、9がstdPROのときの[ﾘﾄﾗｲ]上限（実際には+1の10）
-            const maxloop = isMorning ? 255 : 9;
+            // 255がumeのときの上限（実際には+1の256）、7がstdPROのときの[ﾘﾄﾗｲ]上限（実際には+1の8）
+            const maxloop = isMorning ? 255 : 7;
 
             if (messageType === 'capitalAttack') {
               if (isMorning) {
@@ -2838,8 +2839,9 @@
                 i++;
               } else {
                 message += ` (${cellRank}, ${currentEquipName})`;
-                processType = 'continue';
-                i++;
+                sleepTime = 3;
+                cellType = 'teamAdjacent';
+                processType = 'reload';
               }
             } else if (lastLine.length > 100) {
               message = 'どんぐりシステム';
@@ -2930,28 +2932,15 @@
                     nextProgress = 2;
                   }
                 } else {
-                  if (currentProgress < 20) {
-                    nextProgress = Math.floor(Math.random() * 5) + 28; // 28~32 -2~+1
-                  } else if (currentProgress < 35) {
-                    nextProgress = Math.floor(Math.random() * 5) + 43; // 43~47 -2~+1
+                  if (currentProgress < 25) {
+                    nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
                   } else if (currentProgress < 50) {
-                    nextProgress = Math.floor(Math.random() * 5) + 63; // 63~67 -2~+1
-                  } else if (currentProgress < 70) {
-                    nextProgress = Math.floor(Math.random() * 5) + 78; // 78~82 -2~+1
-                  } else if (currentProgress < 85) {
-                    nextProgress = Math.floor(Math.random() * 5) + 93; // 93~97 -2~+1
+                    nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
+                  } else if (currentProgress < 75) {
+                    nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
                   } else {
-                    nextProgress = Math.floor(Math.random() * 5) + 13; // 13~17 -2~+1
+                    nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
                   }
-//                if (currentProgress < 25) {
-//                  nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
-//                } else if (currentProgress < 50) {
-//                  nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
-//                } else if (currentProgress < 75) {
-//                  nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
-//                } else {
-//                  nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
-//                }
                 }
               }
               next = `→ ${nextProgress}±1%`;
@@ -3043,28 +3032,15 @@
                 nextProgress = 2;
               }
             } else {
-                if (currentProgress < 20) {
-                  nextProgress = Math.floor(Math.random() * 5) + 28; // 28~32 -2~+1
-                } else if (currentProgress < 35) {
-                  nextProgress = Math.floor(Math.random() * 5) + 43; // 43~47 -2~+1
-                } else if (currentProgress < 50) {
-                  nextProgress = Math.floor(Math.random() * 5) + 63; // 63~67 -2~+1
-                } else if (currentProgress < 70) {
-                  nextProgress = Math.floor(Math.random() * 5) + 78; // 78~82 -2~+1
-                } else if (currentProgress < 85) {
-                  nextProgress = Math.floor(Math.random() * 5) + 93; // 93~97 -2~+1
-                } else {
-                  nextProgress = Math.floor(Math.random() * 5) + 13; // 13~17 -2~+1
-                }
-//                if (currentProgress < 25) {
-//                  nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
-//                } else if (currentProgress < 50) {
-//                  nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
-//                } else if (currentProgress < 75) {
-//                  nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
-//                } else {
-//                  nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
-//                }
+              if (currentProgress < 25) {
+                nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
+              } else if (currentProgress < 50) {
+                nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
+              } else if (currentProgress < 75) {
+                nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
+              } else {
+                nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
+              }
             }
           }
           const next = `→ ${nextProgress}±1%`;
@@ -3124,6 +3100,11 @@
 
         const capitalSet = new Set(capitalMap.map(([r, c]) => `${r}-${c}`));
 
+        const nonAdjacentCells = cells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return !capitalSet.has(key) && !adjacentSet.has(key);
+        });
+
         const capitalAdjacentCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
           return adjacentSet.has(key);
@@ -3148,9 +3129,17 @@
           }
         }
 
+        const teamCapitalSet = new Set();
+        for (const [r, c] of capitalMap) {
+          const key = `${r}-${c}`;
+          if (teamColorSet.has(key)) {
+            teamCapitalSet.add(key);
+          }
+        }
+
         const teamAdjacentCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          return teamColorSet.has(key) || teamAdjacentSet.has(key);
+          return (teamColorSet.has(key) || teamAdjacentSet.has(key)) && !teamCapitalSet.has(key);
         })
 
         const mapEdgeSet = new Set();
@@ -3168,6 +3157,11 @@
           return mapEdgeSet.has(key) && !capitalSet.has(key);
         })
 
+        const onceMoreCells = nonAdjacentCells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return key in cellColors && !teamColorSet.has(key);
+        });
+
         function shuffle(arr) {
           for (let i = arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -3176,98 +3170,30 @@
           return arr;
         }
 
-        //チームメンバーを除外するフィルタリング関数
-        const filteredCells = (cells) => {
-          return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
-        };
-
         const isMorning = isMorningTime();
-        let nonAdjacentCells;
-        let regions;
 
         if (isMorning) {
-          const nonAdjacentCells = cells.filter(([r, c]) => {
-            const key = `${r}-${c}`;
-            return !capitalSet.has(key) && !adjacentSet.has(key);
-          });
-
-          const onceMoreCells = nonAdjacentCells.filter(([r, c]) => {
-            const key = `${r}-${c}`;
-            return key in cellColors && !teamColorSet.has(key);
-          });
-
-          regions = {
+          const filteredCells = (cells) => {
+            return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
+          };
+          const regions = {
             nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
             capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
             teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
             mapEdge: shuffle(filteredCells(mapEdgeCells)),
             onceMore: shuffle(filteredCells(onceMoreCells))
           };
+          return regions;
         } else {
-          const nonAdjacentBase = cells.filter(([r, c]) => {
-            const key = `${r}-${c}`;
-            return !capitalSet.has(key) && !adjacentSet.has(key);
-          });
-
-          const onceMoreCells = nonAdjacentBase.filter(([r, c]) => {
-            const key = `${r}-${c}`;
-            return key in cellColors && !teamColorSet.has(key);
-          });
-
-          const excludedColors = [
-            '00008B',//まほろば
-            'FFFF00',//ライーヨー
-            'FF0101',//赤い彗星
-            'FFFFE0',//プリングルズ
-            '696969'//尻子玉
-          ];
-
-          // 1. どこのチームにも属してないマス
-          const group1 = shuffle(nonAdjacentBase.filter(([r, c]) => {
-            const key = `${r}-${c}`;
-            return !cellColors[key];
-          }));
-
-          // 2. 敵チームの首都および首都の上下左右ではないマス
-          const group2 = shuffle(nonAdjacentBase.filter(([r, c]) => {
-            const key = `${r}-${c}`;
-            return cellColors[key] && cellColors[key].replace('#','') !== teamColor;
-          }));
-
-          // 3. 敵チームの首都の上下左右のマス
-          const group3 = shuffle(cells.filter(([r, c]) => {
-            const key = `${r}-${c}`;
-            if (capitalSet.has(key)) return false;
-            if (!adjacentSet.has(key)) return false;
-
-            if (!cellColors[key]) return true;
-            const color = cellColors[key].replace('#', '');
-            return color !== teamColor && !excludedColors.includes(color);
-          }));
-
-          // 4. 敵チームの首都
-          const group4 = shuffle(cells.filter(([r, c]) => {
-            const key = `${r}-${c}`;
-           if (!capitalSet.has(key)) return false;
-           if (!cellColors[key]) return false;
-            const color = cellColors[key].replace('#', '');
-            return color !== teamColor && !excludedColors.includes(color);
-          }));
-
-          // 1~4を結合
-          const nonAdjacentRaw = [...group1, ...group2, ...group3, ...group4];
-          nonAdjacentCells = await filterGuardCells(nonAdjacentRaw);
-
-          regions = {
-//          nonAdjacent: shuffle(nonAdjacentCells),
-            nonAdjacent: nonAdjacentCells,
+          const regions = {
+            nonAdjacent: shuffle(nonAdjacentCells),
             capitalAdjacent: shuffle(capitalAdjacentCells),
             teamAdjacent: shuffle(teamAdjacentCells),
             mapEdge: shuffle(mapEdgeCells),
-            onceMore: shuffle(filteredCells(onceMoreCells))
+            onceMore: shuffle(onceMoreCells)
           };
+          return regions;
         }
-        return regions;
       } catch (e) {
         console.error(e);
         return {
@@ -3278,28 +3204,6 @@
           onceMore: []
         };
       }
-    }
-
-    async function filterGuardCells(candidates) {
-     const checks = candidates.map(async ([r, c]) => {
-        const url = `https://donguri.5ch.net/teambattle?r=${r}&c=${c}&` + MODE;
-
-        try {
-          const res = await fetch(url);
-          if (!res.ok) return null;
-
-          const text = await res.text();
-          const doc = new DOMParser().parseFromString(text, 'text/html');
-          const rank = doc.querySelector('small')?.textContent || '';
-
-          return rank.includes('警備員') ? null : [r, c];
-        } catch {
-          return null;
-        }
-      });
-
-      const results = await Promise.all(checks);
-      return results.filter(Boolean);
     }
 
     async function challenge (region) {
@@ -3324,7 +3228,7 @@
     }
     async function equipChange (region) {
       const [ row, col ] = region;
-      const url = `https://donguri.5ch.net/teambattle?r=${row}&c=${col}&`+MODE;
+      const url = `https://donguri.5ch.io/teambattle?r=${row}&c=${col}&`+MODE;
       try {
         const res = await fetch(url);
         if(!res.ok) throw new Error(`[${res.status}] /teambattle?r=${row}&c=${col}`);
@@ -3366,7 +3270,7 @@
 
   async function drawProgressBar(){
     try {
-      const res = await fetch('https://donguri.5ch.net/');
+      const res = await fetch('https://donguri.5ch.io/');
       if (!res.ok) throw new Error(res.status);
       const text = await res.text();
       const doc = new DOMParser().parseFromString(text, 'text/html');
