@@ -2926,9 +2926,17 @@
           }
         }
 
+        const teamCapitalSet = new Set();
+        for (const [r, c] of capitalMap) {
+          const key = `${r}-${c}`;
+          if (teamColorSet.has(key)) {
+            teamCapitalSet.add(key);
+          }
+        }
+
         const teamAdjacentCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          return teamColorSet.has(key) || teamAdjacentSet.has(key);
+          return (teamColorSet.has(key) || teamAdjacentSet.has(key)) && !teamCapitalSet.has(key);
         })
 
         const mapEdgeSet = new Set();
