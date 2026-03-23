@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 Standard PRO
+// @version      1.2.2d改 Standard Pro
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
@@ -1118,7 +1118,7 @@
     (()=>{
       const link = document.createElement('a');
       link.style.color = '#333';
-      link.textContent = '1.2.2d改 Standard PRO';
+      link.textContent = '1.2.2d改 Standard Pro';
       footer.append(link);
     })();
 
@@ -1809,7 +1809,8 @@
     if (stat.textContent === '装備中...') return;
     const equipPresets = JSON.parse(localStorage.getItem('equipPresets')) || {};
     const fetchPromises = equipPresets[presetName].id
-      .filter(id => id !== undefined && id !== null && !currentEquip.includes(id)) // 未登録or既に装備中の部位は除外
+//      .filter(id => id !== undefined && id !== null && !currentEquip.includes(id)) // 未登録or既に装備中の部位は除外
+      .filter(id => id !== undefined && id !== null)
       .map(id => fetch('https://donguri.5ch.io/equip/' + id));
 
     stat.textContent = '装備中...';
