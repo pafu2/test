@@ -1982,10 +1982,8 @@
             targetColor = cellColors[cellKey] || '#ffffff00';
           }
 
-          if (cell.style.backgroundColor !== targetColor) {
             cell.style.backgroundColor = targetColor;
             refreshedCells.push(cell);
-          }
           cell.style.outline = includesCoord(capitalMap, row, col) ? 'black solid 2px' : '';
         });
       }
@@ -2407,7 +2405,7 @@
       }, 0);
       arenaResult.style.display = '';
 
-      if (lastLine === 'リーダーになった' || lastLine.includes('は新しいアリーナリーダーです。')) {
+      if (lastLine === 'リーダーになった' || lastLine === 'この場所を占領しました' || lastLine.includes('は新しいアリーナリーダーです。')) {
         if (!settings.teamColor) return;
         const cell = document.querySelector(`div[data-row="${row}"][data-col="${col}"]`);
         cell.style.background = '#' + settings.teamColor;
@@ -2615,9 +2613,6 @@
 
     const messageTypes = {
       breaktime: [
-        'この場所を占領しました',
-        'この場所へ移動しました',
-        '首都から出撃しました',
         'チームに参加または離脱してから間もないため、次のバトルが始まるまでお待ちください。',
         'もう一度バトルに参加する前に、待たなければなりません。',
         'ng: ちょっとゆっくり'
@@ -2743,7 +2738,7 @@
             let processType;
             let sleepTime = 2;
 
-            if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')||text.startsWith('この場所を占領しました')) {
+            if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')||text.startsWith('この場所を占領しました')||text.startsWith('首都から出撃しました')||text.startsWith('この場所へ移動しました')) {
               success = true;
               message = '[成功] ' + lastLine;
               processType = 'return';
@@ -2925,7 +2920,7 @@
             });
           }
         }
-        
+
         const exploredSet = new Set();
         const fowMatch = scriptContent.match(/window\.__FOW\s*=\s*({[\s\S]+?});/);
         if (fowMatch && fowMatch[1]) {
