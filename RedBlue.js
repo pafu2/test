@@ -1908,6 +1908,9 @@
       const rows = gridSizeMatch ? Number(gridSizeMatch[1]) : 5;
       const cols = rows;
 
+      const avatarMatch = allScripts.match(/window\.__AVATARS\s*=\s*({[\s\S]*?});/);
+      const myAvatar = avatarMatch ? JSON.parse(avatarMatch[1]).myAvatar : null;
+
       const terrainData = {};
       try {
         const terrainMatch = allScripts.match(/const terrainsPayload\s*=\s*({.+?});/s);
@@ -1964,6 +1967,9 @@
               cell.style.outline = 'black solid 2px';
               cell.style.borderColor = 'gold';
             }
+            if (myAvatar && Number(myAvatar.row) === i && Number(myAvatar.col) === j) {
+              cell.style.outline = '3px solid yellow';
+            }
             grid.appendChild(cell);
             refreshedCells.push(cell);
           }
@@ -1987,6 +1993,9 @@
             refreshedCells.push(cell);
           }
           cell.style.outline = includesCoord(capitalMap, row, col) ? 'black solid 2px' : '';
+          if (myAvatar && Number(myAvatar.row) === Number(row) && Number(myAvatar.col) === Number(col)) {
+            cell.style.outline = '3px solid yellow';
+          }
         });
       }
 
