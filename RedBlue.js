@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 Red vs Blue 03/19版
+// @version      1.2.2d改 Red vs Blue 03/23版
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
@@ -2407,7 +2407,7 @@
       }, 0);
       arenaResult.style.display = '';
 
-      if (lastLine === 'リーダーになった' || lastLine.includes('は新しいアリーナリーダーです。')) {
+      if (lastLine === 'リーダーになった' || lastLine === 'この場所を占領しました。' || lastLine.includes('は新しいアリーナリーダーです。')) {
         if (!settings.teamColor) return;
         const cell = document.querySelector(`div[data-row="${row}"][data-col="${col}"]`);
         cell.style.background = '#' + settings.teamColor;
@@ -2651,6 +2651,7 @@
         'あなたのチームは首都を持っていないため、他のチームの首都に攻撃できません。'
       ],
       teamAdjacent: [
+        'このタイルには移動または攻撃できません。現在位置に隣接するタイルのみ選択できます。',
         'このタイルは攻撃できません。あなたのチームの制御領土に隣接していなければなりません。',
         'このタイルは攻撃できません。首都を奪取するには、隣接タイルを少なくとも3つ支配している必要があります。',
         'このタイルは攻撃できません。首都を奪取するには、隣接タイルを少なくとも2つ支配している必要があります。',
@@ -2739,7 +2740,7 @@
             let processType;
             let sleepTime = 2;
 
-            if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
+            if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')||text.startsWith('この場所を占領しました')||text.startsWith('首都から出撃しました')||text.startsWith('この場所へ移動しました')) {
               success = true;
               message = '[成功] ' + lastLine;
               processType = 'return';
@@ -2921,7 +2922,7 @@
             });
           }
         }
-        
+
         const exploredSet = new Set();
         const fowMatch = scriptContent.match(/window\.__FOW\s*=\s*({[\s\S]+?});/);
         if (fowMatch && fowMatch[1]) {
