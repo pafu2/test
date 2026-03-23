@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 Red vs Blue 03/19版
+// @version      1.2.2d改 Red vs Blue 03/23版
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
@@ -2407,7 +2407,7 @@
       }, 0);
       arenaResult.style.display = '';
 
-      if (lastLine === 'リーダーになった' || lastLine.includes('は新しいアリーナリーダーです。')) {
+      if (lastLine === 'リーダーになった' || lastLine === 'この場所を占領しました。' || lastLine.includes('は新しいアリーナリーダーです。')) {
         if (!settings.teamColor) return;
         const cell = document.querySelector(`div[data-row="${row}"][data-col="${col}"]`);
         cell.style.background = '#' + settings.teamColor;
@@ -2922,7 +2922,7 @@
             });
           }
         }
-        
+
         const exploredSet = new Set();
         const fowMatch = scriptContent.match(/window\.__FOW\s*=\s*({[\s\S]+?});/);
         if (fowMatch && fowMatch[1]) {
