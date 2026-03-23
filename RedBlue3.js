@@ -2615,9 +2615,6 @@
 
     const messageTypes = {
       breaktime: [
-        'この場所を占領しました',
-        'この場所へ移動しました',
-        '首都から出撃しました',
         'チームに参加または離脱してから間もないため、次のバトルが始まるまでお待ちください。',
         'もう一度バトルに参加する前に、待たなければなりません。',
         'ng: ちょっとゆっくり'
@@ -2743,7 +2740,7 @@
             let processType;
             let sleepTime = 2;
 
-            if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')||text.startsWith('この場所を占領しました')) {
+            if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')||text.startsWith('この場所を占領しました')||text.startsWith('首都から出撃しました')||text.startsWith('この場所へ移動しました')) {
               success = true;
               message = '[成功] ' + lastLine;
               processType = 'return';
