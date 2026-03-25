@@ -2742,7 +2742,7 @@
               if (isMorning) {
                 if (loop < maxloop){
                   loop += 1;
-                  sleepTime = 1;
+                  sleepTime = 0.7;
                   message = '(' + loop + '発目) '+ lastLine;
                   processType = 'continue';
                 } else {
@@ -2772,7 +2772,7 @@
               if (isMorning) {
                 if (loop < maxloop){
                   loop += 1;
-                  sleepTime = 1;
+                  sleepTime = 0.7;
                   message = '(' + loop + '発目) '+ lastLine;
                   processType = 'reload';
                 } else {
