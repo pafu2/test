@@ -2758,12 +2758,13 @@
 console.log('選択されたcellType:', cellType);
 
             if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')||text.startsWith('この場所を占領しました')) {
+              loop += 1;
               success = true;
               message = '[成功] (' + loop + '発目) '+ lastLine;
               processType = 'return';
 //              processType = 'reload';
             } else if (messageType === 'avatarAdjacent') {
-              if (loop < 3){
+              if (loop < 3) {
                 loop += 1;
                 sleepTime = 1;
                 message = '(' + loop + '発目) '+ lastLine;
