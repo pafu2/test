@@ -2774,6 +2774,7 @@ console.log('選択されたcellType:', cellType);
                 success = true;
                 message = '[打止] (' + loop + '発目) '+ lastLine;
                 processType = 'return';
+              }
             } else if (messageType === 'breaktime') {
               success = true;
               message = lastLine;
