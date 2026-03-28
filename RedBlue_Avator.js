@@ -2755,14 +2755,12 @@
             let message = lastLine;
             let processType;
             let sleepTime = 2;
-console.log('選択されたcellType:', cellType);
 
             if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')||text.startsWith('この場所を占領しました')) {
               loop += 1;
               success = true;
               message = '[成功] (' + loop + '発目) '+ lastLine;
               processType = 'return';
-//              processType = 'reload';
             } else if (messageType === 'avatarAdjacent') {
               if (loop < 3) {
                 loop += 1;
@@ -2999,7 +2997,22 @@ console.log('選択されたcellType:', cellType);
           }
         }
 
-        const avatarAdjacentCells = Array.from(avatarAdjacentCellsSet, key => key.split('-').map(Number));
+        const avatarAdjacentbaseCells = Array.from(avatarAdjacentCellsSet, key => key.split('-').map(Number));
+
+        //誰もいない
+        const noColorCells = shuffle(avatarAdjacentbaseCells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return !cellColors[key];
+        }));
+
+        //色付き
+        const colorCells = shuffle(avatarAdjacentbaseCells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return cellColors[key];
+        }));
+
+        //統合
+        avatarAdjacentCells = [...noColorCells, ...colorCells];
 
         const adjacentSet = new Set();
         for (const [cr, cc] of capitalMap) {
@@ -3083,13 +3096,12 @@ console.log('選択されたcellType:', cellType);
         }
 
         const regions = {
-          avatarAdjacent: shuffle(avatarAdjacentCells),
+          avatarAdjacent: avatarAdjacentCells,
           nonAdjacent: shuffle(nonAdjacentCells),
           capitalAdjacent: shuffle(capitalAdjacentCells),
           teamAdjacent: shuffle(teamAdjacentCells),
           mapEdge: shuffle(mapEdgeCells)
         };
-console.log('avatarAdjacent:', regions.avatarAdjacent);
         return regions;
       } catch (e) {
         console.error(e);
