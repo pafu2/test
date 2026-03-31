@@ -3012,7 +3012,7 @@
         }));
 
         //統合
-        avatarAdjacentCells = [...noColorCells, ...colorCells];
+        const avatarAdjacentCells = [...noColorCells, ...colorCells];
 
         const adjacentSet = new Set();
         for (const [cr, cc] of capitalMap) {
