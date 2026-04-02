@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         donguri arena assist tool
+// @name         RBtest2
 // @version      1.2.2d改 Red vs Blue 03/23版
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
@@ -2654,9 +2654,7 @@
         '参加するには、装備中の武器と防具のアイテムID'
       ],
       avatarAdjacent: [
-        'このタイルには移動または攻撃できません。現在位置に隣接するタイルのみ選択できます。',
-        '首都から出撃しました',
-        'この場所へ移動しました'
+        'このタイルには移動または攻撃できません。現在位置に隣接するタイルのみ選択できます。'
       ],
       nonAdjacent: [
         'この場所には首都を建設できません（水で隣接が不足）',
@@ -2755,13 +2753,14 @@
             let processType;
             let sleepTime = 2;
 
-            if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')||text.startsWith('この場所を占領しました')||text.startsWith('首都から出撃しました')||text.startsWith('この場所へ移動しました')) {
+            if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')||text.startsWith('この場所を占領しました')||text.startsWith('この場所へ移動しました')) {
               success = true;
               message = '[成功] ' + lastLine;
               processType = 'return';
             } else if (messageType === 'avatarAdjacent') {
-              cellType = 'avatarAdjacent';
+              sleepTime = 1;
               message = lastLine;
+              cellType = 'avatarAdjacent';
               processType = 'reload';
             } else if (messageType === 'breaktime') {
               success = true;
@@ -2811,17 +2810,17 @@
 
             if (success) {
               if (currentProgress < 16) {
-                nextProgress = Math.floor(Math.random() * 7) + 23;//23～29±1
+                nextProgress = Math.floor(Math.random() * 7) + 21;//23～29±1
                } else if (currentProgress < 33) {
-                nextProgress = Math.floor(Math.random() * 7) + 40;//40～46±1
+                nextProgress = Math.floor(Math.random() * 7) + 38;//40～46±1
                } else if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 7) + 56;//56～62±1
+                nextProgress = Math.floor(Math.random() * 7) + 54;//56～62±1
                } else if (currentProgress < 66) {
-                nextProgress = Math.floor(Math.random() * 7) + 73;//73～79±1
+                nextProgress = Math.floor(Math.random() * 7) + 71;//73～79±1
                } else if (currentProgress < 83) {
-                nextProgress = Math.floor(Math.random() * 7) + 90;//90～96±1
+                nextProgress = Math.floor(Math.random() * 7) + 88;//90～96±1
                } else {
-                nextProgress = Math.floor(Math.random() * 7) + 6;//6～12±1
+                nextProgress = Math.floor(Math.random() * 7) + 4;//6～12±1
                }
               next = `→ ${nextProgress}±1%`;
               isAutoJoinRunning = false;
@@ -2840,6 +2839,9 @@
               break;
             } else if (processType === 'return') {
               return;
+            } else if (processType === 'reload') {
+              regions = await getRegions();
+              break;
             }
           } catch (e){
             let message = '';
@@ -2885,17 +2887,17 @@
         }
         if (!success && regions[cellType].length === 0) {
               if (currentProgress < 16) {
-                nextProgress = Math.floor(Math.random() * 7) + 23;//23～29±1
+                nextProgress = Math.floor(Math.random() * 7) + 21;//23～29±1
                } else if (currentProgress < 33) {
-                nextProgress = Math.floor(Math.random() * 7) + 40;//40～46±1
+                nextProgress = Math.floor(Math.random() * 7) + 38;//40～46±1
                } else if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 7) + 56;//56～62±1
+                nextProgress = Math.floor(Math.random() * 7) + 54;//56～62±1
                } else if (currentProgress < 66) {
-                nextProgress = Math.floor(Math.random() * 7) + 73;//73～79±1
+                nextProgress = Math.floor(Math.random() * 7) + 71;//73～79±1
                } else if (currentProgress < 83) {
-                nextProgress = Math.floor(Math.random() * 7) + 90;//90～96±1
+                nextProgress = Math.floor(Math.random() * 7) + 88;//90～96±1
                } else {
-                nextProgress = Math.floor(Math.random() * 7) + 6;//6～12±1
+                nextProgress = Math.floor(Math.random() * 7) + 4;//6～12±1
                }
           const next = `→ ${nextProgress}±1%`;
           isAutoJoinRunning = false;
@@ -2929,6 +2931,9 @@
 
         const gridSizeMatch = scriptContent.match(/const\s+GRID_SIZE\s*=\s*(\d+);/);
         rows = cols = Number(gridSizeMatch[1]);
+
+        const avatarMatch = scriptContent.match(/window\.__AVATARS\s*=\s*({[\s\S]*?});/);
+        const myAvatar = avatarMatch ? JSON.parse(avatarMatch[1]).myAvatar : null;
 
         const terrainMatch = scriptContent.match(/const\s+terrainsPayload\s*=\s*({[\s\S]+?});/);
         if (terrainMatch && terrainMatch[1]) {
@@ -2980,7 +2985,22 @@
           }
         }
 
-        const avatarAdjacentCells = Array.from(avatarAdjacentCellsSet, key => key.split('-').map(Number));
+        const avatarAdjacentbaseCells = Array.from(avatarAdjacentCellsSet, key => key.split('-').map(Number));
+
+        //誰もいない
+        const noColorCells = shuffle(avatarAdjacentbaseCells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return !cellColors[key];
+        }));
+
+        //色付き
+        const colorCells = shuffle(avatarAdjacentbaseCells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return cellColors[key];
+        }));
+
+        //統合
+        const avatarAdjacentCells = [...noColorCells, ...colorCells];
 
         const adjacentSet = new Set();
         for (const [cr, cc] of capitalMap) {
@@ -3064,13 +3084,12 @@
         }
 
         const regions = {
-          avatarAdjacent: shuffle(avatarAdjacentCells),
+          avatarAdjacent: avatarAdjacentCells,
           nonAdjacent: shuffle(nonAdjacentCells),
           capitalAdjacent: shuffle(capitalAdjacentCells),
           teamAdjacent: shuffle(teamAdjacentCells),
           mapEdge: shuffle(mapEdgeCells)
         };
-
         return regions;
       } catch (e) {
         console.error(e);
