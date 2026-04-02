@@ -2753,7 +2753,7 @@
             let processType;
             let sleepTime = 2;
 
-            if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')||text.startsWith('この場所を占領しました')||text.startsWith('この場所へ移動しました')) {
+            if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')||text.startsWith('この場所を占領しました')||text.startsWith('首都から出撃しました')||text.startsWith('この場所へ移動しました')) {
               success = true;
               message = '[成功] ' + lastLine;
               processType = 'return';
