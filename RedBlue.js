@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 Red vs Blue 03/23版
+// @version      1.2.2d改 Red vs Blue 04/04版
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
@@ -2653,6 +2653,9 @@
         '装備しているものは改造が多すぎます。改造の少ない他のものをお試しください',
         '参加するには、装備中の武器と防具のアイテムID'
       ],
+      avatarAdjacent: [
+        'このタイルには移動または攻撃できません。現在位置に隣接するタイルのみ選択できます。'
+      ],
       nonAdjacent: [
         'この場所には首都を建設できません（水で隣接が不足）',
         'このタイルは攻撃できません。水タイルは占領できません。',
@@ -2660,7 +2663,6 @@
         'あなたのチームは首都を持っていないため、他のチームの首都に攻撃できません。'
       ],
       teamAdjacent: [
-        'このタイルには移動または攻撃できません。現在位置に隣接するタイルのみ選択できます。',
         'このタイルは攻撃できません。あなたのチームの制御領土に隣接していなければなりません。',
         'このタイルは攻撃できません。首都を奪取するには、隣接タイルを少なくとも3つ支配している必要があります。',
         'このタイルは攻撃できません。首都を奪取するには、隣接タイルを少なくとも2つ支配している必要があります。',
@@ -2717,7 +2719,9 @@
       const excludeSet = new Set();
 
       let cellType;
-      if (regions.nonAdjacent.length > 0) {
+      if (regions.avatarAdjacent.length > 0) {
+        cellType = 'avatarAdjacent';
+      } else if (regions.nonAdjacent.length > 0) {
         cellType = 'nonAdjacent';
       } else if (regions.teamAdjacent.length > 0) {
         cellType = 'teamAdjacent';
@@ -2753,6 +2757,11 @@
               success = true;
               message = '[成功] ' + lastLine;
               processType = 'return';
+            } else if (messageType === 'avatarAdjacent') {
+              sleepTime = 1;
+              message = lastLine;
+              cellType = 'avatarAdjacent';
+              processType = 'reload';
             } else if (messageType === 'breaktime') {
               success = true;
               message = lastLine;
@@ -2830,6 +2839,9 @@
               break;
             } else if (processType === 'return') {
               return;
+            } else if (processType === 'reload') {
+              regions = await getRegions();
+              break;
             }
           } catch (e){
             let message = '';
@@ -2920,6 +2932,9 @@
         const gridSizeMatch = scriptContent.match(/const\s+GRID_SIZE\s*=\s*(\d+);/);
         rows = cols = Number(gridSizeMatch[1]);
 
+        const avatarMatch = scriptContent.match(/window\.__AVATARS\s*=\s*({[\s\S]*?});/);
+        const myAvatar = avatarMatch ? JSON.parse(avatarMatch[1]).myAvatar : null;
+
         const terrainMatch = scriptContent.match(/const\s+terrainsPayload\s*=\s*({[\s\S]+?});/);
         if (terrainMatch && terrainMatch[1]) {
           const payload = JSON.parse(terrainMatch[1]);
@@ -2954,6 +2969,23 @@
           [0, -1],
           [0, 1]
         ];
+
+        const avatarAdjacentCellsSet = new Set();
+
+        if (myAvatar) {
+          const mr = Number(myAvatar.row ?? myAvatar.r ?? myAvatar.bapRow);
+          const mc = Number(myAvatar.col ?? myAvatar.c ?? myAvatar.bapCol);
+
+          for (const [dr, dc] of directions) {
+            const nr = mr + dr;
+            const nc = mc + dc;
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !waterSet.has(`${nr}-${nc}`)) {
+              avatarAdjacentCellsSet.add(`${nr}-${nc}`);
+            }
+          }
+        }
+
+        const avatarAdjacentCells = Array.from(avatarAdjacentCellsSet, key => key.split('-').map(Number));
 
         const adjacentSet = new Set();
         for (const [cr, cc] of capitalMap) {
@@ -3037,12 +3069,12 @@
         }
 
         const regions = {
+          avatarAdjacent: shuffle(avatarAdjacentCells),
           nonAdjacent: shuffle(nonAdjacentCells),
           capitalAdjacent: shuffle(capitalAdjacentCells),
           teamAdjacent: shuffle(teamAdjacentCells),
           mapEdge: shuffle(mapEdgeCells)
         };
-
         return regions;
       } catch (e) {
         console.error(e);
