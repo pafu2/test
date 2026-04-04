@@ -3821,20 +3821,22 @@
 
       const ownCapital = findOwnCapital(state);
 
-      if (ownCapital) {
-        const fortifyResult = await autoBuildFortsAroundCapital(state);
-
-        if (fortifyResult.stop) {
-          return fortifyResult;
-        }
-
-        if (fortifyResult.message) {
-          logMessage(null, fortifyResult.message, '');
-        }
-
-        state = fortifyResult.state || state;
-        pos = currentPos(state);
-      }
+//要塞建設
+//      if (ownCapital) {
+//        const fortifyResult = await autoBuildFortsAroundCapital(state);
+//
+//        if (fortifyResult.stop) {
+//          return fortifyResult;
+//        }
+//
+//        if (fortifyResult.message) {
+//          logMessage(null, fortifyResult.message, '');
+//        }
+//
+//        state = fortifyResult.state || state;
+//        pos = currentPos(state);
+//      }
+//要塞建設
 
       if (!pos && ownCapital) {
         const startResult = await executeStep([ownCapital.r, ownCapital.c], {
