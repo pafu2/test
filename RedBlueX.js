@@ -2801,17 +2801,17 @@
 
             if (success) {
               if (currentProgress < 16) {
-                nextProgress = 32;
+                nextProgress = Math.floor(Math.random() * 9) + 21;//23～29±1
                } else if (currentProgress < 33) {
-                nextProgress = 49;
+                nextProgress = Math.floor(Math.random() * 9) + 38;//40～46±1
                } else if (currentProgress < 50) {
-                nextProgress = 65;
+                nextProgress = Math.floor(Math.random() * 9) + 54;//56～62±1
                } else if (currentProgress < 66) {
-                nextProgress = 82;
+                nextProgress = Math.floor(Math.random() * 9) + 71;//73～79±1
                } else if (currentProgress < 83) {
-                nextProgress = 99;
+                nextProgress = Math.floor(Math.random() * 9) + 88;//90～96±1
                } else {
-                nextProgress = 15;
+                nextProgress = Math.floor(Math.random() * 9) + 4;//6～12±1
                }
               next = `→ ${nextProgress}±1%`;
               isAutoJoinRunning = false;
@@ -2875,17 +2875,17 @@
         }
         if (!success && regions[cellType].length === 0) {
               if (currentProgress < 16) {
-                nextProgress = 32;
+                nextProgress = Math.floor(Math.random() * 9) + 21;//23～29±1
                } else if (currentProgress < 33) {
-                nextProgress = 49;
+                nextProgress = Math.floor(Math.random() * 9) + 38;//40～46±1
                } else if (currentProgress < 50) {
-                nextProgress = 65;
+                nextProgress = Math.floor(Math.random() * 9) + 54;//56～62±1
                } else if (currentProgress < 66) {
-                nextProgress = 82;
+                nextProgress = Math.floor(Math.random() * 9) + 71;//73～79±1
                } else if (currentProgress < 83) {
-                nextProgress = 99;
+                nextProgress = Math.floor(Math.random() * 9) + 88;//90～96±1
                } else {
-                nextProgress = 15;
+                nextProgress = Math.floor(Math.random() * 9) + 4;//6～12±1
                }
           const next = `→ ${nextProgress}±1%`;
           isAutoJoinRunning = false;
