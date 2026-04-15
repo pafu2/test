@@ -2699,7 +2699,7 @@
             if (messageType === 'capitalAttack') {
               if (loop < 255){
                 loop += 1;
-                sleepTime = 1;
+                sleepTime = 0.7;
                 message = '(' + loop + '発目) '+ lastLine;
                 processType = 'continue';
               } else {
@@ -2715,7 +2715,7 @@
               }
               if (loop < 255){
                 loop += 1;
-                sleepTime = 1;
+                sleepTime = 0.7;
                 message = '(' + loop + '発目) '+ lastLine;
                 processType = 'reload';
               } else {
