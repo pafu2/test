@@ -2739,7 +2739,7 @@
             let sleepTime = 1;
 
             if (messageType === 'capitalAttack') {
-              if (loop < 255){
+              if (loop < 19){
                 loop += 1;
                 sleepTime = 1;
                 message = '(' + loop + '発目) '+ lastLine;
@@ -2752,7 +2752,7 @@
                 i++;
               }
             } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
-              if (loop < 255){
+              if (loop < 19){
                 loop += 1;
                 sleepTime = 1;
                 message = '(' + loop + '発目) '+ lastLine;
@@ -2780,7 +2780,7 @@
               processType = 'reload';
               i++;
             } else if (messageType === 'equipError') {
-              if (loop < 255){
+              if (loop < 19){
                 loop += 1;
                 sleepTime = 1;
                 message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
