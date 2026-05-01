@@ -2672,7 +2672,7 @@
     let nextProgress;
     async function attackRegion () {
       await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 2) {
         return;
       }
 
@@ -2819,20 +2819,20 @@
             }
 
             if (success) {
-              if (currentProgress < 16) {
-                nextProgress = Math.floor(Math.random() * 2) + 26;
-               } else if (currentProgress < 33) {
-                nextProgress = Math.floor(Math.random() * 2) + 43;
-               } else if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 2) + 60;
-               } else if (currentProgress < 66) {
-                nextProgress = Math.floor(Math.random() * 2) + 76;
-               } else if (currentProgress < 83) {
-                nextProgress = Math.floor(Math.random() * 2) + 93;
-               } else {
-                nextProgress = Math.floor(Math.random() * 2) + 10;
-               }
-              next = `→ ${nextProgress}±2%`;
+                if (currentProgress < 16) {
+                  nextProgress = 19;
+                } else if (currentProgress < 33) {
+                  nextProgress = 36;
+                } else if (currentProgress < 50) {
+                  nextProgress = 52;
+                } else if (currentProgress < 66) {
+                  nextProgress = 69;
+                } else if (currentProgress < 83) {
+                  nextProgress = 86;
+                } else {
+                  nextProgress = 2;
+                }
+              next = `→ ${nextProgress}±1%`;
               isAutoJoinRunning = false;
             } else if (processType === 'return') {
               next = '';
@@ -2894,20 +2894,20 @@
           }
         }
         if (!success && regions[cellType].length === 0) {
-              if (currentProgress < 16) {
-                nextProgress = Math.floor(Math.random() * 2) + 26;
-               } else if (currentProgress < 33) {
-                nextProgress = Math.floor(Math.random() * 2) + 43;
-               } else if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 2) + 60;
-               } else if (currentProgress < 66) {
-                nextProgress = Math.floor(Math.random() * 2) + 76;
-               } else if (currentProgress < 83) {
-                nextProgress = Math.floor(Math.random() * 2) + 93;
-               } else {
-                nextProgress = Math.floor(Math.random() * 2) + 10;
-               }
-          const next = `→ ${nextProgress}±2%`;
+                if (currentProgress < 16) {
+                  nextProgress = 19;
+                } else if (currentProgress < 33) {
+                  nextProgress = 36;
+                } else if (currentProgress < 50) {
+                  nextProgress = 52;
+                } else if (currentProgress < 66) {
+                  nextProgress = 69;
+                } else if (currentProgress < 83) {
+                  nextProgress = 86;
+                } else {
+                  nextProgress = 2;
+                }
+          const next = `→ ${nextProgress}±1%`;
           isAutoJoinRunning = false;
           logMessage(null, '攻撃可能なタイルが見つかりませんでした。', next);
           return;
@@ -3063,8 +3063,9 @@
         }));
 
         // 1~4を結合
-        const nonAdjacentRaw = [...group1, ...group2, ...group3, ...group4];
-        const nonAdjacentchoiceCells = await filterGuardCells(nonAdjacentRaw);
+        const nonAdjacentchoiceCells = [...group1, ...group2, ...group3, ...group4];
+        // 警備員マス除外を除外
+        //const nonAdjacentchoiceCells = await filterGuardCells(nonAdjacentRaw);
 
         const nonAdjacentCells = teamColorSet.size > 0 ? filterFog(nonAdjacentchoiceCells) : nonAdjacentbaseCells;
 
@@ -3192,7 +3193,7 @@
     if (!isAutoJoinRunning) {
       attackRegion();
     }
-    autoJoinIntervalId = setInterval(attackRegion,60000);
+    autoJoinIntervalId = setInterval(attackRegion,20000);
   };
 
   async function drawProgressBar(){
