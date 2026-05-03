@@ -2754,7 +2754,7 @@
             } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
               if (loop < 255){
                 loop += 1;
-                sleepTime = 1;
+                sleepTime = 0.7;
                 message = '(' + loop + '発目) '+ lastLine;
                 processType = 'reload';
               } else {
@@ -2764,12 +2764,6 @@
                 processType = 'return';
               }
               i++;
-            } else if (messageType === 'onemoretime') {
-              sleepTime = 90;
-              excludeSet.delete(region.join(','));
-              message = lastLine;
-              cellType = 'onceMore';
-              processType = 'reload';
             } else if (messageType === 'breaktime') {
               success = true;
               message = lastLine;
