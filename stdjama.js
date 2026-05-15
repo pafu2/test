@@ -2707,7 +2707,12 @@
             let processType;
             let sleepTime = 0.7;
 
-            if (text.startsWith('アリーナチャレンジ開始')) {
+            if (text.startsWith('リーダーになった')) {
+              loop += 1;
+              message = '(' + loop + '発目) '+ lastLine;
+              processType = 'reload';
+              i++;
+            } else if (text.startsWith('アリーナチャレンジ開始')) {
               loop += 1;
               message = '(' + loop + '発目) '+ lastLine;
               processType = 'continue';
