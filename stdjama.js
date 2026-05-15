@@ -2704,7 +2704,6 @@
                 message = '[成功] ' + lastLine;
                 processType = 'return';
               }
-              i++;
             } else if (messageType === 'breaktime') {
               success = true;
               message = lastLine;
