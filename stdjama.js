@@ -2711,10 +2711,10 @@ if (!shouldAttack(currentProgress)) {
             const messageType = getMessageType(lastLine);
             let message = lastLine;
             let processType;
-            let sleepTime = 1;
+            let sleepTime = 0.7;
 
             if (text.startsWith('アリーナチャレンジ開始')) {
-              if (loop < 25){
+              if (loop < 30){
                 loop += 1;
                 message = '[ﾘﾄﾗｲ] ' + lastLine;
                 processType = 'continue';
