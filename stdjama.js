@@ -2625,20 +2625,19 @@
       return result;
     }
 
+    function shouldAttack(progress) {
+      return (
+        (progress >= 48 && progress < 50) ||
+        (progress >= 98 && progress < 100)
+      );
+     }
 
-function shouldAttack(progress) {
-  return (
-    (progress >= 48 && progress < 50) ||
-    (progress >= 98 && progress < 100)
-  );
-}
+     async function attackRegion () {
+       await drawProgressBar();
 
-async function attackRegion () {
-  await drawProgressBar();
-
-  if (isAutoJoinRunning || !shouldAttack(currentProgress)) {
-    return;
-  }
+       if (isAutoJoinRunning || !shouldAttack(currentProgress)) {
+         return;
+       }
 
   if (location.href.includes('/teambattle?m=rb')) {
         try {
@@ -2676,27 +2675,22 @@ async function attackRegion () {
         cellType = 'mapEdge';
       }
 
-while(dialog.open) {
-
-  if (!shouldAttack(currentProgress)) {
-    isAutoJoinRunning = false;
-    break;
-  }
-
-  let success = false;
-  isAutoJoinRunning = true;
-
+      while(dialog.open) {
+        if (!shouldAttack(currentProgress)) {
+          isAutoJoinRunning = false;
+          break;
+        }
+        let success = false;
+        isAutoJoinRunning = true;
         regions[cellType] = regions[cellType]
           .filter(e => !excludeSet.has(e.join(',')));
-for (let i = 0; i < regions[cellType].length;) {
-
-if (!shouldAttack(currentProgress)) {
-  isAutoJoinRunning = false;
-  stop = true;
-  break;
-}
-
-  const region = regions[cellType][i];
+          for (let i = 0; i < regions[cellType].length;) {
+           if (!shouldAttack(currentProgress)) {
+             isAutoJoinRunning = false;
+             stop = true;
+             break;
+           }
+          const region = regions[cellType][i];
           let errorCount = 0;
           let next;
           try {
