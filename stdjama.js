@@ -2726,7 +2726,7 @@ if (!shouldAttack(currentProgress)) {
               sleepTime = 3;
               processType = 'continue';
             } else if (messageType === 'retry') {
-              sleepTime = 20;
+              sleepTime = 10;
               processType = 'continue';
             } else if (messageType === 'guardError') {
               message = lastLine;
