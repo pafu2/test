@@ -2778,7 +2778,7 @@ async function attackRegion () {
                   nextProgress = 10;
                 }
               } else {
-                if (currentProgress < 50) {
+                if (currentProgress < 55) {
                   nextProgress = 98;
                 } else {
                   nextProgress = 48;
@@ -2861,7 +2861,7 @@ async function attackRegion () {
                  nextProgress = 10;
               }
             } else {
-              if (currentProgress < 50) {
+              if (currentProgress < 55) {
                 nextProgress = 98;
               } else {
                 nextProgress = 48;
