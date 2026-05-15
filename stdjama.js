@@ -2626,14 +2626,21 @@
     }
 
 
-    let nextProgress;
-    async function attackRegion () {
-      await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 1) {
-        return;
-      }
+function shouldAttack(progress) {
+  return (
+    (progress >= 48 && progress < 50) ||
+    (progress >= 98 && progress < 100)
+  );
+}
 
-    if (location.href.includes('/teambattle?m=rb')) {
+async function attackRegion () {
+  await drawProgressBar();
+
+  if (isAutoJoinRunning || !shouldAttack(currentProgress)) {
+    return;
+  }
+
+  if (location.href.includes('/teambattle?m=rb')) {
         try {
           const res = await fetch(`/teambattle?m=rb&t=${Date.now()}`, { cache: 'no-store' });
           if (res.ok) {
