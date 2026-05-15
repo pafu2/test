@@ -2714,16 +2714,9 @@ if (!shouldAttack(currentProgress)) {
             let sleepTime = 0.7;
 
             if (text.startsWith('アリーナチャレンジ開始')) {
-              if (loop < 30){
-                loop += 1;
-                message = '[ﾘﾄﾗｲ] ' + lastLine;
-                processType = 'continue';
-              } else {
-                loop += 1;
-                success = true;
-                message = '[成功] ' + lastLine;
-                processType = 'return';
-              }
+              loop += 1;
+              message = '(' + loop + '発目) '+ lastLine;
+              processType = 'continue';
             } else if (messageType === 'breaktime') {
               success = true;
               message = lastLine;
