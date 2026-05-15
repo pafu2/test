@@ -2629,7 +2629,7 @@
     let nextProgress;
     async function attackRegion () {
       await drawProgressBar();
-      if (isAutoJoinRunning || nextProgress !== currentProgress) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
         return;
       }
 
@@ -2694,7 +2694,7 @@
             let sleepTime = 1;
 
             if (text.startsWith('アリーナチャレンジ開始')) {
-              if (loop < 20){
+              if (loop < 25){
                 loop += 1;
                 message = '[ﾘﾄﾗｲ] ' + lastLine;
                 processType = 'continue';
