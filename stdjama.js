@@ -3065,7 +3065,7 @@
     if (!isAutoJoinRunning) {
       attackRegion();
     }
-    autoJoinIntervalId = setInterval(attackRegion,15000);
+    autoJoinIntervalId = setInterval(attackRegion,18000);
   };
 
   async function drawProgressBar(){
