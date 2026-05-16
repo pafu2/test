@@ -2725,7 +2725,7 @@
               sleepTime = 3;
               processType = 'continue';
             } else if (messageType === 'retry') {
-              sleepTime = 10;
+              sleepTime = 5;
               processType = 'continue';
             } else if (messageType === 'guardError') {
               message = lastLine;
@@ -3065,7 +3065,7 @@
     if (!isAutoJoinRunning) {
       attackRegion();
     }
-    autoJoinIntervalId = setInterval(attackRegion,20000);
+    autoJoinIntervalId = setInterval(attackRegion,15000);
   };
 
   async function drawProgressBar(){
