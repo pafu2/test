@@ -3097,7 +3097,7 @@
         }
 
         const regions = {
-          nonAdjacent: shuffle(nonAdjacentCells),
+          nonAdjacent: nonAdjacentCells,
           capitalAdjacent: shuffle(capitalAdjacentCells),
           teamAdjacent: shuffle(teamAdjacentCells),
           mapEdge: shuffle(mapEdgeCells)
