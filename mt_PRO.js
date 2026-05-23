@@ -2819,17 +2819,17 @@
 
             if (success) {
               if (currentProgress < 16) {
-                nextProgress = 29;
+                nextProgress = 30;
                } else if (currentProgress < 33) {
-                nextProgress = 46;
+                nextProgress = 47;
                } else if (currentProgress < 50) {
-                nextProgress = 62;
+                nextProgress = 63;
                } else if (currentProgress < 66) {
-                nextProgress = 79;
+                nextProgress = 80;
                } else if (currentProgress < 83) {
-                nextProgress = 96;
+                nextProgress = 97;
                } else {
-                nextProgress = 12;
+                nextProgress = 13;
                }
               next = `→ ${nextProgress}±1%`;
               isAutoJoinRunning = false;
@@ -2894,17 +2894,17 @@
         }
         if (!success && regions[cellType].length === 0) {
               if (currentProgress < 16) {
-                nextProgress = 29;
+                nextProgress = 30;
                } else if (currentProgress < 33) {
-                nextProgress = 46;
+                nextProgress = 47;
                } else if (currentProgress < 50) {
-                nextProgress = 62;
+                nextProgress = 63;
                } else if (currentProgress < 66) {
-                nextProgress = 79;
+                nextProgress = 80;
                } else if (currentProgress < 83) {
-                nextProgress = 96;
+                nextProgress = 97;
                } else {
-                nextProgress = 12;
+                nextProgress = 13;
                }
           const next = `→ ${nextProgress}±1%`;
           isAutoJoinRunning = false;
