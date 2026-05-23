@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 Red vs Blue 04/16版
+// @version      1.2.2d改 Red vs Blue PRO
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
@@ -962,8 +962,6 @@
       number.style.height = '2em';
       number.style.width = '4em';
 
-      const mapSettings = container.cloneNode();
-      addHeader('マップ', mapSettings);
       const toolbar = container.cloneNode();
       addHeader('toolbar', toolbar);
       const arenaResult = container.cloneNode();
@@ -978,15 +976,6 @@
       addHeader('装備パネル', equipPanel);
 
       const settingItems = {
-        mapPosition: {
-          text: 'マップ位置:',
-          type: 'select',
-          options: {
-            center: '中央寄せ',
-            left: '左寄せ'
-          },
-         parent: mapSettings
-       },
         toolbarPosition: {
           text: '位置:',
           type: 'select',
@@ -1132,7 +1121,7 @@
         }
       })
 
-      settingsMenu.append(mapSettings, toolbar, arenaResult, arenaField, settingsPanel, equipPanel);
+      settingsMenu.append(toolbar, arenaResult, arenaField, settingsPanel, equipPanel);
       refreshSettings();
     })();
 
@@ -1143,7 +1132,7 @@
     (()=>{
       const link = document.createElement('a');
       link.style.color = '#333';
-      link.textContent = '1.2.2d改 Red vs Blue';
+      link.textContent = '1.2.2d改 Red vs Blue PRO';
       footer.append(link);
     })();
 
@@ -1834,7 +1823,7 @@
     if (stat.textContent === '装備中...') return;
     const equipPresets = JSON.parse(localStorage.getItem('equipPresets')) || {};
     const fetchPromises = equipPresets[presetName].id
-      .filter(id => id !== undefined && id !== null)
+      .filter(id => id !== undefined && id !== null && !currentEquip.includes(id)) // 未登録or既に装備中の部位は除外
       .map(id => fetch('https://donguri.5ch.io/equip/' + id));
 
     stat.textContent = '装備中...';
@@ -1911,9 +1900,6 @@
       const rows = gridSizeMatch ? Number(gridSizeMatch[1]) : 5;
       const cols = rows;
 
-      const avatarMatch = allScripts.match(/window\.__AVATARS\s*=\s*({[\s\S]*?});/);
-      const myAvatar = avatarMatch ? JSON.parse(avatarMatch[1]).myAvatar : null;
-
       const terrainData = {};
       try {
         const terrainMatch = allScripts.match(/const terrainsPayload\s*=\s*({.+?});/s);
@@ -1937,7 +1923,7 @@
       grid.style.gridTemplateRows = `repeat(${rows}, 35px)`;
       grid.style.gridTemplateColumns = `repeat(${cols}, 35px)`;
       grid.style.gap = '2px';
-      grid.style.justifyContent = settings.mapPosition === 'left' ? 'start' : 'center';
+      grid.style.justifyContent = 'center';
       grid.style.position = 'relative';
 
       grid.style.maxWidth = '100%';
@@ -1970,9 +1956,6 @@
               cell.style.outline = 'black solid 2px';
               cell.style.borderColor = 'gold';
             }
-            if (myAvatar && Number(myAvatar.row) === i && Number(myAvatar.col) === j) {
-              cell.style.outline = '3px solid yellow';
-            }
             grid.appendChild(cell);
             refreshedCells.push(cell);
           }
@@ -1996,9 +1979,6 @@
             refreshedCells.push(cell);
           }
           cell.style.outline = includesCoord(capitalMap, row, col) ? 'black solid 2px' : '';
-          if (myAvatar && Number(myAvatar.row) === Number(row) && Number(myAvatar.col) === Number(col)) {
-            cell.style.outline = '3px solid yellow';
-          }
         });
       }
 
@@ -2031,7 +2011,7 @@
       grid.parentNode.style.height = null;
       grid.parentNode.style.padding = '20px 0';
       grid.parentNode.style.maxWidth = '100%';
-      grid.parentNode.style.overflowX = settings.mapPosition === 'left' ? 'auto' : '';
+      //grid.parentNode.style.overflowX = 'auto';
     }
 
     const cells = grid ? grid.querySelectorAll('.cell') : [];
@@ -2419,7 +2399,7 @@
       }, 0);
       arenaResult.style.display = '';
 
-      if (lastLine === 'リーダーになった' || lastLine === 'この場所を占領しました。' || lastLine.includes('は新しいアリーナリーダーです。')) {
+      if (lastLine === 'リーダーになった' || lastLine.includes('は新しいアリーナリーダーです。')) {
         if (!settings.teamColor) return;
         const cell = document.querySelector(`div[data-row="${row}"][data-col="${col}"]`);
         cell.style.background = '#' + settings.teamColor;
@@ -2659,11 +2639,7 @@
         '装備しているものは改造が多すぎます。改造の少ない他のものをお試しください',
         '参加するには、装備中の武器と防具のアイテムID'
       ],
-      avatarAdjacent: [
-        'このタイルには移動または攻撃できません。現在位置に隣接するタイルのみ選択できます。'
-      ],
       nonAdjacent: [
-        'この場所には首都を建設できません（水で隣接が不足）',
         'このタイルは攻撃できません。水タイルは占領できません。',
         'このタイルは攻撃できません。あなたのチームが首都を持つまで、どの首都にも隣接するタイルを主張することはできません。',
         'あなたのチームは首都を持っていないため、他のチームの首都に攻撃できません。'
@@ -2696,14 +2672,13 @@
     let nextProgress;
     async function attackRegion () {
       await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 2) {
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
         return;
       }
 
-    if (location.href.includes('/teambattle?m=rb')||location.href.includes('/teambattle?m=t')) {
+    if (location.href.includes('/teambattle?m=t')) {
         try {
-          const m = new URLSearchParams(location.search).get('m');
-          const res = await fetch(`/teambattle?m=${m}&t=${Date.now()}`, { cache: 'no-store' });
+          const res = await fetch(`/teambattle?m=t&t=${Date.now()}`, { cache: 'no-store' });
           if (res.ok) {
             const text = await res.text();
             const doc = new DOMParser().parseFromString(text, 'text/html');
@@ -2727,9 +2702,7 @@
       let loop = 0;
 
       let cellType;
-      if (regions.avatarAdjacent.length > 0) {
-        cellType = 'avatarAdjacent';
-      } else if (regions.nonAdjacent.length > 0) {
+      if (regions.nonAdjacent.length > 0) {
         cellType = 'nonAdjacent';
       } else if (regions.teamAdjacent.length > 0) {
         cellType = 'teamAdjacent';
@@ -2755,54 +2728,49 @@
               excludeSet.add(region.join(','));
               i++;
               continue;
-            } else {
-              excludeSet.add(region.join(','));
             }
 
             const [ text, lastLine ] = await challenge(region);
             const messageType = getMessageType(lastLine);
             let message = lastLine;
             let processType;
-            let sleepTime = 2;
+            let sleepTime = 1.5;
 
             if (messageType === 'capitalAttack') {
-              if (loop < 2){
+              if (loop < 4){
                 loop += 1;
-                sleepTime = 1;
-                message = '(' + loop + '発目) '+ lastLine;
+                message = '[ﾘﾄﾗｲ] (' + loop + '発目) ' + lastLine;
                 processType = 'continue';
               } else {
                 loop += 1;
                 success = true;
-                message = '[打止] (' + loop + '発目) '+ lastLine;
+                message = '[成功] (' + loop + '発目) ' + lastLine;
                 processType = 'return';
                 i++;
               }
             } else if (text.startsWith('リーダーになった')) {
-              if (loop < 2){
+              if (loop < 4){
                 loop += 1;
-                sleepTime = 1;
-                message = '(' + loop + '発目) '+ lastLine;
-                processType = 'reload';
+                message = '[ﾘﾄﾗｲ] (' + loop + '発目) ' + lastLine;
+                processType = 'continue';
               } else {
                 loop += 1;
                 success = true;
-                message = '[打止] (' + loop + '発目) '+ lastLine;
+                message = '[成功] (' + loop + '発目) ' + lastLine;
                 processType = 'return';
               }
+              i++;
             } else if (text.startsWith('アリーナチャレンジ開始')) {
+              loop += 1;
               success = true;
-              message = '[成功] ' + lastLine;
+              message = '[成功] (' + loop + '発目) ' + lastLine;
               processType = 'return';
-            } else if (messageType === 'avatarAdjacent') {
-              sleepTime = 1;
-              message = lastLine;
-              cellType = 'avatarAdjacent';
-              processType = 'reload';
+              i++;
             } else if (messageType === 'breaktime') {
               success = true;
               message = lastLine;
               processType = 'return';
+              i++;
             } else if (messageType === 'toofast') {
               sleepTime = 3;
               processType = 'continue';
@@ -2812,20 +2780,23 @@
             } else if (messageType === 'guardError') {
               message = lastLine;
               processType = 'continue';
+              i++;
             } else if (messageType === 'equipError') {
               message += ` (${cellRank}, ${currentEquipName})`;
-              sleepTime = 3;
-              await equipChange(region);
               processType = 'continue';
+              i++;
             } else if (lastLine.length > 100) {
               message = 'どんぐりシステム';
               processType = 'continue';
+              i++;
             } else if (messageType === 'quit') {
               message = '[停止] ' + lastLine;
               processType = 'return';
               clearInterval(autoJoinIntervalId);
+              i++;
             } else if (messageType === 'reset') {
               processType = 'break';
+              i++;
             } else if (messageType in regions) {
               excludeSet.add(region.join(','));
               if (messageType === cellType) {
@@ -2843,6 +2814,7 @@
                 cellType = 'mapEdge';
                 processType = 'break';
               }
+              i++;
             }
 
             if (success) {
@@ -2876,9 +2848,6 @@
               break;
             } else if (processType === 'return') {
               return;
-            } else if (processType === 'reload') {
-              regions = await getRegions();
-              break;
             }
           } catch (e){
             let message = '';
@@ -2920,6 +2889,7 @@
               logMessage(region, e, `→ ${sleepTime}s`);
               await sleep(sleepTime * 1000);
             }
+            i++;
           }
         }
         if (!success && regions[cellType].length === 0) {
@@ -2969,9 +2939,6 @@
         const gridSizeMatch = scriptContent.match(/const\s+GRID_SIZE\s*=\s*(\d+);/);
         rows = cols = Number(gridSizeMatch[1]);
 
-        const avatarMatch = scriptContent.match(/window\.__AVATARS\s*=\s*({[\s\S]*?});/);
-        const myAvatar = avatarMatch ? JSON.parse(avatarMatch[1]).myAvatar : null;
-
         const terrainMatch = scriptContent.match(/const\s+terrainsPayload\s*=\s*({[\s\S]+?});/);
         if (terrainMatch && terrainMatch[1]) {
           const payload = JSON.parse(terrainMatch[1]);
@@ -2983,7 +2950,7 @@
             });
           }
         }
-
+        
         const exploredSet = new Set();
         const fowMatch = scriptContent.match(/window\.__FOW\s*=\s*({[\s\S]+?});/);
         if (fowMatch && fowMatch[1]) {
@@ -3006,23 +2973,6 @@
           [0, -1],
           [0, 1]
         ];
-
-        const avatarAdjacentCellsSet = new Set();
-
-        if (myAvatar) {
-          const mr = Number(myAvatar.row ?? myAvatar.r ?? myAvatar.bapRow);
-          const mc = Number(myAvatar.col ?? myAvatar.c ?? myAvatar.bapCol);
-
-          for (const [dr, dc] of directions) {
-            const nr = mr + dr;
-            const nc = mc + dc;
-            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !waterSet.has(`${nr}-${nc}`)) {
-              avatarAdjacentCellsSet.add(`${nr}-${nc}`);
-            }
-          }
-        }
-
-        const avatarAdjacentCells = Array.from(avatarAdjacentCellsSet, key => key.split('-').map(Number));
 
         const adjacentSet = new Set();
         for (const [cr, cc] of capitalMap) {
@@ -3071,28 +3021,69 @@
 
         const nonAdjacentbaseCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          return !capitalSet.has(key) && !adjacentSet.has(key) && !waterSet.has(key);
+          return !capitalSet.has(key) && !adjacentSet.has(key);
         });
 
-        const nonAdjacentCells = teamColorSet.size > 0 ? filterFog(nonAdjacentbaseCells) : nonAdjacentbaseCells;
+        const nonAdjacentBase = cells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return !capitalSet.has(key) && !adjacentSet.has(key);
+        });
+
+        // 1. どこのチームにも属してないマス
+        const group1 = shuffle(nonAdjacentBase.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return !cellColors[key];
+        }));
+
+        // 2. 敵チームの首都および首都の上下左右ではないマス
+        const group2 = shuffle(nonAdjacentBase.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          return cellColors[key] && cellColors[key].replace('#','') !== teamColor;
+        }));
+
+        // 3. 敵チームの首都の上下左右のマス
+        const group3 = shuffle(cells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          if (capitalSet.has(key)) return false;
+          if (!adjacentSet.has(key)) return false;
+          
+          if (!cellColors[key]) return true;
+          const color = cellColors[key].replace('#', '');
+          return color !== teamColor;
+        }));
+
+        // 4. 敵チームの首都
+        const group4 = shuffle(cells.filter(([r, c]) => {
+          const key = `${r}-${c}`;
+          if (!capitalSet.has(key)) return false;
+          if (!cellColors[key]) return false;
+          const color = cellColors[key].replace('#', '');
+          return color !== teamColor;
+        }));
+
+        // 1~4を結合
+        const nonAdjacentRaw = [...group1, ...group2, ...group3, ...group4];
+        const nonAdjacentchoiceCells = await filterGuardCells(nonAdjacentRaw);
+
+        const nonAdjacentCells = teamColorSet.size > 0 ? filterFog(nonAdjacentchoiceCells) : nonAdjacentbaseCells;
 
         const capitalAdjacentbaseCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          return adjacentSet.has(key) && !waterSet.has(key);
+          return adjacentSet.has(key);
         });
 
         const capitalAdjacentCells = filterFog(capitalAdjacentbaseCells);
 
         const teamAdjacentbaseCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          return (teamColorSet.has(key) || teamAdjacentSet.has(key)) && !waterSet.has(key);
+          return (teamColorSet.has(key) || teamAdjacentSet.has(key));
         })
 
         const teamAdjacentCells = filterFog(teamAdjacentbaseCells);
 
         const mapEdgebaseCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          return mapEdgeSet.has(key) && !capitalSet.has(key) && !waterSet.has(key);
+          return mapEdgeSet.has(key) && !capitalSet.has(key);
         })
 
         const mapEdgeCells = filterFog(mapEdgebaseCells);
@@ -3106,17 +3097,39 @@
         }
 
         const regions = {
-          avatarAdjacent: shuffle(avatarAdjacentCells),
           nonAdjacent: shuffle(nonAdjacentCells),
           capitalAdjacent: shuffle(capitalAdjacentCells),
           teamAdjacent: shuffle(teamAdjacentCells),
           mapEdge: shuffle(mapEdgeCells)
         };
+
         return regions;
       } catch (e) {
         console.error(e);
         throw e;
       }
+    }
+
+    async function filterGuardCells(candidates) {
+     const checks = candidates.map(async ([r, c]) => {
+        const url = `https://donguri.5ch.io/teambattle?r=${r}&c=${c}&` + MODE;
+
+        try {
+          const res = await fetch(url);
+          if (!res.ok) return null;
+
+          const text = await res.text();
+          const doc = new DOMParser().parseFromString(text, 'text/html');
+          const rank = doc.querySelector('small')?.textContent || '';
+
+          return rank.includes('警備員') ? null : [r, c];
+        } catch {
+          return null;
+        }
+      });
+
+      const results = await Promise.all(checks);
+      return results.filter(Boolean);
     }
 
     async function challenge (region) {
@@ -3192,8 +3205,7 @@
       currentProgress = parseInt(container.lastElementChild.textContent);
       let str,min,totalSec,sec,margin;
 
-      const m = new URLSearchParams(location.search).get('m');
-      if (currentProgress === 0 || currentProgress === 50 || ((location.href.includes('/teambattle?m=rb') || location.href.includes('/teambattle?m=t')) && (currentProgress === 16 || currentProgress === 33 || currentProgress === 66 || currentProgress === 83))) {
+      if (currentProgress === 0 || currentProgress === 50 || (location.href.includes('/teambattle?m=t') && (currentProgress === 16 || currentProgress === 33 || currentProgress === 66 || currentProgress === 83))) {
         str = '（マップ更新）';
       } else {
         if (currentProgress === 100) {
@@ -3201,7 +3213,7 @@
           sec = 20;
           margin = 10;
         } else {
-          if (location.href.includes('/teambattle?m=rb')||location.href.includes('/teambattle?m=t')) {
+          if (location.href.includes('/teambattle?m=t')) {
              if (currentProgress <= 16) {
                totalSec = (16 - currentProgress) * 600 / 16.6;
              } else if (currentProgress <= 33) {
