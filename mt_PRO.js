@@ -2819,17 +2819,17 @@
 
             if (success) {
               if (currentProgress < 16) {
-                nextProgress = 12;
-               } else if (currentProgress < 33) {
                 nextProgress = 29;
-               } else if (currentProgress < 50) {
+               } else if (currentProgress < 33) {
                 nextProgress = 46;
-               } else if (currentProgress < 66) {
+               } else if (currentProgress < 50) {
                 nextProgress = 62;
-               } else if (currentProgress < 83) {
+               } else if (currentProgress < 66) {
                 nextProgress = 79;
-               } else {
+               } else if (currentProgress < 83) {
                 nextProgress = 96;
+               } else {
+                nextProgress = 12;
                }
               next = `→ ${nextProgress}±1%`;
               isAutoJoinRunning = false;
@@ -2894,17 +2894,17 @@
         }
         if (!success && regions[cellType].length === 0) {
               if (currentProgress < 16) {
-                nextProgress = 12;
-               } else if (currentProgress < 33) {
                 nextProgress = 29;
-               } else if (currentProgress < 50) {
+               } else if (currentProgress < 33) {
                 nextProgress = 46;
-               } else if (currentProgress < 66) {
+               } else if (currentProgress < 50) {
                 nextProgress = 62;
-               } else if (currentProgress < 83) {
+               } else if (currentProgress < 66) {
                 nextProgress = 79;
-               } else {
+               } else if (currentProgress < 83) {
                 nextProgress = 96;
+               } else {
+                nextProgress = 12;
                }
           const next = `→ ${nextProgress}±1%`;
           isAutoJoinRunning = false;
