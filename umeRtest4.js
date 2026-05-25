@@ -2836,6 +2836,11 @@
         }
 
         if (!success && regions[cellType].length === 0) {
+          if(cellType !== 'participation') {
+            cellType = 'participation';
+            regions = await getRegions();
+            continue;
+          } else {
             if (currentProgress < 50) {
               nextProgress = 52;
             } else {
@@ -2845,6 +2850,7 @@
             isAutoJoinRunning = false;
             logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。(計' + loop + '発)', next);
             return;
+          }
         }
       }
     }
