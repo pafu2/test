@@ -2684,10 +2684,9 @@
             } else if(cellType === 'participation') {
               if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
                 loop += 1;
-                sleepTime = 0.7;
+                success = true;
                 message = '(' + loop + '発目) '+ lastLine;
-                cellType = 'teamAdjacent';
-                processType = 'reload';
+                processType = 'return';
               } else {
                 message = lastLine;
                 processType = 'reload';
@@ -2783,7 +2782,7 @@
               }
               next = `→ ${nextProgress}±1%`;
               isAutoJoinRunning = false;
-//            logMessage(null, '[打止] 終了です。', next);
+              logMessage(null, '[打止] 終了です。', next);
             } else if (processType === 'return') {
               next = '';
               isAutoJoinRunning = false;
