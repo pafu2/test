@@ -1,11 +1,10 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 umeR/stdP Switch
+// @version      1.2.2d改 umeR/stdP Switch 05/25
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
 // @match        https://donguri.5ch.io/teambattle?m=l
-// @match        https://donguri.5ch.io/teambattle?m=rb
 // @match        https://donguri.5ch.io/bag
 // ==/UserScript==
 
@@ -36,10 +35,8 @@
   let MODENAME;
   if (MODE === 'm=hc') {
       MODENAME = '［ハード］';
-  } else if (MODE === 'm=l') {
-      MODENAME = '［ラダー］';
   } else {
-      MODENAME = '［赤vs青］';
+      MODENAME = '［ラダー］';
   }
 
   const vw = Math.min(document.documentElement.clientWidth, window.innerWidth || 0);
@@ -1809,7 +1806,7 @@
     if (stat.textContent === '装備中...') return;
     const equipPresets = JSON.parse(localStorage.getItem('equipPresets')) || {};
     const fetchPromises = equipPresets[presetName].id
-      .filter(id => id !== undefined && id !== null)
+      .filter(id => id !== undefined && id !== null && !currentEquip.includes(id)) // 未登録or既に装備中の部位は除外
       .map(id => fetch('https://donguri.5ch.io/equip/' + id));
 
     stat.textContent = '装備中...';
@@ -2603,10 +2600,6 @@
       capitalAttack: [
         '再建が必要です。'
       ],
-      onemoretime: [
-        'この場所には首都を建設できません（水で隣接が不足）',
-        'もう一度バトルに参加する前に、待たなければなりません。'
-      ],
       breaktime: [
         'チームに参加または離脱してから間もないため、次のバトルが始まるまでお待ちください。',
         'ng: ちょっとゆっくり'
@@ -2672,30 +2665,10 @@
         return;
       }
 
-    if (location.href.includes('/teambattle?m=rb')) {
-        try {
-          const res = await fetch(`/teambattle?m=rb&t=${Date.now()}`, { cache: 'no-store' });
-          if (res.ok) {
-            const text = await res.text();
-            const doc = new DOMParser().parseFromString(text, 'text/html');
-            const target = Array.from(doc.querySelectorAll('header span')).find(s => s.textContent.includes('チーム:'));
-            if (target) {
-              const raw = target.textContent;
-              if (raw.includes('レッド')) {
-                teamName = 'レッド';
-                teamColor = 'd32f2f';
-              } else if (raw.includes('ブルー')) {
-                teamName = 'ブルー';
-                teamColor = '1976d2';
-              }
-            }
-          }
-        } catch (e) { console.error(e); }
-      }
-
       let regions = await getRegions();
       const excludeSet = new Set();
       let loop = 0;
+      let gets = 0;
 
       let cellType;
       if (regions.nonAdjacent.length > 0) {
@@ -2765,10 +2738,20 @@
                   i++;
                 }
               }
-            } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
-              if (cellType === 'onceMore' && text.includes('新しいアリーナリーダー')) {
-                  cellType = 'teamAdjacent';
+            } else if(cellType === 'participation') {
+              if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
+                loop += 1;
+                gets += 1;
+                sleepTime = 1.5;
+                message = '(' + loop + '発目) '+ lastLine;
+                cellType = 'teamAdjacent';
+                processType = 'reload';
+              } else {
+                message = lastLine;
+                processType = 'reload';
               }
+              i++;
+            } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
               if (isMorning) {
                 if (loop < maxloop){
                   loop += 1;
@@ -2802,12 +2785,6 @@
                   i++;
                 }
               }
-            } else if (messageType === 'onemoretime') {
-              sleepTime = 90;
-              excludeSet.delete(region.join(','));
-              message = lastLine;
-              cellType = 'onceMore';
-              processType = 'reload';
             } else if (messageType === 'breaktime') {
               success = true;
               message = lastLine;
@@ -2910,37 +2887,21 @@
             }
 
             if (success) {
-              if (location.href.includes('/teambattle?m=rb')) {
-                if (currentProgress < 16) {
-                  nextProgress = 19;
-                } else if (currentProgress < 33) {
-                  nextProgress = 36;
-                } else if (currentProgress < 50) {
+              if (isMorning) {
+                if (currentProgress < 50) {
                   nextProgress = 52;
-                } else if (currentProgress < 66) {
-                  nextProgress = 69;
-                } else if (currentProgress < 83) {
-                  nextProgress = 86;
                 } else {
                   nextProgress = 2;
                 }
               } else {
-                if (isMorning) {
-                  if (currentProgress < 50) {
-                    nextProgress = 52;
-                  } else {
-                    nextProgress = 2;
-                  }
+                if (currentProgress < 25) {
+                  nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
+                } else if (currentProgress < 50) {
+                  nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
+                } else if (currentProgress < 75) {
+                  nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
                 } else {
-                  if (currentProgress < 25) {
-                    nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
-                  } else if (currentProgress < 50) {
-                    nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
-                  } else if (currentProgress < 75) {
-                    nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
-                  } else {
-                    nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
-                  }
+                  nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
                 }
               }
               next = `→ ${nextProgress}±1%`;
@@ -3010,42 +2971,29 @@
         }
 
         if (!success && regions[cellType].length === 0) {
-          if (location.href.includes('/teambattle?m=rb')) {
-            if (currentProgress < 16) {
-               nextProgress = 19;
-            } else if (currentProgress < 33) {
-               nextProgress = 36;
-            } else if (currentProgress < 50) {
+          if (cellType !== 'participation' && gets === 0) {
+            cellType = 'participation';
+            regions = await getRegions();
+            continue;
+          } else if (isMorning) {
+            if (currentProgress < 50) {
               nextProgress = 52;
-            } else if (currentProgress < 66) {
-               nextProgress = 69;
-            } else if (currentProgress < 83) {
-               nextProgress = 86;
             } else {
-               nextProgress = 2;
+              nextProgress = 2;
             }
           } else {
-            if (isMorning) {
-              if (currentProgress < 50) {
-                nextProgress = 52;
-              } else {
-                nextProgress = 2;
-              }
+            if (currentProgress < 25) {
+              nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
+            } else if (currentProgress < 50) {
+              nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
+            } else if (currentProgress < 75) {
+              nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
             } else {
-              if (currentProgress < 25) {
-                nextProgress = Math.floor(Math.random() * 8) + 31; // 31~38 -2~+1
-              } else if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 8) + 65; // 65~72 -2~+1
-              } else if (currentProgress < 75) {
-                nextProgress = Math.floor(Math.random() * 8) + 81; // 81~88 -2~+1
-              } else {
-                nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
-              }
+              nextProgress = Math.floor(Math.random() * 8) + 15; // 15~22 -2~+1
             }
           }
           const next = `→ ${nextProgress}±1%`;
           isAutoJoinRunning = false;
-          //loop += 1;
           logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。(計' + loop + '発)', next);
           return;
         }
@@ -3157,9 +3105,9 @@
           return mapEdgeSet.has(key) && !capitalSet.has(key);
         })
 
-        const onceMoreCells = nonAdjacentCells.filter(([r, c]) => {
+        const participationCells = cells.filter(([r, c]) => {
           const key = `${r}-${c}`;
-          return key in cellColors && !teamColorSet.has(key);
+          return teamColorSet.has(key) && !capitalSet.has(key);
         });
 
         function shuffle(arr) {
@@ -3181,7 +3129,7 @@
             capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
             teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
             mapEdge: shuffle(filteredCells(mapEdgeCells)),
-            onceMore: shuffle(filteredCells(onceMoreCells))
+            participation: shuffle(participationCells)
           };
           return regions;
         } else {
@@ -3190,7 +3138,7 @@
             capitalAdjacent: shuffle(capitalAdjacentCells),
             teamAdjacent: shuffle(teamAdjacentCells),
             mapEdge: shuffle(mapEdgeCells),
-            onceMore: shuffle(onceMoreCells)
+            participation: shuffle(participationCells)
           };
           return regions;
         }
@@ -3201,7 +3149,7 @@
           capitalAdjacent: [],
           teamAdjacent: [],
           mapEdge: [],
-          onceMore: []
+          participation: []
         };
       }
     }
@@ -3279,32 +3227,15 @@
       currentProgress = parseInt(container.lastElementChild.textContent);
       let str,min,totalSec,sec,margin;
 
-      if (currentProgress === 0 || currentProgress === 50 || (location.href.includes('/teambattle?m=rb') && (currentProgress === 16 || currentProgress === 33 || currentProgress === 66 || currentProgress === 83))) {
-        str = '（マップ更新）';
+      if (currentProgress === 0 || currentProgress === 50) {
+        str = '（マップ更新時）';
       } else {
         if (currentProgress === 100) {
           min = 0;
           sec = 20;
           margin = 10;
         } else {
-          if (location.href.includes('/teambattle?m=rb')) {
-             if (currentProgress <= 16) {
-               totalSec = (16 - currentProgress) * 600 / 16.6;
-             } else if (currentProgress <= 33) {
-               totalSec = (33 - currentProgress) * 600 / 16.6;
-             } else if (currentProgress <= 50) {
-               totalSec = (50 - currentProgress) * 600 / 16.6;
-             } else if (currentProgress <= 66) {
-               totalSec = (66 - currentProgress) * 600 / 16.6;
-             } else if (currentProgress <= 83) {
-               totalSec = (83 - currentProgress) * 600 / 16.6;
-             } else if (currentProgress <= 100) {
-               totalSec = (100 - currentProgress) * 600 / 16.6;
-             }
-          } else {
           totalSec = (currentProgress < 50) ? (50 - currentProgress) * 36 : (100 - currentProgress) * 36 + 10;
-          }
-          totalSec = Math.floor(totalSec);
           min = Math.trunc(totalSec / 60);
           sec = totalSec % 60;
           margin = 20;
