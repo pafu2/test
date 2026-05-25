@@ -2835,11 +2835,11 @@
           }
         }
 
-        if (!success && regions[cellType].length === 0 && cellType !== 'participation') {
-            cellType = 'participation';
-            regions = await getRegions();
-            continue;
-        }
+//        if (!success && regions[cellType].length === 0 && cellType !== 'participation') {
+//            cellType = 'participation';
+//            regions = await getRegions();
+//            continue;
+//        }
 
         if (!success && regions[cellType].length === 0) {
             if (currentProgress < 50) {
