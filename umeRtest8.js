@@ -2686,7 +2686,7 @@
               if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
                 loop += 1;
                 gets += 1;
-                sleepTime = 0.7;
+                sleepTime = 1.5;
                 message = '(' + loop + '発目) '+ lastLine;
                 cellType = 'teamAdjacent';
                 processType = 'reload';
