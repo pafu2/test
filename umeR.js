@@ -2698,6 +2698,7 @@
             } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
               if (loop < 255){
                 loop += 1;
+                gets += 1;
                 sleepTime = 0.7;
                 message = '(' + loop + '発目) '+ lastLine;
                 processType = 'reload';
