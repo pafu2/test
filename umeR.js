@@ -2630,7 +2630,7 @@
       let regions = await getRegions();
       const excludeSet = new Set();
       let loop = 0;
-      let gets = 0;
+      let shot = false;
 
       let cellType;
       if (regions.nonAdjacent.length > 0) {
@@ -2685,7 +2685,7 @@
             } else if(cellType === 'participation') {
               if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
                 loop += 1;
-                gets += 1;
+                shot = true;
                 sleepTime = 1.5;
                 message = '(' + loop + '発目) '+ lastLine;
                 cellType = 'teamAdjacent';
@@ -2698,7 +2698,7 @@
             } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
               if (loop < 255){
                 loop += 1;
-                gets += 1;
+                shot = true;
                 sleepTime = 0.7;
                 message = '(' + loop + '発目) '+ lastLine;
                 processType = 'reload';
@@ -2851,7 +2851,7 @@
         }
 
         if (!success && regions[cellType].length === 0) {
-          if(cellType !== 'participation' && gets === 0) {
+          if (cellType !== 'participation' && !shot) {
             cellType = 'participation';
             regions = await getRegions();
             continue;
