@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RBtest2
-// @version      1.2.2d改 Red vs Blue 03/23版
+// @version      1.2.2d改 Red vs Blue 04/04版
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
@@ -1913,7 +1913,7 @@
 
       const terrainData = {};
       try {
-        const terrainMatch = allScripts.match(/const terrainsPayload\s*=\s*({.+?});/s);
+        const terrainMatch = allScripts.match(/(?:const|let)\s+terrainsPayload\s*=\s*({[\s\S]+?});/);
         if (terrainMatch) {
           const payload = JSON.parse(terrainMatch[1]);
           if (payload.terrains && Array.isArray(payload.terrains)) {
@@ -2762,7 +2762,7 @@
               message = '[成功] (' + loop + '発目) '+ lastLine;
               processType = 'return';
             } else if (messageType === 'avatarAdjacent') {
-              if (loop < 3) {
+              if (loop < 4) {
                 loop += 1;
                 sleepTime = 1;
                 message = '(' + loop + '発目) '+ lastLine;
@@ -2822,17 +2822,17 @@
 
             if (success) {
               if (currentProgress < 16) {
-                nextProgress = Math.floor(Math.random() * 7) + 21;//23～29±1
+                nextProgress = 19;
                } else if (currentProgress < 33) {
-                nextProgress = Math.floor(Math.random() * 7) + 38;//40～46±1
+                nextProgress = 36;
                } else if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 7) + 54;//56～62±1
+                nextProgress = 52;
                } else if (currentProgress < 66) {
-                nextProgress = Math.floor(Math.random() * 7) + 71;//73～79±1
+                nextProgress = 69;
                } else if (currentProgress < 83) {
-                nextProgress = Math.floor(Math.random() * 7) + 88;//90～96±1
+                nextProgress = 86;
                } else {
-                nextProgress = Math.floor(Math.random() * 7) + 4;//6～12±1
+                nextProgress = 2;
                }
               next = `→ ${nextProgress}±1%`;
               isAutoJoinRunning = false;
@@ -2899,17 +2899,17 @@
         }
         if (!success && regions[cellType].length === 0) {
               if (currentProgress < 16) {
-                nextProgress = Math.floor(Math.random() * 7) + 21;//23～29±1
+                nextProgress = 19;
                } else if (currentProgress < 33) {
-                nextProgress = Math.floor(Math.random() * 7) + 38;//40～46±1
+                nextProgress = 36;
                } else if (currentProgress < 50) {
-                nextProgress = Math.floor(Math.random() * 7) + 54;//56～62±1
+                nextProgress = 52;
                } else if (currentProgress < 66) {
-                nextProgress = Math.floor(Math.random() * 7) + 71;//73～79±1
+                nextProgress = 69;
                } else if (currentProgress < 83) {
-                nextProgress = Math.floor(Math.random() * 7) + 88;//90～96±1
+                nextProgress = 86;
                } else {
-                nextProgress = Math.floor(Math.random() * 7) + 4;//6～12±1
+                nextProgress = 2;
                }
           const next = `→ ${nextProgress}±1%`;
           isAutoJoinRunning = false;
@@ -2934,11 +2934,11 @@
         let cellColors, capitalMap, rows, cols;
         const waterSet = new Set();
 
-        const cellColorsMatch = scriptContent.match(/const\s+cellColors\s*=\s*({[\s\S]+?});/);
+        const cellColorsMatch = scriptContent.match(/(?:const|let)\s+cellColors\s*=\s*({[\s\S]+?});/);
         const validJsonStr = cellColorsMatch[1].replace(/'/g, '"').replace(/,\s*}/, '}');
         cellColors = JSON.parse(validJsonStr);
 
-        const capitalListMatch = scriptContent.match(/const\s+capitalList\s*=\s*(\[[\s\S]*?\]);/);
+        const capitalListMatch = scriptContent.match(/(?:const|let)\s+capitalList\s*=\s*(\[[\s\S]*?\]);/);
         capitalMap = JSON.parse(capitalListMatch[1]);
 
         const gridSizeMatch = scriptContent.match(/const\s+GRID_SIZE\s*=\s*(\d+);/);
@@ -2947,7 +2947,7 @@
         const avatarMatch = scriptContent.match(/window\.__AVATARS\s*=\s*({[\s\S]*?});/);
         const myAvatar = avatarMatch ? JSON.parse(avatarMatch[1]).myAvatar : null;
 
-        const terrainMatch = scriptContent.match(/const\s+terrainsPayload\s*=\s*({[\s\S]+?});/);
+        const terrainMatch = scriptContent.match(/(?:const|let)\s+terrainsPayload\s*=\s*({[\s\S]+?});/);
         if (terrainMatch && terrainMatch[1]) {
           const payload = JSON.parse(terrainMatch[1]);
           if (payload.terrains) {
