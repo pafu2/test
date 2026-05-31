@@ -2922,11 +2922,11 @@
         let cellColors, capitalMap, rows, cols;
         const waterSet = new Set();
 
-        const cellColorsMatch = scriptContent.match(/const\s+cellColors\s*=\s*({[\s\S]+?});/);
+        const cellColorsMatch = scriptContent.match(/(?:const|let)\s+cellColors\s*=\s*({[\s\S]+?});/);
         const validJsonStr = cellColorsMatch[1].replace(/'/g, '"').replace(/,\s*}/, '}');
         cellColors = JSON.parse(validJsonStr);
 
-        const capitalListMatch = scriptContent.match(/const\s+capitalList\s*=\s*(\[[\s\S]*?\]);/);
+        const capitalListMatch = scriptContent.match(/(?:const|let)\s+capitalList\s*=\s*(\[[\s\S]*?\]);/);
         capitalMap = JSON.parse(capitalListMatch[1]);
 
         const gridSizeMatch = scriptContent.match(/const\s+GRID_SIZE\s*=\s*(\d+);/);
@@ -2935,7 +2935,7 @@
         const avatarMatch = scriptContent.match(/window\.__AVATARS\s*=\s*({[\s\S]*?});/);
         const myAvatar = avatarMatch ? JSON.parse(avatarMatch[1]).myAvatar : null;
 
-        const terrainMatch = scriptContent.match(/const\s+terrainsPayload\s*=\s*({[\s\S]+?});/);
+        const terrainMatch = scriptContent.match(/(?:const|let)\s+terrainsPayload\s*=\s*({[\s\S]+?});/);
         if (terrainMatch && terrainMatch[1]) {
           const payload = JSON.parse(terrainMatch[1]);
           if (payload.terrains) {
