@@ -1913,7 +1913,7 @@
 
       const terrainData = {};
       try {
-        const terrainMatch = allScripts.match(/const terrainsPayload\s*=\s*({.+?});/s);
+        const terrainMatch = allScripts.match(/(?:const|let)\s+terrainsPayload\s*=\s*({[\s\S]+?});/);
         if (terrainMatch) {
           const payload = JSON.parse(terrainMatch[1]);
           if (payload.terrains && Array.isArray(payload.terrains)) {
