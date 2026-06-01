@@ -1951,7 +1951,7 @@
       const validJsonStr = cellColorsMatch[1].replace(/'/g, '"').replace(/,\s*}/g, '}');
       const cellColors = JSON.parse(validJsonStr);
 
-      const capMatch = allScripts.match(/const (?:capitalMap|capitalList)\s*=\s*(\[.*?\]);/s);
+      const capMatch = allScripts.match(/(?:const|let)\s+(?:capitalMap|capitalList)\s*=\s*(\[.*?\]);/s);
       const capitalMap = capMatch ? JSON.parse(capMatch[1]) : [];
 
       const gridSizeMatch = allScripts.match(/const GRID_SIZE\s*=\s*(\d+);/);
