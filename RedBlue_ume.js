@@ -1,6 +1,6 @@
-// ==UserScript==
+﻿// ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 Red vs Blue ume
+// @version      1.2.2d改 Red vs Blue 06/01版
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
@@ -118,6 +118,35 @@
   let shouldSkipAreaInfo, shouldSkipAutoEquip, cellSelectorActivate, rangeAttackProcessing,
     currentPeriod, currentProgress;
   let currentEquipName = '';
+
+  function getRBStage(progress) {
+    const p = Number(progress);
+    if (!Number.isFinite(p)) return null;
+    if (p <= 16) return 1;
+    if (p <= 33) return 2;
+    if (p <= 50) return 3;
+    if (p <= 66) return 4;
+    if (p <= 83) return 5;
+    return 6;
+  }
+
+  function getCurrentRBStage() {
+    if (!location.href.includes('/teambattle?m=rb')) return null;
+    return getRBStage(currentProgress);
+  }
+
+  function isRBStageRefreshProgress(progress) {
+    const p = Number(progress);
+    if (!Number.isFinite(p)) return false;
+    return p === 0 || p === 17 || p === 34 || p === 51 || p === 67 || p === 84;
+  }
+
+  function normalizeEquipIds(ids) {
+    return (Array.isArray(ids) ? ids : [])
+      .filter(id => id !== undefined && id !== null)
+      .map(id => String(id));
+  }
+
   (()=>{
     const button = document.createElement('button');
     button.type = 'button';
@@ -350,6 +379,9 @@
         closeButton.style.fontSize = '100%';
         closeButton.textContent = '自動参加モードを終了';
         closeButton.addEventListener('click', ()=>{
+          if (typeof window.__stopAutoJoinNow === 'function') {
+            window.__stopAutoJoinNow();
+          }
           autoJoinDialog.close();
         })
         //closeButton.autofocus = true; // inputへのオートフォーカス阻止
@@ -959,6 +991,8 @@
       number.style.height = '2em';
       number.style.width = '4em';
 
+      const mapSettings = container.cloneNode();
+      addHeader('マップ', mapSettings);
       const toolbar = container.cloneNode();
       addHeader('toolbar', toolbar);
       const arenaResult = container.cloneNode();
@@ -973,6 +1007,15 @@
       addHeader('装備パネル', equipPanel);
 
       const settingItems = {
+        mapPosition: {
+          text: 'マップ位置:',
+          type: 'select',
+          options: {
+            center: '中央寄せ',
+            left: '左寄せ'
+          },
+         parent: mapSettings
+       },
         toolbarPosition: {
           text: '位置:',
           type: 'select',
@@ -1118,7 +1161,7 @@
         }
       })
 
-      settingsMenu.append(toolbar, arenaResult, arenaField, settingsPanel, equipPanel);
+      settingsMenu.append(mapSettings, toolbar, arenaResult, arenaField, settingsPanel, equipPanel);
       refreshSettings();
     })();
 
@@ -1129,7 +1172,7 @@
     (()=>{
       const link = document.createElement('a');
       link.style.color = '#333';
-      link.textContent = '1.2.2d改 Red vs Blue ume';
+      link.textContent = '1.2.2d改 Red vs Blue';
       footer.append(link);
     })();
 
@@ -1545,7 +1588,7 @@
     p.style.height = '28px';
 
     const equipSwitchButton = button.cloneNode();
-    equipSwitchButton.textContent = '▶武器';
+    equipSwitchButton.textContent = '?武器';
     equipSwitchButton.style.width = '4em';
     equipSwitchButton.style.height = '42px';
     equipSwitchButton.style.fontSize = '';
@@ -1556,17 +1599,17 @@
         weaponTable.style.display = 'none';
         armorTable.style.display = '';
         necklaceTable.style.display = 'none';
-        event.target.textContent = '▶防具';
+        event.target.textContent = '?防具';
       } else if (!armorTable.style.display) {
         weaponTable.style.display = 'none';
         armorTable.style.display = 'none';
         necklaceTable.style.display = '';
-        event.target.textContent = '▶首';
+        event.target.textContent = '?首';
       } else if (!necklaceTable.style.display) {
         weaponTable.style.display = '';
         armorTable.style.display = 'none';
         necklaceTable.style.display = 'none';
-        event.target.textContent = '▶武器';
+        event.target.textContent = '?武器';
       }
     });
 
@@ -1694,7 +1737,7 @@
         }
       }
 
-      equipSwitchButton.textContent = '▶武器';
+      equipSwitchButton.textContent = '?武器';
       weaponTable.style.display = '';
       armorTable.style.display = 'none';
       necklaceTable.style.display = 'none';
@@ -1814,45 +1857,63 @@
     }
   })();
   //-- ここまで --//
-  async function setPresetItems (presetName) {
-    let currentEquip = JSON.parse(localStorage.getItem('current_equip')) || [];
+  async function setPresetItems (presetName, options = {}) {
+    const { force = false } = options;
     const stat = document.querySelector('.equip-preset-stat');
-    if (stat.textContent === '装備中...') return;
     const equipPresets = JSON.parse(localStorage.getItem('equipPresets')) || {};
-    const fetchPromises = equipPresets[presetName].id
-      .filter(id => id !== undefined && id !== null && !currentEquip.includes(id)) // 未登録or既に装備中の部位は除外
-      .map(id => fetch('https://donguri.5ch.io/equip/' + id));
+    const preset = equipPresets[presetName];
 
-    stat.textContent = '装備中...';
+    if (!preset || !Array.isArray(preset.id)) {
+      throw new Error(`装備プリセットが見つかりません: ${presetName}`);
+    }
+
+    const targetIds = normalizeEquipIds(preset.id);
+    const currentIds = normalizeEquipIds(JSON.parse(localStorage.getItem('current_equip')) || []);
+
+    if (!force && currentEquipName === presetName && JSON.stringify(targetIds) === JSON.stringify(currentIds)) {
+      if (stat) stat.textContent = '維持: ' + presetName;
+      return presetName;
+    }
+
+    if (!force && stat && stat.textContent === '装備中...') {
+      return currentEquipName || null;
+    }
+
+    if (stat) stat.textContent = '装備中...';
+
     try {
-      const responses = await Promise.all(fetchPromises);
-      const texts = await Promise.all(
-        responses.map(async response => {
-          if (!response.ok) {
-            throw new Error(`[${response.status}] /equip/`);
-          }
-          return response.text();
-        })
-      );
+      for (const id of targetIds) {
+        const response = await fetch('https://donguri.5ch.io/equip/' + id);
+        if (!response.ok) {
+          throw new Error(`[${response.status}] /equip/`);
+        }
 
-      if(texts.includes('どんぐりが見つかりませんでした。')) {
-        throw new Error('再ログインしてください');
-      } else if(texts.includes('アイテムが見つかりませんでした。')) {
-        throw new Error('アイテムが見つかりませんでした');
+        const text = await response.text();
+
+        if (text.includes('どんぐりが見つかりませんでした。')) {
+          throw new Error('再ログインしてください');
+        } else if (text.includes('アイテムが見つかりませんでした。')) {
+          throw new Error('アイテムが見つかりませんでした');
+        }
+
+        const doc = new DOMParser().parseFromString(text, 'text/html');
+        const title = doc.querySelector('h1')?.textContent;
+        if (title === 'どんぐり基地') {
+          throw new Error('再ログインしてください');
+        } else if (title !== 'アイテムバッグ') {
+          throw new Error('装備エラー');
+        }
+
+        await sleep(300);
       }
 
-      const docs = texts.map(text => new DOMParser().parseFromString(text,'text/html'));
-      const titles = docs.map(doc => doc.querySelector('h1')?.textContent);
-      if(titles.includes('どんぐり基地')) {
-        throw new Error('再ログインしてください');
-      } else if (!titles.every(title => title === 'アイテムバッグ')) {
-        throw new Error('装備エラー');
-      }
-      stat.textContent = '完了: ' + presetName;
-      localStorage.setItem('current_equip', JSON.stringify(equipPresets[presetName].id));
+      localStorage.setItem('current_equip', JSON.stringify(targetIds));
       currentEquipName = presetName;
+      if (stat) stat.textContent = '完了: ' + presetName;
+      return presetName;
     } catch (e) {
-      stat.textContent = e;
+      if (stat) stat.textContent = String(e);
+      currentEquipName = '';
       localStorage.removeItem('current_equip');
       throw e;
     }
@@ -1897,9 +1958,12 @@
       const rows = gridSizeMatch ? Number(gridSizeMatch[1]) : 5;
       const cols = rows;
 
+      const avatarMatch = allScripts.match(/window\.__AVATARS\s*=\s*({[\s\S]*?});/);
+      const myAvatar = avatarMatch ? JSON.parse(avatarMatch[1]).myAvatar : null;
+
       const terrainData = {};
       try {
-        const terrainMatch = allScripts.match(/const terrainsPayload\s*=\s*({.+?});/s);
+        const terrainMatch = allScripts.match(/(?:const|let)\s+terrainsPayload\s*=\s*({[\s\S]+?});/);
         if (terrainMatch) {
           const payload = JSON.parse(terrainMatch[1]);
           if (payload.terrains && Array.isArray(payload.terrains)) {
@@ -1920,7 +1984,7 @@
       grid.style.gridTemplateRows = `repeat(${rows}, 35px)`;
       grid.style.gridTemplateColumns = `repeat(${cols}, 35px)`;
       grid.style.gap = '2px';
-      grid.style.justifyContent = 'center';
+      grid.style.justifyContent = settings.mapPosition === 'left' ? 'start' : 'center';
       grid.style.position = 'relative';
 
       grid.style.maxWidth = '100%';
@@ -1953,6 +2017,9 @@
               cell.style.outline = 'black solid 2px';
               cell.style.borderColor = 'gold';
             }
+            if (myAvatar && Number(myAvatar.row) === i && Number(myAvatar.col) === j) {
+              cell.style.outline = '3px solid yellow';
+            }
             grid.appendChild(cell);
             refreshedCells.push(cell);
           }
@@ -1976,6 +2043,9 @@
             refreshedCells.push(cell);
           }
           cell.style.outline = includesCoord(capitalMap, row, col) ? 'black solid 2px' : '';
+          if (myAvatar && Number(myAvatar.row) === Number(row) && Number(myAvatar.col) === Number(col)) {
+            cell.style.outline = '3px solid yellow';
+          }
         });
       }
 
@@ -2008,7 +2078,7 @@
       grid.parentNode.style.height = null;
       grid.parentNode.style.padding = '20px 0';
       grid.parentNode.style.maxWidth = '100%';
-      //grid.parentNode.style.overflowX = 'auto';
+      grid.parentNode.style.overflowX = settings.mapPosition === 'left' ? 'auto' : '';
     }
 
     const cells = grid ? grid.querySelectorAll('.cell') : [];
@@ -2137,7 +2207,7 @@
       })
     })
     const editEndButton = button.cloneNode();
-    editEndButton.textContent = '✓';
+    editEndButton.textContent = '?';
     editEndButton.style.display = 'none';
     editEndButton.addEventListener('click', ()=>{
       editButton.style.display = '';
@@ -2396,7 +2466,7 @@
       }, 0);
       arenaResult.style.display = '';
 
-      if (lastLine === 'リーダーになった' || lastLine.includes('は新しいアリーナリーダーです。')) {
+      if (lastLine === 'リーダーになった' || lastLine === 'この場所を占領しました。' || lastLine.includes('は新しいアリーナリーダーです。')) {
         if (!settings.teamColor) return;
         const cell = document.querySelector(`div[data-row="${row}"][data-col="${col}"]`);
         cell.style.background = '#' + settings.teamColor;
@@ -2558,6 +2628,7 @@
 
   let autoJoinIntervalId;
   let isAutoJoinRunning = false;
+  let lastAutoJoinStatusKey = '';
   const sleep = s => new Promise(r=>setTimeout(r,s));
   async function autoJoin() {
     const dialog = document.querySelector('.auto-join');
@@ -2602,10 +2673,13 @@
       logArea.prepend(div);
     }
 
+    function logAutoJoinGuideOnce(key, message, region = null, extra = '') {
+      if (lastAutoJoinGuideKey === key) return;
+      lastAutoJoinGuideKey = key;
+      logMessage(region, message, extra);
+    }
+
     const messageTypes = {
-      capitalAttack: [
-        '再建が必要です。'
-      ],
       breaktime: [
         'チームに参加または離脱してから間もないため、次のバトルが始まるまでお待ちください。',
         'もう一度バトルに参加する前に、待たなければなりません。',
@@ -2637,11 +2711,13 @@
         '参加するには、装備中の武器と防具のアイテムID'
       ],
       nonAdjacent: [
+        'この場所には首都を建設できません（水で隣接が不足）',
         'このタイルは攻撃できません。水タイルは占領できません。',
         'このタイルは攻撃できません。あなたのチームが首都を持つまで、どの首都にも隣接するタイルを主張することはできません。',
         'あなたのチームは首都を持っていないため、他のチームの首都に攻撃できません。'
       ],
       teamAdjacent: [
+        'このタイルには移動または攻撃できません。現在位置に隣接するタイルのみ選択できます。',
         'このタイルは攻撃できません。あなたのチームの制御領土に隣接していなければなりません。',
         'このタイルは攻撃できません。首都を奪取するには、隣接タイルを少なくとも3つ支配している必要があります。',
         'このタイルは攻撃できません。首都を奪取するには、隣接タイルを少なくとも2つ支配している必要があります。',
@@ -2655,441 +2731,490 @@
       mapEdge: [
         'このタイルは攻撃できません。混雑したマップでは、初期主張はマップの端でなければなりません。'
       ]
-    }
+    };
 
-    function getMessageType (text) {
+    function getMessageType(text) {
       const result = Object.keys(messageTypes)
         .find(key => messageTypes[key]
           .some(v => text.includes(v))
-        )
+        );
       return result;
     }
 
+    function pickNextProgress() {
+      if (currentProgress < 16) {
+        return Math.floor(Math.random() * 7) + 23;
+      } else if (currentProgress < 33) {
+        return Math.floor(Math.random() * 7) + 40;
+      } else if (currentProgress < 50) {
+        return Math.floor(Math.random() * 7) + 56;
+      } else if (currentProgress < 66) {
+        return Math.floor(Math.random() * 7) + 73;
+      } else if (currentProgress < 83) {
+        return Math.floor(Math.random() * 7) + 90;
+      }
+      return Math.floor(Math.random() * 7) + 6;
+    }
+
+    function keyOf(r, c) {
+      return `${r}-${c}`;
+    }
+
+    function orthNeighbors(state, rc) {
+      const out = [];
+      const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
+      for (const [dr, dc] of dirs) {
+        const nr = rc.r + dr;
+        const nc = rc.c + dc;
+        if (nr >= 0 && nr < state.rows && nc >= 0 && nc < state.cols) {
+          out.push({ r: nr, c: nc });
+        }
+      }
+      return out;
+    }
+
+    function isExplorable(state, r, c) {
+      if (!state.hasCapital) return true;
+      return state.exploredSet.has(keyOf(r, c));
+    }
+
+    function teamAt(state, r, c) {
+      return state.teamMap[keyOf(r, c)] || 0;
+    }
+
+    function isWater(state, r, c) {
+      return state.waterSet.has(keyOf(r, c));
+    }
+
+    function isFriendly(state, r, c) {
+      return teamAt(state, r, c) === state.myTeamCode;
+    }
+
+    function isEnemy(state, r, c) {
+      const t = teamAt(state, r, c);
+      return state.myTeamCode !== 0 && t !== 0 && t !== state.myTeamCode;
+    }
+
+    function isEmpty(state, r, c) {
+      return teamAt(state, r, c) === 0;
+    }
+
+    function canStepOn(state, r, c) {
+      if (!isExplorable(state, r, c)) return false;
+      if (isWater(state, r, c)) return false;
+      return isFriendly(state, r, c) || isEmpty(state, r, c);
+    }
+
+    function findOwnCapital(state) {
+      for (const [r, c] of state.capitalList) {
+        if (isFriendly(state, r, c)) return { r, c };
+      }
+      for (const [r, c] of state.capitalList) {
+        const friendlyAdj = orthNeighbors(state, { r, c }).filter(n => isFriendly(state, n.r, n.c)).length;
+        if (friendlyAdj > 0) return { r, c };
+      }
+      return state.capitalList[0] ? { r: state.capitalList[0][0], c: state.capitalList[0][1] } : null;
+    }
+
+    function currentPos(state) {
+      if (state.myAvatar) return { r: state.myAvatar.r, c: state.myAvatar.c };
+      return null;
+    }
+
+    function isCapitalTile(state, r, c) {
+      return state.capitalList.some(([cr, cc]) => cr === r && cc === c);
+    }
+
+    function collectCapitalCollapseEmptyCells(state, capitalCoord) {
+      const q = [{ r: capitalCoord.r, c: capitalCoord.c }];
+      const seen = new Set([keyOf(capitalCoord.r, capitalCoord.c)]);
+      const out = [];
+      const outSet = new Set();
+
+      while (q.length > 0) {
+        const cur = q.shift();
+
+        for (const nxt of orthNeighbors(state, cur)) {
+          const nk = keyOf(nxt.r, nxt.c);
+          if (seen.has(nk)) continue;
+          seen.add(nk);
+
+          if (!isExplorable(state, nxt.r, nxt.c)) continue;
+          if (isWater(state, nxt.r, nxt.c)) continue;
+          if (isEnemy(state, nxt.r, nxt.c)) continue;
+
+          if (isEmpty(state, nxt.r, nxt.c)) {
+            if (!outSet.has(nk)) {
+              outSet.add(nk);
+              out.push({ r: nxt.r, c: nxt.c });
+            }
+          }
+
+          q.push(nxt);
+        }
+      }
+
+      return out;
+    }
+
+    function reconstructPath(parentMap, goalKey) {
+      const path = [];
+      let curKey = goalKey;
+      while (curKey) {
+        const [r, c] = curKey.split('-').map(Number);
+        path.push({ r, c });
+        curKey = parentMap.get(curKey) || null;
+      }
+      path.reverse();
+      return path;
+    }
+
+    function bfsToPriorityEmpty(state, start) {
+      const priorityEmptyCells = Array.isArray(state.priorityEmptyCells) ? state.priorityEmptyCells : [];
+      const prioritySet = new Set(
+        priorityEmptyCells
+          .filter(v => v && Number.isInteger(v.r) && Number.isInteger(v.c))
+          .map(v => keyOf(v.r, v.c))
+      );
+
+      if (!prioritySet.size) return null;
+
+      const q = [start];
+      const seen = new Set([keyOf(start.r, start.c)]);
+      const parent = new Map();
+
+      while (q.length > 0) {
+        const cur = q.shift();
+        const curKey = keyOf(cur.r, cur.c);
+
+        if (
+          !(cur.r === start.r && cur.c === start.c) &&
+          prioritySet.has(curKey) &&
+          isEmpty(state, cur.r, cur.c)
+        ) {
+          return reconstructPath(parent, curKey);
+        }
+
+        for (const nxt of orthNeighbors(state, cur)) {
+          const nk = keyOf(nxt.r, nxt.c);
+          if (seen.has(nk)) continue;
+          if (!canStepOn(state, nxt.r, nxt.c)) continue;
+          seen.add(nk);
+          parent.set(nk, curKey);
+          q.push(nxt);
+        }
+      }
+
+      return null;
+    }
+
+    function bfsToNearestEmpty(state, start) {
+      const q = [start];
+      const seen = new Set([keyOf(start.r, start.c)]);
+      const parent = new Map();
+      while (q.length > 0) {
+        const cur = q.shift();
+        const curKey = keyOf(cur.r, cur.c);
+        if (!(cur.r === start.r && cur.c === start.c) && isEmpty(state, cur.r, cur.c)) {
+          return reconstructPath(parent, curKey);
+        }
+        for (const nxt of orthNeighbors(state, cur)) {
+          const nk = keyOf(nxt.r, nxt.c);
+          if (seen.has(nk)) continue;
+          if (!canStepOn(state, nxt.r, nxt.c)) continue;
+          seen.add(nk);
+          parent.set(nk, curKey);
+          q.push(nxt);
+        }
+      }
+      return null;
+    }
+
+    function canAttackEnemyCapital(state, r, c) {
+      if (!isCapitalTile(state, r, c)) return true;
+
+      const neighbors = orthNeighbors(state, { r, c });
+      const requiredFriendlyCount = Math.max(1, neighbors.length - 1);
+      const friendlyAdjCount = neighbors.filter(n => isFriendly(state, n.r, n.c)).length;
+
+      return friendlyAdjCount >= requiredFriendlyCount;
+    }
+
+    function bfsToEnemyFrontier(state, start) {
+      const q = [start];
+      const seen = new Set([keyOf(start.r, start.c)]);
+      const parent = new Map();
+      while (q.length > 0) {
+        const cur = q.shift();
+        const curKey = keyOf(cur.r, cur.c);
+        for (const nxt of orthNeighbors(state, cur)) {
+          if (!isExplorable(state, nxt.r, nxt.c)) continue;
+          if (isWater(state, nxt.r, nxt.c)) continue;
+          if (!isEnemy(state, nxt.r, nxt.c)) continue;
+
+          if (isCapitalTile(state, nxt.r, nxt.c) && !canAttackEnemyCapital(state, nxt.r, nxt.c)) {
+            continue;
+          }
+
+          const basePath = reconstructPath(parent, curKey);
+          basePath.push({ r: nxt.r, c: nxt.c });
+          return basePath;
+        }
+        for (const nxt of orthNeighbors(state, cur)) {
+          const nk = keyOf(nxt.r, nxt.c);
+          if (seen.has(nk)) continue;
+          if (!canStepOn(state, nxt.r, nxt.c)) continue;
+          seen.add(nk);
+          parent.set(nk, curKey);
+          q.push(nxt);
+        }
+      }
+      return null;
+    }
+
+    async function fetchBattleState() {
+      const url = `/teambattle?${MODE}&t=${Date.now()}`;
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`[${res.status}] ${url}`);
+      const text = await res.text();
+      const doc = new DOMParser().parseFromString(text, 'text/html');
+      const headerText = doc?.querySelector('header')?.textContent || '';
+      if (!headerText.includes('どんぐりチーム戦い')) throw new Error('title.ng info');
+
+      const scripts = doc.querySelectorAll('.gridCanvasOuter script');
+      const scriptContent = Array.from(scripts).map(s => s.textContent).join('\n');
+
+      const gridSizeMatch = scriptContent.match(/const\s+GRID_SIZE\s*=\s*(\d+);/);
+      const rows = gridSizeMatch ? Number(gridSizeMatch[1]) : 0;
+      const cols = rows;
+
+      let cellColors = {};
+      const cellColorsMatch = scriptContent.match(/(?:const|let)\s+cellColors\s*=\s*({[\s\S]+?});/);
+      if (cellColorsMatch && cellColorsMatch[1]) {
+        const validJsonStr = cellColorsMatch[1].replace(/'/g, '"').replace(/,\s*}/g, '}');
+        cellColors = JSON.parse(validJsonStr);
+      }
+
+      let capitalList = [];
+      const capitalListMatch = scriptContent.match(/(?:const|let)\s+capitalList\s*=\s*(\[[\s\S]*?\]);/);
+      if (capitalListMatch && capitalListMatch[1]) {
+        capitalList = JSON.parse(capitalListMatch[1]);
+      }
+
+      const waterSet = new Set();
+      const terrainMatch = scriptContent.match(/(?:const|let)\s+terrainsPayload\s*=\s*({[\s\S]+?});/);
+      if (terrainMatch && terrainMatch[1]) {
+        const payload = JSON.parse(terrainMatch[1]);
+        if (Array.isArray(payload.terrains)) {
+          payload.terrains.forEach(item => {
+            const r = item.r ?? item.row ?? item.x;
+            const c = item.c ?? item.col ?? item.y;
+            if (item.t === 'w') waterSet.add(keyOf(r, c));
+          });
+        }
+      }
+
+      let hasCapital = false;
+      const exploredSet = new Set();
+      const fowMatch = scriptContent.match(/window\.__FOW\s*=\s*({[\s\S]+?});/);
+      if (fowMatch && fowMatch[1]) {
+        const fowData = JSON.parse(fowMatch[1]);
+        hasCapital = !!fowData.hasCapital;
+        if (Array.isArray(fowData.explored)) {
+          fowData.explored.forEach(([r, c]) => exploredSet.add(keyOf(r, c)));
+        }
+        if (Array.isArray(fowData.visible)) {
+          fowData.visible.forEach(([r, c]) => exploredSet.add(keyOf(r, c)));
+        }
+      }
+
+      const avatarsMatch = scriptContent.match(/window\.__AVATARS\s*=\s*({[\s\S]+?});/);
+      let avatars = null;
+      if (avatarsMatch && avatarsMatch[1]) {
+        avatars = JSON.parse(avatarsMatch[1]);
+      }
+
+      let headerTeamName = teamName;
+      let headerTeamColor = teamColor;
+      const target = Array.from(doc.querySelectorAll('header span')).find(s => s.textContent.includes('チーム:'));
+      if (target) {
+        const raw = target.textContent;
+        if (raw.includes('レッド')) {
+          headerTeamName = 'レッド';
+          headerTeamColor = 'd32f2f';
+        } else if (raw.includes('ブルー')) {
+          headerTeamName = 'ブルー';
+          headerTeamColor = '1976d2';
+        }
+      }
+      teamName = headerTeamName;
+      teamColor = headerTeamColor;
+
+      const myTeamCode = teamColor === 'd32f2f' ? 1 : (teamColor === '1976d2' ? 2 : 0);
+      const teamMap = Object.create(null);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const v = cellColors[keyOf(r, c)] || '';
+          const hex = String(v).replace('#', '');
+          if (hex === 'd32f2f') teamMap[keyOf(r, c)] = 1;
+          else if (hex === '1976d2') teamMap[keyOf(r, c)] = 2;
+          else teamMap[keyOf(r, c)] = 0;
+        }
+      }
+
+      let myAvatar = null;
+      if (avatars && avatars.myAvatar) {
+        const r = Number(avatars.myAvatar.row ?? avatars.myAvatar.r);
+        const c = Number(avatars.myAvatar.col ?? avatars.myAvatar.c);
+        if (Number.isFinite(r) && Number.isFinite(c)) {
+          myAvatar = { r, c };
+        }
+      }
+
+      return {
+        rows,
+        cols,
+        teamMap,
+        waterSet,
+        exploredSet,
+        capitalList,
+        myAvatar,
+        myTeamCode,
+        hasCapital,
+      };
+    }
+
+    function getAutoFortifyKey() {
+      const stage = location.href.includes('/teambattle?m=rb') ? (getCurrentRBStage() ?? '') : '';
+      return `${MODE}|${currentPeriod ?? ''}|${stage}`;
+    }
+
+    async function buildFortAt(state, region) {
+      const [r, c] = region;
+      const myTeam = state.myTeamCode === 1 ? 'red' : (state.myTeamCode === 2 ? 'blue' : '');
+      if (!myTeam) return [false, 'チーム情報を取得できません'];
+
+      const body = new URLSearchParams();
+      body.set('mode', MODE.replace(/^m=/, ''));
+      body.set('team', myTeam);
+      body.set('r', String(r));
+      body.set('c', String(c));
+      body.set('type', 'f');
+
+      try {
+        const resp = await fetch('/build', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Accept': 'application/json'
+          },
+          body: body.toString(),
+          credentials: 'same-origin'
+        });
+        const data = await resp.json().catch(() => ({ ok: false, error: 'server_error' }));
+
+        if (resp.ok && data && data.ok) {
+          return [true, '要塞を建設しました。'];
+        }
+        return [false, (data && data.error) ? String(data.error) : '建設に失敗しました'];
+      } catch (e) {
+        return [false, String(e)];
+      }
+    }
+
+    async function autoBuildFortsAroundCapital(state) {
+      let latestState = state || await fetchBattleState();
+      const ownCapital = findOwnCapital(latestState);
+      const fortifyKey = getAutoFortifyKey();
+
+      if (!ownCapital || !fortifyKey || lastAutoFortifyKey === fortifyKey) {
+        return {
+          stop: false,
+          state: latestState,
+          built: 0,
+          attempted: 0,
+          message: ''
+        };
+      }
+
+      const candidates = orthNeighbors(latestState, ownCapital)
+        .filter(v => isExplorable(latestState, v.r, v.c))
+        .filter(v => !isWater(latestState, v.r, v.c))
+        .filter(v => isFriendly(latestState, v.r, v.c));
+
+      if (!candidates.length) {
+        lastAutoFortifyKey = fortifyKey;
+        return {
+          stop: false,
+          state: latestState,
+          built: 0,
+          attempted: 0,
+          message: ''
+        };
+      }
+
+      let built = 0;
+      let attempted = 0;
+
+      for (const cell of candidates) {
+        if (autoJoinStopRequested) {
+          return {
+            acted: false,
+            stop: true,
+            keepWatching: false,
+            waitSeconds: 0,
+            message: '自動参加モードを停止しました。',
+            state: latestState
+          };
+        }
+
+        attempted += 1;
+        const [ok] = await buildFortAt(latestState, [cell.r, cell.c]);
+
+        if (ok) {
+          built += 1;
+          await sleep(700);
+          latestState = await fetchBattleState();
+        } else {
+          await sleep(200);
+        }
+      }
+
+      lastAutoFortifyKey = fortifyKey;
+
+      return {
+        stop: false,
+        state: latestState,
+        built,
+        attempted,
+        message: built > 0 ? `[要塞] 首都周囲に${built}マス建設しました。` : ''
+      };
+    }
 
     let nextProgress;
-    async function attackRegion () {
-      await drawProgressBar();
-      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 3) {
-        return;
-      }
 
-    if (location.href.includes('/teambattle?m=rb')) {
-        try {
-          const res = await fetch(`/teambattle?m=rb&t=${Date.now()}`, { cache: 'no-store' });
-          if (res.ok) {
-            const text = await res.text();
-            const doc = new DOMParser().parseFromString(text, 'text/html');
-            const target = Array.from(doc.querySelectorAll('header span')).find(s => s.textContent.includes('チーム:'));
-            if (target) {
-              const raw = target.textContent;
-              if (raw.includes('レッド')) {
-                teamName = 'レッド';
-                teamColor = 'd32f2f';
-              } else if (raw.includes('ブルー')) {
-                teamName = 'ブルー';
-                teamColor = '1976d2';
-              }
-            }
-          }
-        } catch (e) { console.error(e); }
-      }
-
-      let regions = await getRegions();
-      const excludeSet = new Set();
-      let loop = 0;
-
-      let cellType;
-      if (regions.nonAdjacent.length > 0) {
-        cellType = 'nonAdjacent';
-      } else if (regions.teamAdjacent.length > 0) {
-        cellType = 'teamAdjacent';
-      } else if (regions.capitalAdjacent.length > 0) {
-        cellType = 'capitalAdjacent';
-      } else {
-        cellType = 'mapEdge';
-      }
-
-      while(dialog.open) {
-        let success = false;
-        isAutoJoinRunning = true;
-
-        regions[cellType] = regions[cellType]
-          .filter(e => !excludeSet.has(e.join(',')));
-        for (let i = 0; i < regions[cellType].length;) {
-          const region = regions[cellType][i];
-          let errorCount = 0;
-          let next;
-          try {
-            const [cellRank, equipChangeStat] = await equipChange(region);
-            if (equipChangeStat === 'noEquip') {
-              excludeSet.add(region.join(','));
-              i++;
-              continue;
-            } else {
-              excludeSet.add(region.join(','));
-            }
-
-            const [ text, lastLine ] = await challenge(region);
-            const messageType = getMessageType(lastLine);
-            let message = lastLine;
-            let processType;
-            let sleepTime = 1;
-
-            if (messageType === 'capitalAttack') {
-              if (loop < 255){
-                loop += 1;
-                sleepTime = 1;
-                message = '(' + loop + '発目) '+ lastLine;
-                processType = 'continue';
-              } else {
-                loop += 1;
-                success = true;
-                message = '[打止] (' + loop + '発目) '+ lastLine;
-                processType = 'return';
-                i++;
-              }
-            } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
-              if (cellType === 'onceMore' && text.includes('新しいアリーナリーダー')) {
-                cellType = 'teamAdjacent';
-              }
-              if (loop < 255){
-                loop += 1;
-                sleepTime = 1;
-                message = '(' + loop + '発目) '+ lastLine;
-                processType = 'reload';
-              } else {
-                loop += 1;
-                success = true;
-                message = '[打止] (' + loop + '発目) '+ lastLine;
-                processType = 'return';
-              }
-              i++;
-            } else if (messageType === 'onemoretime') {
-              sleepTime = 90;
-              excludeSet.delete(region.join(','));
-              message = lastLine;
-              cellType = 'onceMore';
-              processType = 'reload';
-            } else if (messageType === 'breaktime') {
-              success = true;
-              message = lastLine;
-              processType = 'return';
-              i++;
-            } else if (messageType === 'toofast') {
-              sleepTime = 3;
-              processType = 'continue';
-            } else if (messageType === 'retry') {
-              sleepTime = 20;
-              processType = 'continue';
-            } else if (messageType === 'guardError') {
-              message = lastLine;
-              processType = 'reload';
-              i++;
-            } else if (messageType === 'equipError') {
-              if (loop < 255){
-                loop += 1;
-                sleepTime = 1;
-                message = '(' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
-                processType = 'reload';
-              } else {
-                loop += 1;
-                success = true;
-                message = '[打止] (' + loop + '発目) '+ lastLine + ` (${cellRank}, ${currentEquipName})`;
-                processType = 'return';
-              }
-              i++;
-            } else if (lastLine.length > 100) {
-              message = 'どんぐりシステム';
-              processType = 'continue';
-              i++;
-            } else if (messageType === 'quit') {
-              message = '[停止] ' + lastLine;
-              processType = 'return';
-              clearInterval(autoJoinIntervalId);
-              i++;
-            } else if (messageType === 'reset') {
-              processType = 'break';
-              i++;
-            } else if (messageType in regions) {
-              excludeSet.add(region.join(','));
-              if (messageType === cellType) {
-                loop += 1;
-                message = '(' + loop + '発目) '+ lastLine;
-                processType = 'continue';
-              } else if (messageType === 'nonAdjacent') {
-                loop += 1;
-                message = '(' + loop + '発目) '+ lastLine;
-                cellType = 'nonAdjacent';
-                processType = 'break';
-              } else if (messageType === 'teamAdjacent') {
-                loop += 1;
-                message = '(' + loop + '発目) '+ lastLine;
-                cellType = 'teamAdjacent';
-                processType = 'break';
-              } else if (messageType === 'capitalAdjacent') {
-                loop += 1;
-                message = '(' + loop + '発目) '+ lastLine;
-                cellType = 'capitalAdjacent';
-                processType = 'break';
-              } else if (messageType === 'mapEdge') {
-                loop += 1;
-                message = '(' + loop + '発目) '+ lastLine;
-                cellType = 'mapEdge';
-                processType = 'break';
-              }
-              i++;
-            }
-            if (success) {
-              clearInterval(autoJoinIntervalId);
-              autoJoinIntervalId = null;
-              next = `→ 予約なし`;
-              isAutoJoinRunning = false;
-//              logMessage(null, '[打止] 終了です。', next);
-            } else if (processType === 'return') {
-              next = '';
-              isAutoJoinRunning = false;
-            } else {
-              next = `→ ${sleepTime}s`;
-            }
-
-            logMessage(region, message, next);
-            await sleep(sleepTime * 1000);
-
-            if (processType === 'break') {
-              regions = await getRegions();
-              break;
-            } else if (processType === 'return') {
-              return;
-            } else if (processType === 'reload') {
-              regions = await getRegions();
-              break;
-            }
-          } catch (e){
-            let message = '';
-            switch (e) {
-              case 403:
-                message = `[403] Forbidden`;
-                break;
-              case 404:
-                message = `[404] Not Found`;
-                break;
-              case 500:
-                message = `[500] Internal Server Error`;
-                break;
-              case 502:
-                message = `[502] Bad Gateway`;
-                break;
-              default:
-                message = e;
-                break;
-            }
-            if (e.message === '再ログインしてください') {
-              logMessage(region, '[停止] どんぐりが見つかりませんでした', '');
-              isAutoJoinRunning = false;
-              clearInterval(autoJoinIntervalId);
-              return;
-            } else if (e === 403) {
-              logMessage(region, message, '');
-              isAutoJoinRunning = false;
-              clearInterval(autoJoinIntervalId);
-              return;
-            } else if ([404,500,502].includes(e)) {
-              errorCount++;
-              let sleepTime = 20 * errorCount;
-              if(sleepTime > 600) sleepTime = 600;
-              logMessage(region, message, `→ ${sleepTime}s`);
-              await sleep(sleepTime * 1000);
-            } else {
-              let sleepTime = 20;
-              logMessage(region, e, `→ ${sleepTime}s`);
-              await sleep(sleepTime * 1000);
-            }
-            i++;
-          }
-        }
-
-        if (!success && regions[cellType].length === 0) {
-            clearInterval(autoJoinIntervalId);
-            autoJoinIntervalId = null;
-            const next = `→ 予約なし`;
-            isAutoJoinRunning = false;
-            logMessage(null, '[打止] 攻撃可能なタイルが見つかりませんでした。(計' + loop + '発)', next);
-            return;
-        }
-      }
+    function getRBStagePresetCandidates() {
+      const stage = getCurrentRBStage();
+      if (!stage) return [];
+      return [
+        `RB_STAGE${stage}`,
+        `RB${stage}`,
+        `第${stage}戦`,
+        `第${stage}戦用`
+      ];
     }
 
-    async function getRegions () {
-      try {
-        const res = await fetch('');
-        if (!res.ok) throw new Error(`[${res.status}] /teambattle`);
-        const text = await res.text();
-        const doc = new DOMParser().parseFromString(text, 'text/html');
-        const headerText = doc?.querySelector('header')?.textContent || '';
-        if (!headerText.includes('どんぐりチーム戦い')) throw new Error('title.ng info');
-
-        const scripts = doc.querySelectorAll('.gridCanvasOuter script');
-        const scriptContent = Array.from(scripts).map(s => s.textContent).join('\n');
-
-        let cellColors, capitalMap, rows, cols;
-        const waterSet = new Set();
-
-        const cellColorsMatch = scriptContent.match(/const\s+cellColors\s*=\s*({[\s\S]+?});/);
-        const validJsonStr = cellColorsMatch[1].replace(/'/g, '"').replace(/,\s*}/, '}');
-        cellColors = JSON.parse(validJsonStr);
-
-        const capitalListMatch = scriptContent.match(/const\s+capitalList\s*=\s*(\[[\s\S]*?\]);/);
-        capitalMap = JSON.parse(capitalListMatch[1]);
-
-        const gridSizeMatch = scriptContent.match(/const\s+GRID_SIZE\s*=\s*(\d+);/);
-        rows = cols = Number(gridSizeMatch[1]);
-
-        const terrainMatch = scriptContent.match(/const\s+terrainsPayload\s*=\s*({[\s\S]+?});/);
-        if (terrainMatch && terrainMatch[1]) {
-          const payload = JSON.parse(terrainMatch[1]);
-          if (payload.terrains) {
-            payload.terrains.forEach(item => {
-              const r = item.r ?? item.row ?? item.x;
-              const c = item.c ?? item.col ?? item.y;
-              if (item.t === 'w') waterSet.add(`${r}-${c}`);
-            });
-          }
-        }
-        
-        const exploredSet = new Set();
-        const fowMatch = scriptContent.match(/window\.__FOW\s*=\s*({[\s\S]+?});/);
-        if (fowMatch && fowMatch[1]) {
-          const fowData = JSON.parse(fowMatch[1]);
-          if (fowData.explored) {
-            fowData.explored.forEach(([r, c]) => exploredSet.add(`${r}-${c}`));
-          }
-        }
-
-        const cells = [];
-        for (let r = 0; r < rows; r++) {
-          for (let c = 0; c < cols; c++) {
-            cells.push([r, c]);
-          }
-        }
-
-        const directions = [
-          [-1, 0],
-          [1, 0],
-          [0, -1],
-          [0, 1]
-        ];
-
-        const adjacentSet = new Set();
-        for (const [cr, cc] of capitalMap) {
-          for (const [dr, dc] of directions) {
-            const nr = cr + dr;
-            const nc = cc + dc;
-            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
-              adjacentSet.add(`${nr}-${nc}`);
-            }
-          }
-        }
-
-        const capitalSet = new Set(capitalMap.map(([r, c]) => `${r}-${c}`));
-
-        const teamColorSet = new Set();
-        for(const [key, value] of Object.entries(cellColors)) {
-          if (teamColor === value.replace('#','')) {
-            teamColorSet.add(key);
-          }
-        }
-
-        const teamAdjacentSet = new Set();
-        for (const key of [...teamColorSet]) {
-          const [tr, tc] = key.split('-');
-          for (const [dr, dc] of directions) {
-            const nr = Number(tr) + dr;
-            const nc = Number(tc) + dc;
-            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
-              teamAdjacentSet.add(`${nr}-${nc}`);
-            }
-          }
-        }
-
-        const mapEdgeSet = new Set();
-        for (let i=0; i<rows; i++) {
-          mapEdgeSet.add(`${i}-0`);
-          mapEdgeSet.add(`${i}-${cols-1}`);
-        }
-        for (let i=0; i<cols; i++) {
-          mapEdgeSet.add(`0-${i}`);
-          mapEdgeSet.add(`${rows-1}-${i}`);
-        }
-
-        //霧セル除外
-        const filterFog = (list) => list.filter(([r, c]) => exploredSet.has(`${r}-${c}`));
-
-        const nonAdjacentbaseCells = cells.filter(([r, c]) => {
-          const key = `${r}-${c}`;
-          return !capitalSet.has(key) && !adjacentSet.has(key) && !waterSet.has(key);
-        });
-
-        const nonAdjacentCells = teamColorSet.size > 0 ? filterFog(nonAdjacentbaseCells) : nonAdjacentbaseCells;
-
-        const capitalAdjacentbaseCells = cells.filter(([r, c]) => {
-          const key = `${r}-${c}`;
-          return adjacentSet.has(key) && !waterSet.has(key);
-        });
-
-        const capitalAdjacentCells = filterFog(capitalAdjacentbaseCells);
-
-        const teamAdjacentbaseCells = cells.filter(([r, c]) => {
-          const key = `${r}-${c}`;
-          return (teamColorSet.has(key) || teamAdjacentSet.has(key)) && !waterSet.has(key);
-        })
-
-        const teamAdjacentCells = filterFog(teamAdjacentbaseCells);
-
-        const mapEdgebaseCells = cells.filter(([r, c]) => {
-          const key = `${r}-${c}`;
-          return mapEdgeSet.has(key) && !capitalSet.has(key) && !waterSet.has(key);
-        })
-
-        const mapEdgeCells = filterFog(mapEdgebaseCells);
-
-        function shuffle(arr) {
-          for (let i = arr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [arr[i], arr[j]] = [arr[j], arr[i]];
-          }
-          return arr;
-        }
-
-        //チームメンバーを除外
-        const filteredCells = (cells) => {
-          return cells.filter(([r, c]) => !teamColorSet.has(`${r}-${c}`));
-        };
-
-        const regions = {
-          nonAdjacent: shuffle(filteredCells(nonAdjacentCells)),
-          capitalAdjacent: shuffle(filteredCells(capitalAdjacentCells)),
-          teamAdjacent: shuffle(filteredCells(teamAdjacentCells)),
-          mapEdge: shuffle(filteredCells(mapEdgeCells))
-        };
-
-        return regions;
-      } catch (e) {
-        console.error(e);
-        throw e;
-      }
-    }
-
-    async function challenge (region) {
+    async function challenge(region) {
       const [ row, col ] = region;
       const body = `row=${row}&col=${col}`;
       try {
-        const res = await fetch('/teamchallenge?'+MODE, {
+        const res = await fetch('/teamchallenge?' + MODE, {
           method: 'POST',
           body: body,
           headers: headers
-        })
+        });
 
-        if(!res.ok) throw new Error(res.status);
+        if (!res.ok) throw new Error(res.status);
         const text = await res.text();
         const lastLine = text.trim().split('\n').pop();
         return [ text, lastLine ];
@@ -3097,49 +3222,969 @@
         console.error(e);
         throw e;
       }
-
     }
-    async function equipChange (region) {
+
+    async function equipChange(region, options = {}) {
+      const {
+        preferredPresetName = null,
+        excludePresetNames = []
+      } = options;
+
       const [ row, col ] = region;
-      const url = `https://donguri.5ch.io/teambattle?r=${row}&c=${col}&`+MODE;
+      const url = `https://donguri.5ch.io/teambattle?r=${row}&c=${col}&` + MODE;
       try {
         const res = await fetch(url);
-        if(!res.ok) throw new Error(`[${res.status}] /teambattle?r=${row}&c=${col}`);
+        if (!res.ok) throw new Error(`[${res.status}] /teambattle?r=${row}&c=${col}`);
         const text = await res.text();
-        const doc = new DOMParser().parseFromString(text,'text/html');
+        const doc = new DOMParser().parseFromString(text, 'text/html');
         const headerText = doc?.querySelector('header')?.textContent || '';
-        if(!headerText.includes('どんぐりチーム戦い')) return Promise.reject(`title.ng`);
+        if (!headerText.includes('どんぐりチーム戦い')) return Promise.reject(`title.ng`);
         const table = doc.querySelector('table');
-        if(!table) throw new Error('table.ng');
-        const equipCond = table.querySelector('td small').textContent;
+        if (!table) throw new Error('table.ng');
+        const small = table.querySelector('td small');
+        if (!small) throw new Error('equipCond.ng');
+
+        const equipCond = small.textContent;
         const rank = equipCond
-          .replace('エリート','e')
-          .replace(/.+から|\w+-|まで|だけ|警備員|警|\s|\[|\]|\|/g,'');
+          .replace('エリート', 'e')
+          .replace(/.+から|\w+-|まで|だけ|警備員|警|\s|\[|\]|\|/g, '');
+
         const autoEquipItems = JSON.parse(localStorage.getItem('autoEquipItems')) || {};
         const autoEquipItemsAutojoin = JSON.parse(localStorage.getItem('autoEquipItemsAutojoin')) || {};
+        const equipPresets = JSON.parse(localStorage.getItem('equipPresets')) || {};
 
-        if (autoEquipItemsAutojoin[rank]?.length > 0) {
-          const index = Math.floor(Math.random() * autoEquipItemsAutojoin[rank].length);
-          await setPresetItems(autoEquipItemsAutojoin[rank][index]);
-          return [rank, 'success'];
-        } else if (autoEquipItems[rank]?.length > 0) {
-          const index = Math.floor(Math.random() * autoEquipItems[rank].length);
-          await setPresetItems(autoEquipItems[rank][index]);
-          return [rank, 'success'];
-        } else {
-          return [rank, 'noEquip'];
+        const rankSourceList = autoEquipItemsAutojoin[rank]?.length > 0
+          ? autoEquipItemsAutojoin[rank]
+          : (autoEquipItems[rank] || []);
+
+        const stageSourceList = getRBStagePresetCandidates()
+          .filter(name => equipPresets[name]);
+
+        // 明示登録した自動参加用/通常用ランク装備を優先し、
+        // stage preset は補助候補として後ろに回す
+        const sourceList = [...rankSourceList, ...stageSourceList];
+        const uniqueSourceList = [...new Set(sourceList.filter(Boolean))];
+        if (!uniqueSourceList.length) {
+          return [rank, 'noEquip', null];
         }
+
+        const excludeSet = new Set(
+          (Array.isArray(excludePresetNames) ? excludePresetNames : [excludePresetNames])
+            .filter(Boolean)
+        );
+
+        const candidates = [];
+
+        if (
+          preferredPresetName &&
+          uniqueSourceList.includes(preferredPresetName) &&
+          !excludeSet.has(preferredPresetName)
+        ) {
+          candidates.push(preferredPresetName);
+        }
+
+        for (const name of uniqueSourceList) {
+          if (name === preferredPresetName) continue;
+          if (excludeSet.has(name)) continue;
+          candidates.push(name);
+        }
+
+        if (
+          !candidates.length &&
+          preferredPresetName &&
+          uniqueSourceList.includes(preferredPresetName)
+        ) {
+          candidates.push(preferredPresetName);
+        }
+
+        if (!candidates.length) {
+          return [rank, 'noAlternative', preferredPresetName];
+        }
+
+        let lastError = null;
+        for (const presetName of candidates) {
+          try {
+            await setPresetItems(presetName, { force: true });
+            return [rank, 'success', presetName];
+          } catch (e) {
+            lastError = e;
+          }
+        }
+
+        if (lastError) throw lastError;
+        return [rank, 'noAlternative', preferredPresetName];
       } catch (e) {
         console.error(e);
         throw e;
       }
     }
 
+    function isDefeatMessage(text, lastLine) {
+      const source = `${text}\n${lastLine}`;
+      return [
+        '敗北',
+        '敗れ',
+        '負け',
+        '首都に戻され',
+        '首都へ戻され',
+        '首都に戻りました',
+        '首都へ戻りました',
+        '首都に戻る',
+        '首都へ戻る',
+        '返り討ち'
+      ].some(v => source.includes(v));
+    }
+
+    async function executeStep(region, options = {}) {
+      const { isEnemyStep = false, forceAutoEquip = false } = options;
+      let equipRank = '';
+      let usedPresetName = '';
+      const shouldTryEquip = !shouldSkipAutoEquip && (forceAutoEquip || isEnemyStep || !currentEquipName);
+
+      if (autoJoinStopRequested) {
+        return { ok: false, stop: true, retry: false, stale: false, defeated: false, waitSeconds: 0, message: '自動参加モードを停止しました。' };
+      }
+
+      if (shouldTryEquip) {
+        try {
+          const [cellRank, equipChangeStat, presetName] = await equipChange(region);
+          equipRank = cellRank;
+          usedPresetName = presetName || '';
+
+          if (autoJoinStopRequested) {
+            return { ok: false, stop: true, retry: false, stale: false, defeated: false, waitSeconds: 0, message: '自動参加モードを停止しました。' };
+          }
+
+          if (equipChangeStat === 'noEquip') {
+            return { ok: false, stop: false, retry: false, stale: false, defeated: false, waitSeconds: 0, message: `[装備なし] ${cellRank}` };
+          }
+          if (equipChangeStat === 'noAlternative') {
+            return { ok: false, stop: false, retry: false, stale: false, defeated: false, waitSeconds: 0, message: `[装備候補不足] ${cellRank}` };
+          }
+        } catch (e) {
+          if (autoJoinStopRequested) {
+            return { ok: false, stop: true, retry: false, stale: false, defeated: false, waitSeconds: 0, message: '自動参加モードを停止しました。' };
+          }
+          return { ok: false, stop: false, retry: true, stale: false, defeated: false, waitSeconds: 3, message: String(e) };
+        }
+      }
+
+      if (autoJoinStopRequested) {
+        return { ok: false, stop: true, retry: false, stale: false, defeated: false, waitSeconds: 0, message: '自動参加モードを停止しました。' };
+      }
+
+      const [ text, lastLine ] = await challenge(region);
+
+      if (autoJoinStopRequested) {
+        return { ok: false, stop: true, retry: false, stale: false, defeated: false, waitSeconds: 0, message: '自動参加モードを停止しました。' };
+      }
+
+      const messageType = getMessageType(lastLine);
+
+      if (
+        text.startsWith('アリーナチャレンジ開始') ||
+        text.startsWith('リーダーになった') ||
+        text.startsWith('この場所を占領しました') ||
+        text.startsWith('首都から出撃しました') ||
+        text.startsWith('この場所へ移動しました')
+      ) {
+        return { ok: true, stop: false, retry: false, stale: false, defeated: false, waitSeconds: 0, message: '[成功] ' + lastLine };
+      }
+      if (isEnemyStep && isDefeatMessage(text, lastLine)) {
+        return {
+          ok: false,
+          stop: false,
+          retry: false,
+          stale: false,
+          defeated: true,
+          waitSeconds: 0,
+          message: '[敗北] ' + (lastLine || '首都へ戻されました。')
+        };
+      }
+      if (messageType === 'breaktime') {
+        return { ok: false, stop: true, retry: false, stale: false, defeated: false, waitSeconds: 0, message: lastLine };
+      }
+      if (messageType === 'quit') {
+        clearInterval(autoJoinIntervalId);
+        return { ok: false, stop: true, retry: false, stale: false, defeated: false, waitSeconds: 0, message: '[停止] ' + lastLine };
+      }
+      if (messageType === 'toofast') {
+        return { ok: false, stop: false, retry: true, stale: false, defeated: false, waitSeconds: 3, message: lastLine };
+      }
+      if (messageType === 'retry') {
+        return { ok: false, stop: false, retry: true, stale: false, defeated: false, waitSeconds: 20, message: lastLine };
+      }
+      if (messageType === 'equipError') {
+        const failedPresetName = usedPresetName || currentEquipName || null;
+
+        resetAutoJoinEquipState('equipError');
+        equipRank = '';
+        usedPresetName = '';
+
+        if (!shouldSkipAutoEquip) {
+          try {
+            const [retryRank, retryStat, retryPresetName] = await equipChange(region, {
+              preferredPresetName: failedPresetName,
+              excludePresetNames: []
+            });
+
+            if (autoJoinStopRequested) {
+              return { ok: false, stop: true, retry: false, stale: false, defeated: false, waitSeconds: 0, message: '自動参加モードを停止しました。' };
+            }
+
+            if (retryStat === 'success') {
+              return {
+                ok: false,
+                stop: false,
+                retry: true,
+                stale: false,
+                defeated: false,
+                waitSeconds: 3,
+                message: `${lastLine} → 装備再同期: ${retryPresetName}`
+              };
+            }
+            if (retryStat === 'noAlternative') {
+              return {
+                ok: false,
+                stop: false,
+                retry: true,
+                stale: false,
+                defeated: false,
+                waitSeconds: 3,
+                message: `${lastLine} → 装備候補を再確認します`
+              };
+            }
+            if (retryStat === 'noEquip') {
+              return {
+                ok: false,
+                stop: false,
+                retry: false,
+                stale: false,
+                defeated: false,
+                waitSeconds: 0,
+                message: `[装備なし] ${retryRank}`
+              };
+            }
+          } catch (e) {
+            if (autoJoinStopRequested) {
+              return { ok: false, stop: true, retry: false, stale: false, defeated: false, waitSeconds: 0, message: '自動参加モードを停止しました。' };
+            }
+            return {
+              ok: false,
+              stop: false,
+              retry: true,
+              stale: false,
+              defeated: false,
+              waitSeconds: 3,
+              message: `${lastLine} → ${String(e)}`
+            };
+          }
+        }
+
+        return {
+          ok: false,
+          stop: false,
+          retry: true,
+          stale: false,
+          defeated: false,
+          waitSeconds: 3,
+          message: `${lastLine} → 装備再試行待ち`
+        };
+      }
+      if (
+        messageType === 'reset' ||
+        messageType === 'nonAdjacent' ||
+        messageType === 'teamAdjacent' ||
+        messageType === 'capitalAdjacent' ||
+        messageType === 'mapEdge'
+      ) {
+        return { ok: false, stop: false, retry: false, stale: true, defeated: false, waitSeconds: 1, message: lastLine };
+      }
+      if (messageType === 'guardError') {
+        return { ok: false, stop: false, retry: false, stale: true, defeated: false, waitSeconds: 1, message: lastLine };
+      }
+      if (lastLine.length > 100) {
+        return { ok: false, stop: false, retry: true, stale: false, defeated: false, waitSeconds: 2, message: 'どんぐりシステム' };
+      }
+
+      return { ok: false, stop: false, retry: false, stale: true, defeated: false, waitSeconds: 1, message: lastLine };
+    }
+
+    async function followPath(path, state) {
+      if (!Array.isArray(path) || path.length < 2) {
+        return { moved: false, stop: false, keepWatching: false, waitSeconds: 0, message: '経路が見つかりませんでした。' };
+      }
+
+      if (autoJoinStopRequested) {
+        return { moved: false, stop: true, keepWatching: false, waitSeconds: 0, message: '自動参加モードを停止しました。', state };
+      }
+
+      let latestState = state;
+      for (let i = 1; i < path.length; i++) {
+        if (autoJoinStopRequested) {
+          return { moved: false, stop: true, keepWatching: false, waitSeconds: 0, message: '自動参加モードを停止しました。', state: latestState };
+        }
+
+        const step = path[i];
+        const isEnemyStep = i === path.length - 1 && isEnemy(latestState, step.r, step.c);
+        const isCapitalTarget = isEnemyStep && isCapitalTile(latestState, step.r, step.c);
+        const result = await executeStep([step.r, step.c], { isEnemyStep });
+
+        if (autoJoinStopRequested) {
+          return { moved: false, stop: true, keepWatching: false, waitSeconds: 0, message: '自動参加モードを停止しました。', state: latestState };
+        }
+
+        if (isSuppressibleAutoJoinWaitMessage(result.message)) {
+          if (lastAutoJoinQuietMessage !== result.message) {
+            logMessage(`${step.r},${step.c}`, result.message, '');
+            lastAutoJoinQuietMessage = result.message;
+          }
+        } else {
+          lastAutoJoinQuietMessage = '';
+          logMessage(`${step.r},${step.c}`, result.message, '');
+        }
+
+        if (result.stop) {
+          return { moved: false, stop: true, keepWatching: false, waitSeconds: 0, message: result.message, state: latestState };
+        }
+
+        if (result.defeated) {
+          latestState = await fetchBattleState();
+
+          if (autoJoinStopRequested) {
+            return { moved: false, stop: true, keepWatching: false, waitSeconds: 0, message: '自動参加モードを停止しました。', state: latestState };
+          }
+
+          const ownCapital = findOwnCapital(latestState);
+
+          if (ownCapital) {
+            const redeployResult = await executeStep([ownCapital.r, ownCapital.c], { isEnemyStep: false });
+
+            if (autoJoinStopRequested) {
+              return { moved: false, stop: true, keepWatching: false, waitSeconds: 0, message: '自動参加モードを停止しました。', state: latestState };
+            }
+
+            logMessage(`${ownCapital.r},${ownCapital.c}`, '[再出撃] ' + redeployResult.message, '');
+
+            if (redeployResult.stop) {
+              return { moved: false, stop: true, keepWatching: false, waitSeconds: 0, message: redeployResult.message, state: latestState };
+            }
+            if (redeployResult.retry) {
+              return {
+                moved: false,
+                stop: false,
+                keepWatching: true,
+                waitSeconds: redeployResult.waitSeconds || 3,
+                message: redeployResult.message,
+                state: latestState
+              };
+            }
+
+            await sleep(1200);
+
+            if (autoJoinStopRequested) {
+              return { moved: false, stop: true, keepWatching: false, waitSeconds: 0, message: '自動参加モードを停止しました。', state: latestState };
+            }
+
+            latestState = await fetchBattleState();
+
+            if (autoJoinStopRequested) {
+              return { moved: false, stop: true, keepWatching: false, waitSeconds: 0, message: '自動参加モードを停止しました。', state: latestState };
+            }
+
+            return {
+              moved: true,
+              stop: false,
+              keepWatching: false,
+              waitSeconds: 0,
+              message: `${result.message} → 首都から再出撃しました。`,
+              state: latestState
+            };
+          }
+
+          return {
+            moved: false,
+            stop: false,
+            keepWatching: true,
+            waitSeconds: 2,
+            message: `${result.message} → 首都が見つからないため再出撃待機`,
+            state: latestState
+          };
+        }
+
+        if (result.retry) {
+          return {
+            moved: false,
+            stop: false,
+            keepWatching: true,
+            waitSeconds: result.waitSeconds || 3,
+            message: result.message,
+            state: latestState
+          };
+        }
+        if (!result.ok && !result.stale) {
+          return { moved: false, stop: false, keepWatching: false, waitSeconds: 0, message: result.message, state: latestState };
+        }
+
+        await sleep(isEnemyStep ? 1500 : 900);
+
+        if (autoJoinStopRequested) {
+          return { moved: false, stop: true, keepWatching: false, waitSeconds: 0, message: '自動参加モードを停止しました。', state: latestState };
+        }
+
+        latestState = await fetchBattleState();
+
+        if (autoJoinStopRequested) {
+          return { moved: false, stop: true, keepWatching: false, waitSeconds: 0, message: '自動参加モードを停止しました。', state: latestState };
+        }
+
+        if (isCapitalTarget) {
+          const capitalResolved =
+            !isEnemy(latestState, step.r, step.c) ||
+            !isCapitalTile(latestState, step.r, step.c);
+
+          if (capitalResolved) {
+            let latestPos = currentPos(latestState);
+
+            if (!latestPos || latestPos.r !== step.r || latestPos.c !== step.c) {
+              const moveToCapitalResult = await executeStep([step.r, step.c], { isEnemyStep: false });
+              logMessage(`${step.r},${step.c}`, '[首都制圧後移動] ' + moveToCapitalResult.message, '');
+
+              if (moveToCapitalResult.stop) {
+                return { moved: false, stop: true, keepWatching: false, waitSeconds: 0, message: moveToCapitalResult.message, state: latestState };
+              }
+              if (moveToCapitalResult.retry) {
+                return {
+                  moved: true,
+                  stop: false,
+                  keepWatching: true,
+                  waitSeconds: moveToCapitalResult.waitSeconds || 2,
+                  message: moveToCapitalResult.message,
+                  state: latestState
+                };
+              }
+
+              await sleep(900);
+              latestState = await fetchBattleState();
+              latestPos = currentPos(latestState);
+            }
+
+            const priorityEmptyCells = collectCapitalCollapseEmptyCells(latestState, { r: step.r, c: step.c });
+
+            if (priorityEmptyCells.length > 0) {
+              latestState.priorityEmptyCells = priorityEmptyCells;
+              return {
+                moved: true,
+                stop: false,
+                keepWatching: false,
+                waitSeconds: 0,
+                message: `${result.message} → 首都周囲の空白を優先します。`,
+                state: latestState
+              };
+            }
+          }
+        }
+
+        if (result.stale) {
+          return {
+            moved: true,
+            stop: false,
+            keepWatching: true,
+            waitSeconds: result.waitSeconds || 1,
+            message: result.message,
+            state: latestState
+          };
+        }
+      }
+
+      return { moved: true, stop: false, keepWatching: false, waitSeconds: 0, message: '経路完了', state: latestState };
+    }
+
+    async function tryClaimOwnCapital(state) {
+      let latestState = state || await fetchBattleState();
+
+      const candidates = (latestState.capitalList || [])
+        .map(([r, c]) => ({ r, c }))
+        .filter(v => !isWater(latestState, v.r, v.c))
+        .sort((a, b) => {
+          const score = (v) => {
+            if (isFriendly(latestState, v.r, v.c)) return 0;
+            if (isEmpty(latestState, v.r, v.c)) return 1;
+            return 2;
+          };
+          return score(a) - score(b);
+        });
+
+      if (!candidates.length) {
+        return {
+          acted: false,
+          stop: false,
+          keepWatching: true,
+          waitSeconds: 2,
+          message: '首都候補が見つかりませんでした。',
+          state: latestState
+        };
+      }
+
+      for (const cap of candidates) {
+        if (autoJoinStopRequested) {
+          return {
+            acted: false,
+            stop: true,
+            keepWatching: false,
+            waitSeconds: 0,
+            message: '自動参加モードを停止しました。',
+            state: latestState
+          };
+        }
+
+        const claimResult = await executeStep([cap.r, cap.c], {
+          isEnemyStep: isEnemy(latestState, cap.r, cap.c),
+          forceAutoEquip: true
+        });
+        logMessage(`${cap.r},${cap.c}`, '[首都取得] ' + claimResult.message, '');
+
+        if (claimResult.stop) {
+          return {
+            acted: false,
+            stop: true,
+            keepWatching: false,
+            waitSeconds: 0,
+            message: claimResult.message,
+            state: latestState
+          };
+        }
+
+        if (claimResult.retry) {
+          return {
+            acted: false,
+            stop: false,
+            keepWatching: true,
+            waitSeconds: claimResult.waitSeconds || 3,
+            message: claimResult.message,
+            state: latestState
+          };
+        }
+
+        await sleep(1200);
+        latestState = await fetchBattleState();
+
+        if (latestState.hasCapital) {
+          return {
+            acted: true,
+            stop: false,
+            keepWatching: false,
+            waitSeconds: 0,
+            message: '首都を取得しました。',
+            state: latestState
+          };
+        }
+      }
+
+      return {
+        acted: false,
+        stop: false,
+        keepWatching: true,
+        waitSeconds: 2,
+        message: '首都取得を再試行します。',
+        state: latestState
+      };
+    }
+
+    async function planAndAct(stateOverride = null) {
+      let state = stateOverride || await fetchBattleState();
+      let pos = currentPos(state);
+
+      if (!state.hasCapital) {
+        const claimResult = await tryClaimOwnCapital(state);
+        if (claimResult.stop) {
+          return claimResult;
+        }
+        if (claimResult.keepWatching) {
+          return claimResult;
+        }
+
+        state = claimResult.state || await fetchBattleState();
+        pos = currentPos(state);
+
+        if (!state.hasCapital) {
+          return {
+            acted: false,
+            stop: false,
+            keepWatching: true,
+            waitSeconds: 2,
+            message: '首都取得待機中です。',
+            state
+          };
+        }
+      }
+
+      const ownCapital = findOwnCapital(state);
+
+//要塞建設
+//      if (ownCapital) {
+//        const fortifyResult = await autoBuildFortsAroundCapital(state);
+//
+//        if (fortifyResult.stop) {
+//          return fortifyResult;
+//        }
+//
+//        if (fortifyResult.message) {
+//          logMessage(null, fortifyResult.message, '');
+//        }
+//
+//        state = fortifyResult.state || state;
+//        pos = currentPos(state);
+//      }
+//要塞建設
+
+      if (!pos && ownCapital) {
+        const startResult = await executeStep([ownCapital.r, ownCapital.c], {
+          isEnemyStep: false,
+          forceAutoEquip: true
+        });
+        logMessage(`${ownCapital.r},${ownCapital.c}`, startResult.message, '');
+
+        if (startResult.stop) {
+          return { acted: false, stop: true, keepWatching: false, waitSeconds: 0, message: startResult.message, state };
+        }
+        if (startResult.retry) {
+          return {
+            acted: false,
+            stop: false,
+            keepWatching: true,
+            waitSeconds: startResult.waitSeconds || 3,
+            message: startResult.message,
+            state
+          };
+        }
+
+        await sleep(1200);
+        state = await fetchBattleState();
+        pos = currentPos(state);
+      }
+
+      if (!pos) {
+        return {
+          acted: false,
+          stop: false,
+          keepWatching: true,
+          waitSeconds: 2,
+          message: '現在地を取得できませんでした。',
+          state
+        };
+      }
+
+      const priorityEmptyPath = bfsToPriorityEmpty(state, pos);
+      if (priorityEmptyPath && priorityEmptyPath.length >= 2) {
+        const result = await followPath(priorityEmptyPath, state);
+        return {
+          acted: result.moved,
+          stop: result.stop,
+          keepWatching: !!result.keepWatching,
+          waitSeconds: result.waitSeconds || 1,
+          message: result.message,
+          state: result.state || state,
+          phase: 'priorityEmpty'
+        };
+      }
+      if (Array.isArray(state.priorityEmptyCells) && state.priorityEmptyCells.length > 0) {
+        delete state.priorityEmptyCells;
+      }
+
+      const emptyPath = bfsToNearestEmpty(state, pos);
+      if (emptyPath && emptyPath.length >= 2) {
+        const result = await followPath(emptyPath, state);
+        return {
+          acted: result.moved,
+          stop: result.stop,
+          keepWatching: !!result.keepWatching,
+          waitSeconds: result.waitSeconds || 1,
+          message: result.message,
+          state: result.state || state,
+          phase: 'empty'
+        };
+      }
+
+      const enemyPath = bfsToEnemyFrontier(state, pos);
+      if (enemyPath && enemyPath.length >= 2) {
+        const result = await followPath(enemyPath, state);
+        return {
+          acted: result.moved,
+          stop: result.stop,
+          keepWatching: !!result.keepWatching,
+          waitSeconds: result.waitSeconds || 1,
+          message: result.message,
+          state: result.state || state,
+          phase: 'enemy'
+        };
+      }
+
+      return {
+        acted: false,
+        stop: false,
+        keepWatching: true,
+        waitSeconds: 10,
+        message: '盤面を埋め終えたため監視を継続します。',
+        state,
+        phase: 'idle'
+      };
+    }
+
+    async function runAutoBattleLoop() {
+      let state = null;
+
+      for (let loop = 0; loop < 100; loop++) {
+        if (autoJoinStopRequested) {
+          return {
+            acted: false,
+            stop: true,
+            keepWatching: false,
+            waitSeconds: 0,
+            message: '自動参加モードを停止しました。',
+            state
+          };
+        }
+
+        const result = await planAndAct(state);
+
+        if (autoJoinStopRequested) {
+          return {
+            acted: false,
+            stop: true,
+            keepWatching: false,
+            waitSeconds: 0,
+            message: '自動参加モードを停止しました。',
+            state: result.state || state
+          };
+        }
+
+        if (result.stop) {
+          return result;
+        }
+        if (result.keepWatching) {
+          return result;
+        }
+        if (!result.acted) {
+          return result;
+        }
+
+        state = result.state || await fetchBattleState();
+        const pos = currentPos(state);
+
+        if (autoJoinStopRequested) {
+          return {
+            acted: false,
+            stop: true,
+            keepWatching: false,
+            waitSeconds: 0,
+            message: '自動参加モードを停止しました。',
+            state
+          };
+        }
+
+        if (!pos) {
+          return {
+            acted: false,
+            stop: false,
+            keepWatching: true,
+            waitSeconds: 2,
+            message: '現在地を取得できませんでした。',
+            state
+          };
+        }
+
+        const nextPriorityEmptyPath = bfsToPriorityEmpty(state, pos);
+        if (nextPriorityEmptyPath && nextPriorityEmptyPath.length >= 2) {
+          logAutoJoinGuideOnce('priorityEmpty', '[継続] 首都周囲の空白を優先して埋めます。', null, '');
+          await sleep(300);
+          if (autoJoinStopRequested) {
+            return {
+              acted: false,
+              stop: true,
+              keepWatching: false,
+              waitSeconds: 0,
+              message: '自動参加モードを停止しました。',
+              state
+            };
+          }
+          continue;
+        }
+        if (Array.isArray(state.priorityEmptyCells) && state.priorityEmptyCells.length > 0) {
+          delete state.priorityEmptyCells;
+        }
+
+        const nextEmptyPath = bfsToNearestEmpty(state, pos);
+        if (nextEmptyPath && nextEmptyPath.length >= 2) {
+          logAutoJoinGuideOnce('empty', '[継続] 空白マスを優先して埋めます。', null, '');
+          await sleep(600);
+          if (autoJoinStopRequested) {
+            return {
+              acted: false,
+              stop: true,
+              keepWatching: false,
+              waitSeconds: 0,
+              message: '自動参加モードを停止しました。',
+              state
+            };
+          }
+          continue;
+        }
+
+        const nextEnemyPath = bfsToEnemyFrontier(state, pos);
+        if (nextEnemyPath && nextEnemyPath.length >= 2) {
+          logAutoJoinGuideOnce('enemy', '[継続] 空白が無いため敵マスへ進みます。', null, '');
+          await sleep(900);
+          if (autoJoinStopRequested) {
+            return {
+              acted: false,
+              stop: true,
+              keepWatching: false,
+              waitSeconds: 0,
+              message: '自動参加モードを停止しました。',
+              state
+            };
+          }
+          continue;
+        }
+
+        return {
+          acted: true,
+          stop: false,
+          keepWatching: true,
+          waitSeconds: 5,
+          message: '盤面を埋め終えたため監視を継続します。',
+          state
+        };
+      }
+
+      return {
+        acted: false,
+        stop: false,
+        keepWatching: true,
+        waitSeconds: 3,
+        message: '連続処理が長くなったため監視継続に戻ります。',
+        state
+      };
+    }
+
+    async function attackRegion() {
+      if (autoJoinStopRequested) {
+        return;
+      }
+
+      await drawProgressBar();
+
+      if (autoJoinStopRequested) {
+        return;
+      }
+
+      const currentRBStage = getCurrentRBStage();
+
+      if (
+        (lastAutoJoinBattlePeriod !== null && currentPeriod !== lastAutoJoinBattlePeriod) ||
+        (
+          location.href.includes('/teambattle?m=rb') &&
+          lastAutoJoinRBStage !== null &&
+          currentRBStage !== null &&
+          currentRBStage !== lastAutoJoinRBStage
+        )
+      ) {
+        resetAutoJoinEquipState('新しいバトルを検知');
+        logMessage(null, '[装備初期化] 新しいバトルを検知したため装備状態をリセットしました。', '');
+      }
+      lastAutoJoinBattlePeriod = currentPeriod;
+      lastAutoJoinRBStage = currentRBStage;
+
+      if (location.href.includes('/teambattle?m=rb') && isRBStageRefreshProgress(currentProgress)) {
+        const statusKey = `${currentPeriod}|rb-refresh-wait|${currentProgress}`;
+        nextProgress = currentProgress;
+
+        if (lastAutoJoinStatusKey !== statusKey) {
+          logMessage(null, '[待機] マップ更新直後のため次の1%まで戦闘開始を待機します。', '');
+          lastAutoJoinStatusKey = statusKey;
+        }
+
+        if (!autoJoinStopRequested && typeof window.__queueAutoJoinRetry === 'function') {
+          window.__queueAutoJoinRetry(() => {
+            const dialog = document.querySelector('.auto-join');
+            if (!autoJoinStopRequested && dialog?.open && !isAutoJoinRunning) {
+              attackRegion();
+            }
+          }, 5000);
+        }
+        return;
+      }
+
+      if (isAutoJoinRunning || Math.abs(nextProgress - currentProgress) >= 2) {
+        return;
+      }
+
+      isAutoJoinRunning = true;
+      try {
+        const result = await runAutoBattleLoop();
+
+        if (autoJoinStopRequested) {
+          lastAutoJoinStatusKey = '';
+          return;
+        }
+
+        if (result.stop) {
+          lastAutoJoinStatusKey = '';
+          return;
+        }
+
+        if (result.keepWatching) {
+          const waitSeconds = Math.max(1, Number(result.waitSeconds) || 1);
+          const statusKey = `${currentPeriod}|${result.phase || ''}|${result.message || ''}`;
+
+          nextProgress = currentProgress;
+
+          if (isSuppressibleAutoJoinWaitMessage(result.message)) {
+            if (lastAutoJoinQuietMessage !== result.message) {
+              logMessage(null, result.message, `→ ${waitSeconds}s後再試行`);
+              lastAutoJoinQuietMessage = result.message;
+            }
+            lastAutoJoinStatusKey = statusKey;
+          } else {
+            lastAutoJoinQuietMessage = '';
+            if (lastAutoJoinStatusKey !== statusKey) {
+              logMessage(null, result.message, `→ ${waitSeconds}s後再試行`);
+              lastAutoJoinStatusKey = statusKey;
+            }
+          }
+
+          if (!autoJoinStopRequested && typeof window.__queueAutoJoinRetry === 'function') {
+            window.__queueAutoJoinRetry(() => {
+              const dialog = document.querySelector('.auto-join');
+              if (!autoJoinStopRequested && dialog?.open && !isAutoJoinRunning) {
+                attackRegion();
+              }
+            }, waitSeconds * 1000);
+          }
+
+          return;
+        }
+
+        lastAutoJoinStatusKey = '';
+        lastAutoJoinGuideKey = '';
+        lastAutoJoinQuietMessage = '';
+        nextProgress = currentProgress;
+        logMessage(null, result.message, '→ 継続監視');
+      } catch (e) {
+        console.error(e);
+        lastAutoJoinStatusKey = '';
+        logMessage(null, String(e), '');
+      } finally {
+        isAutoJoinRunning = false;
+      }
+    }
+
     if (!isAutoJoinRunning) {
       attackRegion();
     }
-    autoJoinIntervalId = setInterval(attackRegion,60000);
-  };
+    autoJoinIntervalId = setInterval(attackRegion, 30000);
+  }
 
   async function drawProgressBar(){
     try {
@@ -3152,7 +4197,10 @@
       currentProgress = parseInt(container.lastElementChild.textContent);
       let str,min,totalSec,sec,margin;
 
-      if (currentProgress === 0 || currentProgress === 50 || (location.href.includes('/teambattle?m=rb') && (currentProgress === 16 || currentProgress === 33 || currentProgress === 66 || currentProgress === 83))) {
+      if (
+        (location.href.includes('/teambattle?m=rb') && isRBStageRefreshProgress(currentProgress)) ||
+        (!location.href.includes('/teambattle?m=rb') && (currentProgress === 0 || currentProgress === 50))
+      ) {
         str = '（マップ更新）';
       } else {
         if (currentProgress === 100) {
@@ -3197,20 +4245,110 @@
   }
 
   drawProgressBar();
+
+  let lastAutoJoinBattlePeriod = null;
+  let lastAutoJoinRBStage = null;
+  let lastAutoJoinGuideKey = '';
+  let lastAutoJoinQuietMessage = '';
+  let lastAutoFortifyKey = '';
+
+  function isSuppressibleAutoJoinWaitMessage(message = '') {
+    return typeof message === 'string' && (
+      message.includes('行動回数をリセットするため') ||
+      message.includes('しばらくお待ちください')
+    );
+  }
+
+  function resetAutoJoinEquipState(reason = '次戦移行') {
+    currentEquipName = '';
+    localStorage.removeItem('current_equip');
+    weaponTable = null;
+    armorTable = null;
+    necklaceTable = null;
+
+    const stat = document.querySelector('.equip-preset-stat');
+    if (stat) stat.textContent = `${reason}のため装備状態を初期化`;
+  }
+
   function startAutoJoin() {
+    if (typeof window.__resumeAutoJoinNow === 'function') {
+      window.__resumeAutoJoinNow();
+    }
+    resetAutoJoinEquipState();
+    lastAutoFortifyKey = '';
+    lastAutoJoinBattlePeriod = currentPeriod || null;
+
+    {
+      const p = Number(currentProgress);
+      if (!location.href.includes('/teambattle?m=rb') || !Number.isFinite(p)) {
+        lastAutoJoinRBStage = null;
+      } else if (p <= 16) {
+        lastAutoJoinRBStage = 1;
+      } else if (p <= 33) {
+        lastAutoJoinRBStage = 2;
+      } else if (p <= 50) {
+        lastAutoJoinRBStage = 3;
+      } else if (p <= 66) {
+        lastAutoJoinRBStage = 4;
+      } else if (p <= 83) {
+        lastAutoJoinRBStage = 5;
+      } else {
+        lastAutoJoinRBStage = 6;
+      }
+    }
+
     clearInterval(progressBarIntervalId);
     progressBarIntervalId = null;
     autoJoin();
   }
   let progressBarIntervalId = setInterval(drawProgressBar, 18000);
+  let autoJoinStopRequested = false;
+  let autoJoinRetryTimeoutIds = new Set();
+
   (()=>{ // autoJoinとprogressBarのinterval管理
+    function clearAutoJoinRetryTimeouts() {
+      for (const id of autoJoinRetryTimeoutIds) {
+        clearTimeout(id);
+      }
+      autoJoinRetryTimeoutIds.clear();
+    }
+
     function stopAutoJoin() {
+      autoJoinStopRequested = true;
+
       if (autoJoinIntervalId) {
         clearInterval(autoJoinIntervalId);
         autoJoinIntervalId = null;
       }
+
+      clearAutoJoinRetryTimeouts();
       isAutoJoinRunning = false;
+      lastAutoJoinGuideKey = '';
+      lastAutoJoinQuietMessage = '';
+      lastAutoFortifyKey = '';
+
+      if (typeof lastAutoJoinStatusKey !== 'undefined') {
+        lastAutoJoinStatusKey = '';
+      }
     }
+
+    function resumeAutoJoin() {
+      autoJoinStopRequested = false;
+      clearAutoJoinRetryTimeouts();
+    }
+
+    window.__stopAutoJoinNow = stopAutoJoin;
+    window.__resumeAutoJoinNow = resumeAutoJoin;
+    window.__queueAutoJoinRetry = function (fn, waitMs) {
+      const timeoutId = setTimeout(() => {
+        autoJoinRetryTimeoutIds.delete(timeoutId);
+        if (autoJoinStopRequested) return;
+        fn();
+      }, waitMs);
+      autoJoinRetryTimeoutIds.add(timeoutId);
+      return timeoutId;
+    };
+
     const dialog = document.querySelector('.auto-join');
     const observer = new MutationObserver(() => {
       if (!dialog.open) {
