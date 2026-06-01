@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         RBtest2
-// @version      1.2.2d改 Red vs Blue 04/04版
+// @version      1.2.2d改 Red vs Blue 06/01版
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
@@ -1901,7 +1901,7 @@
       const validJsonStr = cellColorsMatch[1].replace(/'/g, '"').replace(/,\s*}/g, '}');
       const cellColors = JSON.parse(validJsonStr);
 
-      const capMatch = allScripts.match(/const (?:capitalMap|capitalList)\s*=\s*(\[.*?\]);/s);
+      const capMatch = allScripts.match(/(?:const|let)\s+(?:capitalMap|capitalList)\s*=\s*(\[.*?\]);/s);
       const capitalMap = capMatch ? JSON.parse(capMatch[1]) : [];
 
       const gridSizeMatch = allScripts.match(/const GRID_SIZE\s*=\s*(\d+);/);
