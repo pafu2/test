@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 Red vs Blue ume
+// @version      1.2.2d改 Red vs Blue ume 06/01版
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
@@ -1893,7 +1893,7 @@
       const validJsonStr = cellColorsMatch[1].replace(/'/g, '"').replace(/,\s*}/g, '}');
       const cellColors = JSON.parse(validJsonStr);
 
-      const capMatch = allScripts.match(/const (?:capitalMap|capitalList)\s*=\s*(\[.*?\]);/s);
+      const capMatch = allScripts.match(/(?:const|let)\s+(?:capitalMap|capitalList)\s*=\s*(\[.*?\]);/s);
       const capitalMap = capMatch ? JSON.parse(capMatch[1]) : [];
 
       const gridSizeMatch = allScripts.match(/const GRID_SIZE\s*=\s*(\d+);/);
@@ -1902,7 +1902,7 @@
 
       const terrainData = {};
       try {
-        const terrainMatch = allScripts.match(/const terrainsPayload\s*=\s*({.+?});/s);
+        const terrainMatch = allScripts.match(/(?:const|let)\s+terrainsPayload\s*=\s*({[\s\S]+?});/);
         if (terrainMatch) {
           const payload = JSON.parse(terrainMatch[1]);
           if (payload.terrains && Array.isArray(payload.terrains)) {
@@ -2928,17 +2928,17 @@
         let cellColors, capitalMap, rows, cols;
         const waterSet = new Set();
 
-        const cellColorsMatch = scriptContent.match(/const\s+cellColors\s*=\s*({[\s\S]+?});/);
+        const cellColorsMatch = scriptContent.match(/(?:const|let)\s+cellColors\s*=\s*({[\s\S]+?});/);
         const validJsonStr = cellColorsMatch[1].replace(/'/g, '"').replace(/,\s*}/, '}');
         cellColors = JSON.parse(validJsonStr);
 
-        const capitalListMatch = scriptContent.match(/const\s+capitalList\s*=\s*(\[[\s\S]*?\]);/);
+        const capitalListMatch = scriptContent.match(/(?:const|let)\s+capitalList\s*=\s*(\[[\s\S]*?\]);/);
         capitalMap = JSON.parse(capitalListMatch[1]);
 
         const gridSizeMatch = scriptContent.match(/const\s+GRID_SIZE\s*=\s*(\d+);/);
         rows = cols = Number(gridSizeMatch[1]);
 
-        const terrainMatch = scriptContent.match(/const\s+terrainsPayload\s*=\s*({[\s\S]+?});/);
+        const terrainMatch = scriptContent.match(/(?:const|let)\s+terrainsPayload\s*=\s*({[\s\S]+?});/);
         if (terrainMatch && terrainMatch[1]) {
           const payload = JSON.parse(terrainMatch[1]);
           if (payload.terrains) {
