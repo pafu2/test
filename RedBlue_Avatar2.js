@@ -2761,7 +2761,7 @@
                 loop += 1;
                 sleepTime = 1;
                 message = '[ﾘﾄﾗｲ] (' + loop + '発目) '+ lastLine;
-                processType = 'continue';
+                processType = 'reload';
               } else {
                 loop += 1;
                 success = true;
