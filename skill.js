@@ -4,7 +4,8 @@
 // @version      1.1
 // @description  探検→採掘→探検の切替
 // @author       ぱふぱふ
-// @match        https://donguri.5ch.io/*
+// @match        https://donguri.5ch.io/
+// @match        https://donguri.5ch.io/auth
 // @grant        none
 // ==/UserScript==
 
