@@ -4,14 +4,33 @@
 // @version      1.1
 // @description  探検→採掘→探検の切替
 // @author       ぱふぱふ
-// @match        https://donguri.io.net/
+// @match        https://donguri.5ch.io/*
 // @grant        none
 // ==/UserScript==
 
 (function() {
     'use strict';
 
-const statusEl = document.createElement('div');
+    // 502対策
+    if (document.title.includes("502: Bad gateway")) {
+        const statusEl = document.createElement('div');
+        statusEl.style = "position:fixed;top:10px;left:10px;z-index:9999;padding:10px;background:white;color:black;font-size:18px;border-radius:5px;pointer-events:none;line-height:1.5;border:2px solid #c0c0c0;box-shadow: 2px 2px 5px rgba(0,0,0,0.2);";
+        document.body.appendChild(statusEl);
+        let remain = 60;
+        statusEl.innerHTML = `502エラー検出<br>更新まで: ${remain}秒`;
+
+        const timer = setInterval(() => {
+            remain--;
+            statusEl.innerHTML = `502エラー検出<br>更新まで: ${remain}秒`;
+            if (remain <= 0) {
+                clearInterval(timer);
+                location.reload();
+            }
+        }, 1000);
+        return;
+    }
+
+    const statusEl = document.createElement('div');
     statusEl.style = "position:fixed;top:10px;left:10px;z-index:9999;padding:10px;background:white;color:black;font-size:18px;border-radius:5px;pointer-events:none;line-height:1.5;border:2px solid #c0c0c0;box-shadow: 2px 2px 5px rgba(0,0,0,0.2);";
     document.body.appendChild(statusEl);
 
