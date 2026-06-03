@@ -2668,7 +2668,7 @@
       let regions = await getRegions();
       const excludeSet = new Set();
       let loop = 0;
-      let gets = 0;
+      let shot = false;
 
       let cellType;
       if (regions.nonAdjacent.length > 0) {
@@ -2741,7 +2741,7 @@
             } else if(cellType === 'participation') {
               if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
                 loop += 1;
-                gets += 1;
+                shot = true;
                 sleepTime = 1.5;
                 message = '(' + loop + '発目) '+ lastLine;
                 cellType = 'teamAdjacent';
@@ -2755,7 +2755,7 @@
               if (isMorning) {
                 if (loop < maxloop){
                   loop += 1;
-                  gets += 1;
+                  shot = true;
                   sleepTime = 0.7;
                   message = '(' + loop + '発目) '+ lastLine;
                   processType = 'reload';
@@ -2889,8 +2889,12 @@
 
             if (success) {
               if (isMorning) {
-                if (currentProgress < 50) {
+                if (currentProgress < 20) {
+                  nextProgress = 25;
+                } else if (currentProgress < 50) {
                   nextProgress = 52;
+                } else if (currentProgress < 70) {
+                  nextProgress = 75;
                 } else {
                   nextProgress = 2;
                 }
@@ -2972,13 +2976,17 @@
         }
 
         if (!success && regions[cellType].length === 0) {
-          if (cellType !== 'participation' && gets === 0) {
+          if (cellType !== 'participation' && !shot) {
             cellType = 'participation';
             regions = await getRegions();
             continue;
           } else if (isMorning) {
-            if (currentProgress < 50) {
+            if (currentProgress < 20) {
+              nextProgress = 25;
+            } else if (currentProgress < 50) {
               nextProgress = 52;
+            } else if (currentProgress < 70) {
+              nextProgress = 75;
             } else {
               nextProgress = 2;
             }
