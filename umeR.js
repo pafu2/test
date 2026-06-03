@@ -2779,8 +2779,12 @@
               i++;
             }
             if (success) {
-              if (currentProgress < 50) {
+              if (currentProgress < 20) {
+                nextProgress = 25;
+              } else if (currentProgress < 50) {
                 nextProgress = 52;
+              } else if (currentProgress < 70) {
+                nextProgress = 75;
               } else {
                 nextProgress = 2;
               }
@@ -2856,8 +2860,12 @@
             regions = await getRegions();
             continue;
           } else {
-            if (currentProgress < 50) {
+            if (currentProgress < 20) {
+              nextProgress = 25;
+            } else if (currentProgress < 50) {
               nextProgress = 52;
+            } else if (currentProgress < 70) {
+              nextProgress = 75;
             } else {
               nextProgress = 2;
             }
