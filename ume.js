@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 ume
+// @version      1.2.2d改 ume 06/11版
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
@@ -2595,7 +2595,8 @@
         '装備している防具と武器が力不足です。',
         '装備している防具と武器が強すぎます',
         '装備しているものは改造が多すぎます。改造の少ない他のものをお試しください',
-        '参加するには、装備中の武器と防具のアイテムID'
+        '参加するには、装備中の武器と防具のアイテムID',
+        'RedBlueとLadderでは'
       ],
       nonAdjacent: [
         'このタイルは攻撃できません。あなたのチームが首都を持つまで、どの首都にも隣接するタイルを主張することはできません。',
