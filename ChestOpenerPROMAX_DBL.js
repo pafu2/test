@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri Chest Opener
-// @version      1.2c改 06/04版
+// @version      1.2c改 06/13版
 // @description  Automated box opening and recycling
 // @author       7234e634
 // @match        https://donguri.5ch.io/bag
@@ -374,7 +374,9 @@ for(const v of ranks){
           }
 
           if(h1.textContent.includes('アイテムバッグ')){
-            const itemLockLinks = doc.querySelectorAll('a[href*="/lock/"]');
+            const itemLockLinks =
+            [...doc.querySelectorAll('a[onclick*="toggleLock"]')]
+            .filter(a => a.textContent.includes('[錠]'));
 
             for(const elm of itemLockLinks){
               const itemName = elm.closest('tr').firstChild.textContent;
@@ -442,7 +444,9 @@ for(const v of ranks){
   })
 
   async function itemLocking(doc) {
-    const itemLockLinks = doc.querySelectorAll('a[href*="/lock/"]');
+    const itemLockLinks =
+    [...doc.querySelectorAll('a[onclick*="toggleLock"]')]
+    .filter(a => a.textContent.includes('[錠]'));
     const checkedRanks = Array.from(document.querySelectorAll('.keep-item:checked')).map(elm => elm.value);
     const itemInputs = document.querySelectorAll('.wishlist');
     const results = [];
@@ -528,8 +532,25 @@ for(const v of ranks){
       });
     });
 
-    const promises = results.map(async link => {
-      const response = await fetch(link.href, { method: 'GET' });
+    const promises = results.map(async (link) => {
+
+      const onclick = link.getAttribute('onclick');
+
+      const match = onclick.match(
+        /toggleLock\(this,\s*'([^']+)',\s*'(\d+)'\)/
+      );
+
+      if (!match) {
+        throw new Error('Failed to parse lock information');
+      }
+
+      const itemId = match[2];
+
+      const response = await fetch(
+        `/lock/${itemId}`,
+        { method: 'GET' }
+      );
+
       if (!response.ok) {
         throw new Error('Failed to lock item');
       }
@@ -630,7 +651,15 @@ for(const v of ranks){
 
           if(h1.textContent.includes('アイテムバッグ')){
             const necklaceTable = doc.querySelector('#necklaceTable');
-            const rows = Array.from(necklaceTable.rows).slice(1).filter(row => row.querySelector('a[href*="/lock/"]'));
+            const rows = Array.from(necklaceTable.rows)
+            .slice(1)
+            .filter(row =>
+                [...row.querySelectorAll('a')]
+                .some(a =>
+                    a.textContent.includes('[錠]') &&
+                    a.getAttribute('onclick')?.includes('toggleLock')
+                )
+            );
 
             const lockPromises = [];
             for (const row of rows) {
@@ -662,11 +691,18 @@ for(const v of ranks){
 
                     const buffCount = itemEffects.filter(effects => buffs.includes(effects[1])).length;
                     const debuffCount = itemEffects.filter(effects => debuffs.includes(effects[1])).length;
-
+                    const lockLink = [...row.querySelectorAll('a')].find(a => a.getAttribute('onclick')?.includes('toggleLock'));
                     if (itemRank === 'Pt' || itemRank === 'Au' || (minBuffs[itemRank] !== undefined && buffCount >= minBuffs[itemRank] && debuffCount <= maxDebuffs[itemRank])) {
-                        const lockLink = row.querySelectorAll('a')[1];
-                        if (lockLink && lockLink.href.includes('/lock/')) {
-                            lockPromises.push(fetch(lockLink.href));
+
+                       if (lockLink) {
+                          const onclick = lockLink.getAttribute('onclick');
+                          const match = onclick?.match(/toggleLock\(this,\s*'([^']+)',\s*'(\d+)'\)/);
+
+                            if (match) {
+                               const itemId = match[2];
+                               lockPromises.push(fetch(`/lock/${itemId}`)
+                              );
+                            }
                         }
                     }
                 }
