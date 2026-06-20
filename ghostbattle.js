@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ゴーストバトル
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  ぱふぱふへ自動挑戦
 // @match        https://donguri.5ch.io/duels
 // @grant        none
@@ -99,7 +99,9 @@
         return null;
     }
 
-    async function waitForModal() {
+    async function waitForModal(timeout = 10000) {
+
+        const start = Date.now();
 
         while (running) {
 
@@ -108,6 +110,10 @@
 
             if (closeBtn && closeBtn.offsetParent !== null) {
                 return closeBtn;
+            }
+
+            if (Date.now() - start > timeout) {
+                return null;
             }
 
             await sleep(100);
@@ -126,8 +132,6 @@
 
                 if (!challengeBtn) {
 
-                    console.log("ぱふぱふが見つかりません");
-
                     await sleep(3000);
 
                     continue;
@@ -135,10 +139,13 @@
 
                 challengeBtn.click();
 
-                const closeBtn = await waitForModal();
+                const closeBtn = await waitForModal(10000);
 
                 if (!closeBtn) {
-                    break;
+
+                    await sleep(20000);
+
+                    continue;
                 }
 
                 battleCount++;
@@ -162,8 +169,6 @@
         isRunning = false;
 
         updateCounter();
-
-        console.log("自動対戦停止");
     }
 
     startBtn.onclick = () => {
@@ -175,8 +180,6 @@
 
         updateCounter();
 
-        console.log("自動対戦開始");
-
         main();
     };
 
@@ -185,8 +188,6 @@
         running = false;
 
         updateCounter();
-
-        console.log("停止要求");
     };
 
 })();
