@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 Red vs Blue 06/01版
+// @version      1.2.2d改 m=t 08/27版
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
@@ -2757,7 +2757,7 @@
             let processType;
             let sleepTime = 2;
 
-            if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')||text.startsWith('この場所を占領しました')||text.startsWith('首都から出撃しました')||text.startsWith('この場所へ移動しました')) {
+            if (text.includes('アリーナチャレンジ開始')||text.includes('リーダーになった')||text.includes('この場所を占領しました')||text.includes('首都から出撃しました')||text.includes('この場所へ移動しました')) {
               success = true;
               message = '[成功] ' + lastLine;
               processType = 'return';
