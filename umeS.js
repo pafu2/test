@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 umeR/stdP Switch 06/11版
+// @version      1.2.2d改 umeR/stdP Switch 08/27版
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
@@ -2740,7 +2740,7 @@
                 }
               }
             } else if(cellType === 'participation') {
-              if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
+              if (text.includes('アリーナチャレンジ開始')||text.includes('リーダーになった')) {
                 loop += 1;
                 shot = true;
                 sleepTime = 1.5;
@@ -2752,7 +2752,7 @@
                 processType = 'reload';
               }
               i++;
-            } else if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
+            } else if (text.includes('アリーナチャレンジ開始')||text.includes('リーダーになった')) {
               if (isMorning) {
                 if (loop < maxloop){
                   loop += 1;
@@ -2768,7 +2768,7 @@
                 }
                 i++;
               } else {
-                if (text.startsWith('リーダーになった')) {
+                if (text.includes('リーダーになった')) {
                   if (loop < maxloop){
                     loop += 1;
                     message = '[ﾘﾄﾗｲ] ' + lastLine;
