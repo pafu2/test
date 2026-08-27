@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 Standard 06/11版
+// @version      1.2.2d改 Standard 08/27版
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
@@ -2688,7 +2688,7 @@
             let processType;
             let sleepTime = 2;
 
-            if (text.startsWith('アリーナチャレンジ開始')||text.startsWith('リーダーになった')) {
+            if (text.includes('アリーナチャレンジ開始')||text.includes('リーダーになった')) {
               success = true;
               message = '[成功] ' + lastLine;
               processType = 'return';
