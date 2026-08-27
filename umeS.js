@@ -2739,6 +2739,9 @@
                   i++;
                 }
               }
+            } else if (messageType === 'retry') {
+              sleepTime = 20;
+              processType = 'continue';
             } else if(cellType === 'participation') {
               if (text.includes('アリーナチャレンジ開始')||text.includes('リーダーになった')) {
                 loop += 1;
@@ -2794,9 +2797,6 @@
               i++;
             } else if (messageType === 'toofast') {
               sleepTime = 3;
-              processType = 'continue';
-            } else if (messageType === 'retry') {
-              sleepTime = 20;
               processType = 'continue';
             } else if (messageType === 'guardError') {
               message = lastLine;
