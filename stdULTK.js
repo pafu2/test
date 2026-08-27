@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         donguri arena assist tool
-// @version      1.2.2d改 Standard Ultimate警備員仕様 06/11版
+// @version      1.2.2d改 Standard Ultimate警備員仕様 08/27版
 // @description  fix arena ui and add functions
 // @author       ぱふぱふ
 // @match        https://donguri.5ch.io/teambattle?m=hc
@@ -2706,7 +2706,7 @@
                 processType = 'return';
                 i++;
               }
-            } else if (text.startsWith('リーダーになった')) {
+            } else if (text.includes('リーダーになった')) {
               if (loop < 9){
                 loop += 1;
                 message = '[ﾘﾄﾗｲ] ' + lastLine;
@@ -2718,7 +2718,7 @@
                 processType = 'return';
               }
               i++;
-            } else if (text.startsWith('アリーナチャレンジ開始')) {
+            } else if (text.includes('アリーナチャレンジ開始')) {
               loop += 1;
               success = true;
               message = '[成功] ' + lastLine;
